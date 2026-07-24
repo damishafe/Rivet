@@ -24,3 +24,11 @@ def test_data_dir_reads_env(monkeypatch: object) -> None:
     assert isinstance(mp, pytest.MonkeyPatch)
     mp.setenv("RIVET_DATA_DIR", "/tmp/rivet-test-data")
     assert data_dir() == Path("/tmp/rivet-test-data")
+
+
+def test_engine_uses_wal_and_busy_timeout(engine: Engine) -> None:
+    with engine.connect() as conn:
+        journal = conn.exec_driver_sql("PRAGMA journal_mode").scalar()
+        timeout = conn.exec_driver_sql("PRAGMA busy_timeout").scalar()
+    assert journal == "wal"
+    assert timeout == 30000
