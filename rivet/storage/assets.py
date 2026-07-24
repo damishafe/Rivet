@@ -1,6 +1,7 @@
 import hashlib
 import os
 from pathlib import Path
+from uuid import uuid4
 
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
@@ -11,7 +12,7 @@ from rivet.storage.records import AssetRow
 
 def _atomic_write(dest: Path, data: bytes) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    tmp = dest.with_name(dest.name + ".tmp")
+    tmp = dest.with_name(f"{dest.name}.{uuid4().hex}.tmp")
     with open(tmp, "wb") as handle:
         handle.write(data)
         handle.flush()
