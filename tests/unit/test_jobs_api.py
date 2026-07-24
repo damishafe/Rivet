@@ -42,3 +42,13 @@ def test_unknown_job_replays_nothing(engine: Engine) -> None:
         response = client.get("/api/jobs/ghost/events?follow=false")
     assert response.status_code == 200
     assert "event: stage" not in response.text
+
+
+def test_last_event_id_header_resumes_stream(engine: Engine) -> None:
+    seed_events(engine, 3)
+    with TestClient(create_app(engine)) as client:
+        response = client.get(
+            "/api/jobs/job-1/events?follow=false", headers={"last-event-id": "2"}
+        )
+    assert response.text.count("event: stage") == 1
+    assert "step 2" in response.text
