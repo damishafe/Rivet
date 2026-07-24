@@ -58,3 +58,10 @@ class StageRunRow(SQLModel, table=True):
     job_id: str = Field(index=True)
     project_id: str = Field(index=True)
     payload: dict[str, Any] = Field(sa_column=Column(JSON))
+
+
+class StageCacheRow(SQLModel, table=True):
+    __tablename__ = "stage_cache"
+
+    fingerprint: str = Field(primary_key=True)
+    payload: dict[str, Any] = Field(sa_column=Column(JSON))
