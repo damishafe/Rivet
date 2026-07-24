@@ -2,7 +2,7 @@ import asyncio
 from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, Request
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent  # type: ignore[attr-defined]
+from sse_starlette import EventSourceResponse, ServerSentEvent
 
 from rivet.storage.events import EventStore
 
