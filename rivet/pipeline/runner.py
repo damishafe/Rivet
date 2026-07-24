@@ -47,6 +47,14 @@ class JobRunner:
 
     async def run(self, job: Job, plan: list[PlannedStage]) -> Job:
         self._jobs.set_status(job.id, "running")
+        try:
+            return await self._execute(job, plan)
+        except Exception as error:
+            failed = self._jobs.set_status(job.id, "failed", error=str(error))
+            self._emit(job, "runner", "failed", 0.0, str(error))
+            return failed
+
+    async def _execute(self, job: Job, plan: list[PlannedStage]) -> Job:
         workdir = self._asset_root / "projects" / job.project_id / "work" / job.id
         workdir.mkdir(parents=True, exist_ok=True)
         context = StageContext(project_id=job.project_id, job_id=job.id, workdir=workdir)

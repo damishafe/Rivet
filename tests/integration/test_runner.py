@@ -109,3 +109,25 @@ def test_second_job_hits_cache(engine: Engine, tmp_path: Path) -> None:
     assert runs[0].cache_hit is True
     refreshed = JobStore(engine).get(second.id)
     assert refreshed is not None and refreshed.status == "succeeded"
+
+
+@dataclass
+class CleanupBoomStage(EchoStage):
+    name: str = "cleanup_boom"
+
+    async def cleanup(self) -> None:
+        raise RuntimeError("cleanup exploded")
+
+
+def test_cleanup_failure_marks_job_failed_not_stuck(engine: Engine, tmp_path: Path) -> None:
+    jobs = JobStore(engine)
+    job = jobs.create("p1", "generate")
+    finished = asyncio.run(
+        JobRunner(engine, tmp_path).run(job, make_plan(CleanupBoomStage(), ["only"]))
+    )
+    assert finished.status == "failed"
+    assert "cleanup exploded" in (finished.error or "")
+    refreshed = jobs.get(job.id)
+    assert refreshed is not None and refreshed.status == "failed"
+    later = jobs.create("p1", "generate")
+    assert later.id != job.id
