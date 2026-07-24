@@ -1,10 +1,11 @@
 import asyncio
 from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from sse_starlette import EventSourceResponse, ServerSentEvent
 
 from rivet.storage.events import EventStore
+from services.api.deps import get_event_store
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -20,9 +21,9 @@ def _resume_cursor(after: int, header: str | None) -> int:
 
 @router.get("/{job_id}/events")
 async def stream_events(
-    job_id: str, request: Request, after: int = 0, follow: bool = True
+    job_id: str, request: Request, after: int = 0, follow: bool = True,
+    store: EventStore = Depends(get_event_store)
 ) -> EventSourceResponse:
-    store = EventStore(request.app.state.engine)
     cursor_start = _resume_cursor(after, request.headers.get("last-event-id"))
 
     async def generate() -> AsyncIterator[ServerSentEvent]:
