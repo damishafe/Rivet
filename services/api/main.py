@@ -6,7 +6,7 @@ from sqlalchemy.engine import Engine
 
 from rivet import __version__
 from rivet.storage.db import make_engine
-from services.api import projects
+from services.api import jobs, projects
 
 
 @asynccontextmanager
@@ -20,6 +20,7 @@ def create_app(engine: Engine | None = None) -> FastAPI:
     app = FastAPI(title="Rivet", version=__version__, lifespan=lifespan)
     app.state.engine = engine
     app.include_router(projects.router)
+    app.include_router(jobs.router)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
