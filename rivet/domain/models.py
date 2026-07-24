@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from rivet.domain.ids import new_id
 from rivet.domain.states import ProjectStatus
@@ -59,12 +59,14 @@ class Motion(BaseModel):
 
 
 class ShotPlan(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     shot_id: Literal["hook", "proof", "cta"]
     purpose: str
     duration_s: float = Field(gt=0)
     background_prompt: str
     negative_prompt: str = ""
-    copy: ShotCopy
+    copy_: ShotCopy = Field(alias="copy", serialization_alias="copy")
     product: ProductPlacement
     logo: LogoPlacement
     layout_template: str
