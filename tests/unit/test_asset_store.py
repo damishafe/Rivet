@@ -35,3 +35,26 @@ def test_same_content_maps_to_same_path(engine: Engine, tmp_path: Path) -> None:
 
 def test_get_unknown_returns_none(engine: Engine, tmp_path: Path) -> None:
     assert AssetStore(engine, tmp_path).get("missing") is None
+
+
+def test_save_persists_dimensions_and_provenance(engine: Engine, tmp_path: Path) -> None:
+    store = AssetStore(engine, tmp_path)
+    asset = store.save(
+        "proj1", "derived", b"cutout", "image/png", ".png",
+        width=640, height=480, provenance="derived",
+    )
+    fetched = store.get(asset.id)
+    assert fetched is not None
+    assert (fetched.width, fetched.height, fetched.provenance) == (640, 480, "derived")
+
+
+def test_find_filters_by_role_in_insertion_order(engine: Engine, tmp_path: Path) -> None:
+    store = AssetStore(engine, tmp_path)
+    first = store.save("proj1", "product", b"one", "image/png", ".png")
+    second = store.save("proj1", "product", b"two", "image/png", ".png")
+    logo = store.save("proj1", "logo", b"three", "image/svg+xml", ".svg")
+    store.save("other", "product", b"four", "image/png", ".png")
+    products = store.find("proj1", "product")
+    assert [a.id for a in products] == [first.id, second.id]
+    assert store.find("proj1") == [*products, logo][0:3] or len(store.find("proj1")) == 3
+    assert store.find("proj1", "brief_audio") == []

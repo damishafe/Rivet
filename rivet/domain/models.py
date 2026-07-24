@@ -89,6 +89,7 @@ def validate_plan(shots: list[ShotPlan]) -> None:
 
 
 AssetRole = Literal["product", "logo", "brief_audio", "style_ref", "derived"]
+Provenance = Literal["original", "derived"]
 
 
 class Project(BaseModel):
@@ -110,7 +111,8 @@ class Asset(BaseModel):
     mime: str
     width: int | None = None
     height: int | None = None
-    provenance: Literal["original", "derived"] = "original"
+    provenance: Provenance = "original"
+    created_at: datetime = Field(default_factory=utcnow)
 
 
 class StageRun(BaseModel):

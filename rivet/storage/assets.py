@@ -4,9 +4,9 @@ from pathlib import Path
 from uuid import uuid4
 
 from sqlalchemy.engine import Engine
-from sqlmodel import Session
+from sqlmodel import Session, select
 
-from rivet.domain.models import Asset, AssetRole
+from rivet.domain.models import Asset, AssetRole, Provenance
 from rivet.storage.records import AssetRow
 
 
@@ -26,7 +26,15 @@ class AssetStore:
         self._root = root
 
     def save(
-        self, project_id: str, role: AssetRole, data: bytes, mime: str, suffix: str
+        self,
+        project_id: str,
+        role: AssetRole,
+        data: bytes,
+        mime: str,
+        suffix: str,
+        width: int | None = None,
+        height: int | None = None,
+        provenance: Provenance = "original",
     ) -> Asset:
         digest = hashlib.sha256(data).hexdigest()
         dest = (
@@ -35,7 +43,14 @@ class AssetStore:
         if not dest.exists():
             _atomic_write(dest, data)
         asset = Asset(
-            project_id=project_id, role=role, path=str(dest), sha256=digest, mime=mime
+            project_id=project_id,
+            role=role,
+            path=str(dest),
+            sha256=digest,
+            mime=mime,
+            width=width,
+            height=height,
+            provenance=provenance,
         )
         with Session(self._engine) as session:
             session.add(
@@ -48,3 +63,13 @@ class AssetStore:
         with Session(self._engine) as session:
             row = session.get(AssetRow, asset_id)
             return Asset.model_validate(row.payload) if row else None
+
+    def find(self, project_id: str, role: AssetRole | None = None) -> list[Asset]:
+        with Session(self._engine) as session:
+            rows = session.exec(
+                select(AssetRow).where(AssetRow.project_id == project_id)
+            ).all()
+        assets = [Asset.model_validate(row.payload) for row in rows]
+        if role is not None:
+            assets = [asset for asset in assets if asset.role == role]
+        return sorted(assets, key=lambda asset: (asset.created_at, asset.id))
