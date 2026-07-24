@@ -5,6 +5,8 @@ from fastapi.testclient import TestClient
 from PIL import Image
 from sqlalchemy.engine import Engine
 
+from rivet.domain.states import ProjectStatus
+from rivet.storage.projects import ProjectStore
 from services.api.main import create_app
 
 
@@ -63,3 +65,30 @@ def test_get_brand_before_derive_404(engine: Engine, tmp_path: Path) -> None:
         project_id = str(client.post("/api/projects", json={"name": "None"}).json()["id"])
         response = client.get(f"/api/projects/{project_id}/brand")
     assert response.status_code == 404
+
+
+def test_derive_with_only_product_409(engine: Engine, tmp_path: Path) -> None:
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        project_id = str(client.post("/api/projects", json={"name": "Half"}).json()["id"])
+        upload(client, project_id, "product", "RGB")
+        response = client.post(f"/api/projects/{project_id}/brand/derive")
+    assert response.status_code == 409
+
+
+def test_confirm_with_foreign_assets_422(engine: Engine, tmp_path: Path) -> None:
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        owner = setup_project(client)
+        other = setup_project(client)
+        proposal = client.post(f"/api/projects/{owner}/brand/derive").json()
+        response = client.put(f"/api/projects/{other}/brand", json=proposal)
+    assert response.status_code == 422
+
+
+def test_confirm_after_planning_409(engine: Engine, tmp_path: Path) -> None:
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        project_id = setup_project(client)
+        proposal = client.post(f"/api/projects/{project_id}/brand/derive").json()
+        assert client.put(f"/api/projects/{project_id}/brand", json=proposal).status_code == 200
+        ProjectStore(engine).advance(project_id, ProjectStatus.PLANNED)
+        response = client.put(f"/api/projects/{project_id}/brand", json=proposal)
+    assert response.status_code == 409

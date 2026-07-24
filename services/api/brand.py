@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from rivet.adapters.heuristic_brand import propose_brand_dna
 from rivet.domain.models import BrandDNA, Project, utcnow
+from rivet.domain.states import ProjectStatus
 from rivet.storage.assets import AssetStore
 from rivet.storage.projects import ProjectStore
 from services.api.deps import get_asset_store, get_project_store
@@ -39,8 +40,15 @@ def confirm_brand(
     project_id: str,
     dna: BrandDNA,
     projects: ProjectStore = Depends(get_project_store),
+    assets: AssetStore = Depends(get_asset_store),
 ) -> Project:
-    _require_project(projects, project_id)
+    project = _require_project(projects, project_id)
+    if project.status not in (ProjectStatus.DRAFT, ProjectStatus.BRAND_READY):
+        raise HTTPException(status_code=409, detail="brand is frozen after planning")
+    for asset_id in (dna.product_asset_id, dna.logo_asset_id):
+        asset = assets.get(asset_id)
+        if asset is None or asset.project_id != project_id:
+            raise HTTPException(status_code=422, detail="asset does not belong to project")
     confirmed = dna.model_copy(update={"confirmed_at": utcnow()})
     return projects.set_brand_dna(project_id, confirmed)
 
