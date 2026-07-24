@@ -119,6 +119,7 @@ class Asset(BaseModel):
 class StageRun(BaseModel):
     id: str = Field(default_factory=new_id)
     project_id: str
+    job_id: str
     stage: str
     model: str | None = None
     revision: str | None = None
