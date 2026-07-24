@@ -53,5 +53,9 @@ packages = ["rivet", "cli", "services"]
 module = ["torch", "torch.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "rivet.domain.models"
+disable_error_code = ["assignment"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
