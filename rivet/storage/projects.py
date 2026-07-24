@@ -1,12 +1,16 @@
 import secrets
-from datetime import UTC
+from datetime import UTC, datetime
 
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
-from rivet.domain.models import Project, utcnow
+from rivet.domain.models import BrandDNA, Project, utcnow
 from rivet.domain.states import ProjectStatus, assert_transition
 from rivet.storage.records import ProjectRow
+
+
+def _aware(dt: datetime) -> datetime:
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=UTC)
 
 
 def _to_row(project: Project) -> ProjectRow:
@@ -28,8 +32,8 @@ def _to_project(row: ProjectRow) -> Project:
         name=row.name,
         status=ProjectStatus(row.status),
         campaign_seed=row.campaign_seed,
-        created_at=row.created_at.replace(tzinfo=UTC) if row.created_at.tzinfo is None else row.created_at,
-        updated_at=row.updated_at.replace(tzinfo=UTC) if row.updated_at.tzinfo is None else row.updated_at,
+        created_at=_aware(row.created_at),
+        updated_at=_aware(row.updated_at),
         active_version=row.active_version,
         brief=row.brief,
     )
@@ -81,3 +85,25 @@ class ProjectStore:
             session.commit()
             session.refresh(row)
             return _to_project(row)
+
+    def set_brand_dna(self, project_id: str, dna: BrandDNA) -> Project:
+        with Session(self._engine) as session:
+            row = session.get(ProjectRow, project_id)
+            if row is None:
+                raise KeyError(project_id)
+            row.brand_dna = dna.model_dump(mode="json")
+            if dna.confirmed_at is not None and row.status == ProjectStatus.DRAFT.value:
+                assert_transition(ProjectStatus(row.status), ProjectStatus.BRAND_READY)
+                row.status = ProjectStatus.BRAND_READY.value
+            row.updated_at = utcnow()
+            session.add(row)
+            session.commit()
+            session.refresh(row)
+            return _to_project(row)
+
+    def get_brand_dna(self, project_id: str) -> BrandDNA | None:
+        with Session(self._engine) as session:
+            row = session.get(ProjectRow, project_id)
+            if row is None:
+                raise KeyError(project_id)
+            return BrandDNA.model_validate(row.brand_dna) if row.brand_dna else None

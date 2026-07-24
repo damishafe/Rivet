@@ -63,3 +63,51 @@ def test_set_brief_strips_and_persists(engine: Engine) -> None:
 def test_set_brief_unknown_project_raises(engine: Engine) -> None:
     with pytest.raises(KeyError):
         ProjectStore(engine).set_brief("missing", "x" * 40)
+
+
+from rivet.domain.models import BrandDNA, PaletteColor, utcnow
+
+
+def make_dna(confirmed: bool = False) -> BrandDNA:
+    return BrandDNA(
+        product_name="Kora Arc",
+        palette=[PaletteColor(hex="#FF3B00", role="primary")],
+        tone=["bold"],
+        audience="campus creators",
+        required_text=["Make every space your studio"],
+        forbidden_claims=["waterproof"],
+        logo_asset_id="a" * 32,
+        product_asset_id="b" * 32,
+        confirmed_at=utcnow() if confirmed else None,
+    )
+
+
+def test_brand_dna_round_trips_unconfirmed(engine: Engine) -> None:
+    store = ProjectStore(engine)
+    project = store.create("DNA")
+    store.set_brand_dna(project.id, make_dna())
+    fetched = store.get_brand_dna(project.id)
+    assert fetched is not None and fetched.product_name == "Kora Arc"
+    refreshed = store.get(project.id)
+    assert refreshed is not None and refreshed.status is ProjectStatus.DRAFT
+
+
+def test_confirmed_dna_advances_to_brand_ready(engine: Engine) -> None:
+    store = ProjectStore(engine)
+    project = store.create("DNA2")
+    updated = store.set_brand_dna(project.id, make_dna(confirmed=True))
+    assert updated.status is ProjectStatus.BRAND_READY
+
+
+def test_reconfirming_when_already_brand_ready_keeps_status(engine: Engine) -> None:
+    store = ProjectStore(engine)
+    project = store.create("DNA3")
+    store.set_brand_dna(project.id, make_dna(confirmed=True))
+    updated = store.set_brand_dna(project.id, make_dna(confirmed=True))
+    assert updated.status is ProjectStatus.BRAND_READY
+
+
+def test_get_brand_dna_missing_returns_none(engine: Engine) -> None:
+    store = ProjectStore(engine)
+    project = store.create("Empty")
+    assert store.get_brand_dna(project.id) is None
