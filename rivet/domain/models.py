@@ -100,6 +100,7 @@ class Project(BaseModel):
     created_at: datetime = Field(default_factory=utcnow)
     updated_at: datetime = Field(default_factory=utcnow)
     active_version: int = 1
+    brief: str | None = None
 
 
 class Asset(BaseModel):

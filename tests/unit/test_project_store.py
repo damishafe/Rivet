@@ -49,3 +49,17 @@ def test_list_all_returns_created_projects(engine: Engine) -> None:
     a = store.create("A")
     b = store.create("B")
     assert {p.id for p in store.list_all()} == {a.id, b.id}
+
+
+def test_set_brief_strips_and_persists(engine: Engine) -> None:
+    store = ProjectStore(engine)
+    project = store.create("Briefed")
+    updated = store.set_brief(project.id, "  Launch the Kora Arc speaker to campus creators.  ")
+    assert updated.brief == "Launch the Kora Arc speaker to campus creators."
+    fetched = store.get(project.id)
+    assert fetched is not None and fetched.brief == updated.brief
+
+
+def test_set_brief_unknown_project_raises(engine: Engine) -> None:
+    with pytest.raises(KeyError):
+        ProjectStore(engine).set_brief("missing", "x" * 40)

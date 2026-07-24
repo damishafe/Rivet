@@ -15,6 +15,7 @@ class ProjectRow(SQLModel, table=True):
     created_at: datetime
     updated_at: datetime
     active_version: int
+    brief: str | None = None
     brand_dna: dict[str, Any] | None = Field(default=None, sa_column=Column(JSON))
     shots: list[dict[str, Any]] | None = Field(default=None, sa_column=Column(JSON))
 

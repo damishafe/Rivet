@@ -18,6 +18,7 @@ def _to_row(project: Project) -> ProjectRow:
         created_at=project.created_at,
         updated_at=project.updated_at,
         active_version=project.active_version,
+        brief=project.brief,
     )
 
 
@@ -30,6 +31,7 @@ def _to_project(row: ProjectRow) -> Project:
         created_at=row.created_at.replace(tzinfo=UTC) if row.created_at.tzinfo is None else row.created_at,
         updated_at=row.updated_at.replace(tzinfo=UTC) if row.updated_at.tzinfo is None else row.updated_at,
         active_version=row.active_version,
+        brief=row.brief,
     )
 
 
@@ -62,6 +64,18 @@ class ProjectStore:
                 raise KeyError(project_id)
             assert_transition(ProjectStatus(row.status), target)
             row.status = target.value
+            row.updated_at = utcnow()
+            session.add(row)
+            session.commit()
+            session.refresh(row)
+            return _to_project(row)
+
+    def set_brief(self, project_id: str, text: str) -> Project:
+        with Session(self._engine) as session:
+            row = session.get(ProjectRow, project_id)
+            if row is None:
+                raise KeyError(project_id)
+            row.brief = text.strip()
             row.updated_at = utcnow()
             session.add(row)
             session.commit()

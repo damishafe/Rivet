@@ -43,3 +43,21 @@ def test_get_unknown_project_returns_404(engine: Engine) -> None:
 def test_empty_name_rejected(engine: Engine) -> None:
     with make_client(engine) as client:
         assert client.post("/api/projects", json={"name": ""}).status_code == 422
+
+
+def test_post_brief_persists(engine: Engine) -> None:
+    with make_client(engine) as client:
+        project_id = client.post("/api/projects", json={"name": "B"}).json()["id"]
+        response = client.post(
+            f"/api/projects/{project_id}/brief",
+            json={"text": "Launch the Kora Arc portable speaker to campus creators."},
+        )
+    assert response.status_code == 200
+    assert response.json()["brief"].startswith("Launch the Kora Arc")
+
+
+def test_post_brief_too_short_422(engine: Engine) -> None:
+    with make_client(engine) as client:
+        project_id = client.post("/api/projects", json={"name": "B"}).json()["id"]
+        response = client.post(f"/api/projects/{project_id}/brief", json={"text": "   short   "})
+    assert response.status_code == 422
