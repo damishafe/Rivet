@@ -91,7 +91,72 @@ def probe_whisper(device: str) -> ProbeResult:
     )
 
 
-PROBES: tuple[Probe, ...] = (Probe("transcription", "whisper-tiny.en", probe_whisper),)
+def probe_sam2(device: str) -> ProbeResult:
+    import numpy as np
+    import torch
+    from transformers import Sam2Model, Sam2Processor
+
+    name = "facebook/sam2.1-hiera-small"
+    _reset_peak(device)
+    t0 = time.perf_counter()
+    proc = Sam2Processor.from_pretrained(name)
+    model = Sam2Model.from_pretrained(name).to(device)
+    load_s = time.perf_counter() - t0
+
+    img = np.zeros((256, 256, 3), dtype="uint8")
+    img[64:192, 64:192] = 200
+    inputs = proc(
+        images=img, input_points=[[[[128, 128]]]], input_labels=[[[1]]], return_tensors="pt"
+    ).to(device)
+    t1 = time.perf_counter()
+    with torch.no_grad():
+        out = model(**inputs)
+    _sync(device)
+    infer_s = time.perf_counter() - t1
+    return ProbeResult(
+        stage="segmentation",
+        name=name,
+        device=device,
+        ok=True,
+        load_s=round(load_s, 2),
+        infer_s=round(infer_s, 2),
+        peak_mb=round(_peak_mb(device) or 0, 0),
+        note=f"masks={tuple(out.pred_masks.shape)}",
+    )
+
+
+def probe_kokoro(device: str) -> ProbeResult:
+    from kokoro import KPipeline
+
+    name = "hexgrad/Kokoro-82M"
+    _reset_peak(device)
+    t0 = time.perf_counter()
+    pipe = KPipeline(lang_code="a", device=device)
+    load_s = time.perf_counter() - t0
+
+    text = "Make every space your studio."
+    t1 = time.perf_counter()
+    chunks = list(pipe(text, voice="af_heart"))
+    _sync(device)
+    infer_s = time.perf_counter() - t1
+    secs = len(chunks[0].audio) / 24000
+    return ProbeResult(
+        stage="narration",
+        name=name,
+        device=device,
+        ok=True,
+        load_s=round(load_s, 2),
+        infer_s=round(infer_s, 2),
+        peak_mb=round(_peak_mb(device) or 0, 0),
+        note=f"{secs:.1f}s speech",
+    )
+
+
+PROBES: tuple[Probe, ...] = (
+    Probe("transcription", "whisper-tiny.en", probe_whisper),
+    Probe("segmentation", "sam2.1-hiera-small", probe_sam2),
+    Probe("narration", "kokoro-82M", probe_kokoro),
+)
 
 
 def run(selected: set[str] | None) -> list[ProbeResult]:
