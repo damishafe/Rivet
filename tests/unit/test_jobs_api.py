@@ -3,6 +3,7 @@ from sqlalchemy.engine import Engine
 
 from rivet.domain.events import StageEvent
 from rivet.storage.events import EventStore
+from rivet.storage.jobs import JobStore
 from services.api.main import create_app
 
 
@@ -52,3 +53,20 @@ def test_last_event_id_header_resumes_stream(engine: Engine) -> None:
         )
     assert response.text.count("event: stage") == 1
     assert "step 2" in response.text
+
+
+def test_get_job_and_cancel(engine: Engine) -> None:
+    job = JobStore(engine).create("p1", "generate")
+    with TestClient(create_app(engine)) as client:
+        fetched = client.get(f"/api/jobs/{job.id}")
+        assert fetched.status_code == 200
+        assert fetched.json()["status"] == "queued"
+        cancelled = client.post(f"/api/jobs/{job.id}/cancel")
+    assert cancelled.status_code == 202
+    assert JobStore(engine).cancel_requested(job.id) is True
+
+
+def test_unknown_job_404(engine: Engine) -> None:
+    with TestClient(create_app(engine)) as client:
+        assert client.get("/api/jobs/nope").status_code == 404
+        assert client.post("/api/jobs/nope/cancel").status_code == 404

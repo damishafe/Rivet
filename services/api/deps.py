@@ -2,6 +2,7 @@ from fastapi import Request
 
 from rivet.storage.assets import AssetStore
 from rivet.storage.events import EventStore
+from rivet.storage.jobs import JobStore
 from rivet.storage.projects import ProjectStore
 
 
@@ -15,3 +16,7 @@ def get_event_store(request: Request) -> EventStore:
 
 def get_asset_store(request: Request) -> AssetStore:
     return AssetStore(request.app.state.engine, request.app.state.asset_root)
+
+
+def get_job_store(request: Request) -> JobStore:
+    return JobStore(request.app.state.engine)

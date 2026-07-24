@@ -1,11 +1,13 @@
 import asyncio
 from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sse_starlette import EventSourceResponse, ServerSentEvent
 
+from rivet.domain.jobs import Job
 from rivet.storage.events import EventStore
-from services.api.deps import get_event_store
+from rivet.storage.jobs import JobStore
+from services.api.deps import get_event_store, get_job_store
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -17,6 +19,23 @@ def _resume_cursor(after: int, header: str | None) -> int:
         return max(after, int(header))
     except ValueError:
         return after
+
+
+@router.get("/{job_id}")
+def get_job(job_id: str, store: JobStore = Depends(get_job_store)) -> Job:
+    job = store.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="job not found")
+    return job
+
+
+@router.post("/{job_id}/cancel", status_code=202)
+def cancel_job(job_id: str, store: JobStore = Depends(get_job_store)) -> Job:
+    job = store.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="job not found")
+    store.request_cancel(job_id)
+    return job
 
 
 @router.get("/{job_id}/events")
