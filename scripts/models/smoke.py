@@ -3,7 +3,7 @@ import json
 import time
 import traceback
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
@@ -62,7 +62,6 @@ def probe_whisper(device: str) -> ProbeResult:
     import math
 
     import numpy as np
-    import torch
     from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
     name = "openai/whisper-tiny.en"
