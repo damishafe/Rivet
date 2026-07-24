@@ -56,3 +56,9 @@ def test_brief_audio_by_declared_mime() -> None:
 def test_derived_role_never_accepted() -> None:
     with pytest.raises(UnsupportedMediaType):
         validate_upload("derived", png_bytes(), "image/png")
+
+
+def test_product_rejects_truncated_png() -> None:
+    truncated = png_bytes()[:40]
+    with pytest.raises(InvalidMedia):
+        validate_upload("product", truncated, "image/png")

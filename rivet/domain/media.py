@@ -44,7 +44,7 @@ def _probe_image(data: bytes) -> tuple[str, int, int, bool]:
             image_format = image.format or ""
             width, height = image.size
             has_alpha = image.mode in ("RGBA", "LA", "PA") or "transparency" in image.info
-    except UnidentifiedImageError as error:
+    except (UnidentifiedImageError, OSError, ValueError, SyntaxError) as error:
         raise InvalidMedia("unrecognized image content") from error
     if image_format not in IMAGE_SUFFIXES:
         raise UnsupportedMediaType(f"unsupported image format {image_format}")
