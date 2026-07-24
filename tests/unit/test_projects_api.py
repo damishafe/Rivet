@@ -61,3 +61,19 @@ def test_post_brief_too_short_422(engine: Engine) -> None:
         project_id = client.post("/api/projects", json={"name": "B"}).json()["id"]
         response = client.post(f"/api/projects/{project_id}/brief", json={"text": "   short   "})
     assert response.status_code == 422
+
+
+def test_post_brief_too_long_422(engine: Engine) -> None:
+    with make_client(engine) as client:
+        project_id = client.post("/api/projects", json={"name": "B"}).json()["id"]
+        response = client.post(f"/api/projects/{project_id}/brief", json={"text": "x" * 1001})
+    assert response.status_code == 422
+
+
+def test_post_brief_unknown_project_404(engine: Engine) -> None:
+    with make_client(engine) as client:
+        response = client.post(
+            "/api/projects/nope/brief",
+            json={"text": "Launch the Kora Arc portable speaker to campus creators."},
+        )
+    assert response.status_code == 404

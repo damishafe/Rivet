@@ -56,5 +56,5 @@ def test_find_filters_by_role_in_insertion_order(engine: Engine, tmp_path: Path)
     store.save("other", "product", b"four", "image/png", ".png")
     products = store.find("proj1", "product")
     assert [a.id for a in products] == [first.id, second.id]
-    assert store.find("proj1") == [*products, logo][0:3] or len(store.find("proj1")) == 3
+    assert [a.id for a in store.find("proj1")] == [first.id, second.id, logo.id]
     assert store.find("proj1", "brief_audio") == []
