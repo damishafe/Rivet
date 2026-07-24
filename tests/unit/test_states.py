@@ -45,3 +45,15 @@ def test_failed_resumes_only_to_running_states() -> None:
     assert TRANSITIONS[ProjectStatus.FAILED] == frozenset(
         {ProjectStatus.GENERATING, ProjectStatus.AUDITING}
     )
+
+
+def test_cancelled_resumes_only_to_running_states() -> None:
+    assert TRANSITIONS[ProjectStatus.CANCELLED] == frozenset(
+        {ProjectStatus.GENERATING, ProjectStatus.AUDITING}
+    )
+
+
+def test_exported_is_terminal() -> None:
+    assert TRANSITIONS[ProjectStatus.EXPORTED] == frozenset()
+    with pytest.raises(InvalidTransition):
+        assert_transition(ProjectStatus.EXPORTED, ProjectStatus.DRAFT)

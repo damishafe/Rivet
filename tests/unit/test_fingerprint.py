@@ -51,3 +51,17 @@ def test_stage_version_changes_key() -> None:
 def test_missing_manifest_still_produces_key() -> None:
     key = cache_key("transcribe", "1", make_request(), None)
     assert len(key) == 64
+
+
+def test_dtype_changes_key() -> None:
+    other = ModelManifest(repo=MANIFEST.repo, revision=MANIFEST.revision, dtype="bf16")
+    assert cache_key("bg", "1", make_request(), MANIFEST) != cache_key(
+        "bg", "1", make_request(), other
+    )
+
+
+def test_config_changes_key() -> None:
+    changed = make_request(config={"width": 1024, "height": 1344})
+    assert cache_key("bg", "1", make_request(), MANIFEST) != cache_key(
+        "bg", "1", changed, MANIFEST
+    )
