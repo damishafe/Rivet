@@ -2,16 +2,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from rivet.adapters.heuristic_planner import propose_shots
-from rivet.domain.models import PlanValidationError, ShotPlan
+from rivet.domain.models import PlanValidationError, Project, ShotPlan
+from rivet.domain.states import ProjectStatus
 from rivet.storage.plans import PlanStore
 from rivet.storage.projects import ProjectStore
 from services.api.deps import get_plan_store, get_project_store
 
 router = APIRouter(prefix="/api/projects", tags=["plan"])
 
+WRITABLE_STATUSES = (ProjectStatus.BRAND_READY, ProjectStatus.PLANNED)
+
 
 class PlanResponse(BaseModel):
     shots: list[ShotPlan]
+
+
+def _require_writable(project: Project) -> None:
+    if project.status not in WRITABLE_STATUSES:
+        raise HTTPException(status_code=409, detail="plan is frozen after generation starts")
 
 
 @router.post("/{project_id}/plan")
@@ -23,6 +31,7 @@ def derive_plan(
     project = projects.get(project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    _require_writable(project)
     dna = projects.get_brand_dna(project_id)
     if dna is None or dna.confirmed_at is None:
         raise HTTPException(status_code=409, detail="confirmed brand dna required")
@@ -39,8 +48,10 @@ def edit_shot(
     projects: ProjectStore = Depends(get_project_store),
     plans: PlanStore = Depends(get_plan_store),
 ) -> PlanResponse:
-    if projects.get(project_id) is None:
+    project = projects.get(project_id)
+    if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    _require_writable(project)
     if shot.shot_id != shot_id:
         raise HTTPException(status_code=422, detail="shot id mismatch")
     try:

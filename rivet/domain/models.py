@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from rivet.domain.ids import new_id
+from rivet.domain.layouts import LayoutTemplate
 from rivet.domain.states import ProjectStatus
 
 
@@ -69,7 +70,7 @@ class ShotPlan(BaseModel):
     copy_: ShotCopy = Field(alias="copy", serialization_alias="copy")
     product: ProductPlacement
     logo: LogoPlacement
-    layout_template: str
+    layout_template: LayoutTemplate
     motion: Motion
     narration: str
     seed: int

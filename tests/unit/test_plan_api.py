@@ -89,3 +89,37 @@ def test_edit_breaking_window_422(engine: Engine, tmp_path: Path) -> None:
         hook["duration_s"] = 40
         response = client.put(f"/api/projects/{project_id}/shots/hook", json=hook)
     assert response.status_code == 422
+
+
+def test_edit_invalid_layout_422(engine: Engine, tmp_path: Path) -> None:
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        project_id = planned_project(client)
+        shots = client.post(f"/api/projects/{project_id}/plan").json()["shots"]
+        hook = shots[0]
+        hook["layout_template"] = "fancy_grid"
+        response = client.put(f"/api/projects/{project_id}/shots/hook", json=hook)
+    assert response.status_code == 422
+
+
+def test_derive_frozen_after_generation_409(engine: Engine, tmp_path: Path) -> None:
+    from rivet.domain.states import ProjectStatus
+    from rivet.storage.projects import ProjectStore
+
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        project_id = planned_project(client)
+        client.post(f"/api/projects/{project_id}/plan")
+        ProjectStore(engine).advance(project_id, ProjectStatus.GENERATING)
+        response = client.post(f"/api/projects/{project_id}/plan")
+    assert response.status_code == 409
+
+
+def test_edit_frozen_after_generation_409(engine: Engine, tmp_path: Path) -> None:
+    from rivet.domain.states import ProjectStatus
+    from rivet.storage.projects import ProjectStore
+
+    with TestClient(create_app(engine, asset_root=tmp_path)) as client:
+        project_id = planned_project(client)
+        shots = client.post(f"/api/projects/{project_id}/plan").json()["shots"]
+        ProjectStore(engine).advance(project_id, ProjectStatus.GENERATING)
+        response = client.put(f"/api/projects/{project_id}/shots/hook", json=shots[0])
+    assert response.status_code == 409
