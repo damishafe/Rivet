@@ -88,6 +88,9 @@ def validate_plan(shots: list[ShotPlan]) -> None:
         raise PlanValidationError(f"total duration {total}s outside the 12-15s window")
 
 
+AssetRole = Literal["product", "logo", "brief_audio", "style_ref", "derived"]
+
+
 class Project(BaseModel):
     id: str = Field(default_factory=new_id)
     name: str = Field(min_length=1, max_length=120)
@@ -101,7 +104,7 @@ class Project(BaseModel):
 class Asset(BaseModel):
     id: str = Field(default_factory=new_id)
     project_id: str
-    role: Literal["product", "logo", "brief_audio", "style_ref", "derived"]
+    role: AssetRole
     path: str
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     mime: str
