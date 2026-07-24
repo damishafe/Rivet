@@ -59,7 +59,7 @@ class Motion(BaseModel):
 
 
 class ShotPlan(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
 
     shot_id: Literal["hook", "proof", "cta"]
     purpose: str
