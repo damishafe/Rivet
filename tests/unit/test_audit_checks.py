@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 from rivet.audit.checks import SceneAudit, audit_scene, check_palette, check_prominence
@@ -179,6 +180,21 @@ def test_fitting_copy_passes_a05(tmp_path: Path) -> None:
     scene = build_scene(tmp_path)
     a05 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A05")
     assert a05.passed
+
+
+def test_every_layout_satisfies_prominence_policy(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    cutout = Image.new("RGBA", (520, 640), (0, 0, 0, 0))
+    ImageDraw.Draw(cutout).ellipse([60, 98, 460, 542], fill=(40, 40, 44, 255))
+    cutout_path = tmp_path / "typical_product.png"
+    cutout.save(cutout_path)
+    coverage = float((np.asarray(Image.open(cutout_path))[:, :, 3] > 128).mean())
+    assert 0.40 <= coverage <= 0.45, "cutout must model a real segmented product"
+    scene.cutout_path = str(cutout_path)
+    for layout in GEOMETRY:
+        scene.layout = layout  # type: ignore[assignment]
+        check = check_prominence(scene)
+        assert check.passed, f"{layout} renders the product at {check.observed} of frame"
 
 
 def test_all_neutral_brand_flags_saturated_background(tmp_path: Path) -> None:
