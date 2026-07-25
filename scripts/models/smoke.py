@@ -152,10 +152,46 @@ def probe_kokoro(device: str) -> ProbeResult:
     )
 
 
+def probe_sdxl(device: str) -> ProbeResult:
+    import numpy as np
+    import torch
+    from diffusers import AutoencoderKL, StableDiffusionXLPipeline
+
+    name = "stabilityai/stable-diffusion-xl-base-1.0"
+    _reset_peak(device)
+    t0 = time.perf_counter()
+    vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
+    pipe = StableDiffusionXLPipeline.from_pretrained(
+        name, vae=vae, torch_dtype=torch.float16, variant="fp16", use_safetensors=True
+    ).to(device)
+    load_s = time.perf_counter() - t0
+
+    prompt = "bold energetic studio backdrop, orange and charcoal, soft gradient, no product, no text"
+    t1 = time.perf_counter()
+    image = pipe(
+        prompt=prompt, height=1216, width=832, num_inference_steps=8, guidance_scale=6.0
+    ).images[0]
+    _sync(device)
+    infer_s = time.perf_counter() - t1
+    real = float(np.asarray(image).std()) > 5.0
+    return ProbeResult(
+        stage="background",
+        name=name,
+        device=device,
+        ok=real,
+        load_s=round(load_s, 1),
+        infer_s=round(infer_s, 1),
+        peak_mb=round(_peak_mb(device) or 0, 0),
+        note=f"plate {image.size} 8 steps" if real else "black/nan output",
+        error="" if real else "fp16 vae produced a black image",
+    )
+
+
 PROBES: tuple[Probe, ...] = (
     Probe("transcription", "whisper-tiny.en", probe_whisper),
     Probe("segmentation", "sam2.1-hiera-small", probe_sam2),
     Probe("narration", "kokoro-82M", probe_kokoro),
+    Probe("background", "sdxl-base-1.0", probe_sdxl),
 )
 
 
