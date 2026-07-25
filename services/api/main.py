@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 
 from rivet import __version__
 from rivet.storage.db import data_dir, make_engine
-from services.api import assets, brand, jobs, plan, projects, transcribe
+from services.api import assets, brand, generate, jobs, plan, projects, transcribe
 
 
 @asynccontextmanager
@@ -29,6 +29,7 @@ def create_app(engine: Engine | None = None, asset_root: Path | None = None) -> 
     app.include_router(brand.router)
     app.include_router(plan.router)
     app.include_router(transcribe.router)
+    app.include_router(generate.router)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
