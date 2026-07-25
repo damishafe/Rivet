@@ -3,16 +3,24 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pytest
+import soundfile as sf
 from fastapi.testclient import TestClient
 from PIL import Image, ImageDraw
 from sqlalchemy.engine import Engine
 
 from rivet.adapters.background import BackgroundStage
+from rivet.adapters.narrate import NarrateStage
 from rivet.adapters.segment import SegmentStage
 from services.api.main import create_app
 
 ffmpeg_missing = shutil.which("ffmpeg") is None
+
+
+def fake_narrator(text: str, device: str, out_path: Path) -> float:
+    sf.write(out_path, np.zeros(24000, dtype="float32"), 24000)
+    return 1.0
 
 
 def fake_segmenter(image_path: str, config: dict[str, Any], device: str, out_path: Path) -> float:
@@ -41,6 +49,7 @@ def build_app(engine: Engine, tmp_path: Path) -> TestClient:
     app = create_app(engine, asset_root=tmp_path)
     app.state.segment_stage = SegmentStage(segmenter=fake_segmenter)
     app.state.background_stage = BackgroundStage(generator=fake_background)
+    app.state.narrate_stage = NarrateStage(narrator=fake_narrator)
     return TestClient(app)
 
 
@@ -66,6 +75,7 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     assert all(len(s["checks"]) == 7 for s in receipt["scenes"])
     assert len(receipt["receipt_hash"]) == 64
     assert receipt["video_path"] and Path(receipt["video_path"]).exists()
+    assert receipt["captions_path"] and Path(receipt["captions_path"]).exists()
     saved = tmp_path / "projects" / project_id / "work"
     assert any(p.name == "receipt.json" for p in saved.rglob("receipt.json"))
 

@@ -5,13 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from rivet.adapters.background import BackgroundStage
 from rivet.adapters.composite import CompositeStage
 from rivet.adapters.motion import MotionStage
+from rivet.adapters.narrate import NarrateStage
 from rivet.adapters.segment import SegmentStage
 from rivet.audit.receipt import build_campaign_receipt
 from rivet.domain.models import PaletteColor
 from rivet.domain.receipt import CampaignReceipt
 from rivet.pipeline.runner import JobRunner, PlannedStage
 from rivet.pipeline.stage import Stage, StageRequest
-from rivet.render.assemble import assemble_scenes
+from rivet.render.assemble import assemble_scenes, mix_narration, write_srt
 from rivet.storage.assets import AssetStore
 from rivet.storage.jobs import ActiveJobError, JobStore
 from rivet.storage.plans import PlanStore
@@ -69,6 +70,7 @@ async def generate_campaign(
 
     segment = _stage(request, "segment_stage", SegmentStage())
     background = _stage(request, "background_stage", BackgroundStage())
+    narrate = _stage(request, "narrate_stage", NarrateStage())
     composite = CompositeStage()
     motion = MotionStage()
 
@@ -127,15 +129,41 @@ async def generate_campaign(
                 ),
             )
         )
+        plan.append(
+            PlannedStage(
+                stage=narrate,
+                request=StageRequest(
+                    stage=f"narration.{shot.shot_id}", seed=shot.seed,
+                    config={"shot_id": shot.shot_id, "text": shot.narration},
+                ),
+            )
+        )
 
     finished = await JobRunner(engine, asset_root).run(job, plan)
     if finished.status != "succeeded":
         raise HTTPException(status_code=500, detail=f"generation failed: {finished.error}")
+
     clips = [str(workdir / f"{shot.shot_id}.mp4") for shot in shots]
+    silent_path = workdir / "silent.mp4"
+    assemble_scenes(clips, silent_path)
+
+    narration_clips: list[tuple[str, int]] = []
+    cues: list[tuple[str, float, float]] = []
+    offset = 0.0
+    for shot in shots:
+        wav = workdir / f"{shot.shot_id}-narration.wav"
+        if wav.exists():
+            narration_clips.append((str(wav), int(offset * 1000)))
+        cues.append((shot.narration, offset, offset + shot.duration_s))
+        offset += shot.duration_s
+
     video_path = str(workdir / "campaign.mp4")
-    assemble_scenes(clips, Path(video_path))
+    mix_narration(str(silent_path), narration_clips, Path(video_path))
+    captions_path = str(workdir / "campaign.srt")
+    write_srt(cues, Path(captions_path))
+
     receipt = build_campaign_receipt(
-        project_id, shots, workdir, brand, logo_path, cutout_path, video_path
+        project_id, shots, workdir, brand, logo_path, cutout_path, video_path, captions_path
     )
     (workdir / "receipt.json").write_text(receipt.model_dump_json(indent=2))
     return receipt

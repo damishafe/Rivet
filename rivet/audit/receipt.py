@@ -19,6 +19,7 @@ def build_campaign_receipt(
     logo_path: str,
     cutout_path: str,
     video_path: str | None = None,
+    captions_path: str | None = None,
 ) -> CampaignReceipt:
     product_sha = _sha256(cutout_path)
     logo_sha = _sha256(logo_path)
@@ -64,6 +65,7 @@ def build_campaign_receipt(
         logo_sha256=logo_sha,
         scenes=scenes,
         video_path=video_path,
+        captions_path=captions_path,
         passed=all(scene.passed for scene in scenes),
     )
     return receipt.finalize()

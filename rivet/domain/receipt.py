@@ -22,6 +22,7 @@ class CampaignReceipt(BaseModel):
     logo_sha256: str
     scenes: list[SceneResult]
     video_path: str | None = None
+    captions_path: str | None = None
     passed: bool
     receipt_hash: str = ""
 
