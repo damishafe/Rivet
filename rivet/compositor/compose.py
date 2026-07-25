@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 
 from rivet.compositor.geometry import GEOMETRY, rect_px
-from rivet.compositor.typography import fit_lines
+from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.layouts import LayoutTemplate
 
 CANVAS = (1080, 1920)
@@ -56,7 +56,7 @@ def _draw_text(
     if not text:
         return
     x, y, w, h = box
-    font, lines, line_height = fit_lines(draw, text, w, h, weight, max_size=min(h, 150))
+    font, lines, line_height, _ = fit_lines(draw, text, w, h, weight, max_size=min(h, 150))
     ty = float(y)
     for line in lines:
         line_width = draw.textlength(line, font=font)
@@ -70,13 +70,11 @@ def _draw_cta(draw: ImageDraw.ImageDraw, text: str, box: Box, accent: Color) -> 
         return
     x, y, w, h = box
     draw.rounded_rectangle([x, y, x + w, y + h], radius=h // 2, fill=accent)
-    font, lines, line_height = fit_lines(
-        draw, text, int(w * 0.82), int(h * 0.62), weight=700, max_size=int(h * 0.5)
-    )
-    line = lines[0] if lines else text
-    tx = x + (w - draw.textlength(line, font=font)) / 2
-    ty = y + (h - line_height) / 2
-    draw.text((tx, ty), line, font=font, fill=CTA_FG)
+    font, _ = fit_single_line(draw, text, int(w * 0.82), weight=700, max_size=int(h * 0.5))
+    ascent, descent = font.getmetrics()
+    tx = x + (w - draw.textlength(text, font=font)) / 2
+    ty = y + (h - (ascent + descent)) / 2
+    draw.text((tx, ty), text, font=font, fill=CTA_FG)
 
 
 def compose_still(

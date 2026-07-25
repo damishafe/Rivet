@@ -35,7 +35,7 @@ def fit_lines(
     max_size: int,
     min_size: int = 16,
     line_spacing: float = 1.12,
-) -> tuple[ImageFont.FreeTypeFont, list[str], float]:
+) -> tuple[ImageFont.FreeTypeFont, list[str], float, bool]:
     for size in range(max_size, min_size - 1, -2):
         font = load_font(size, weight)
         lines = wrap_text(draw, text, font, max_width)
@@ -43,6 +43,26 @@ def fit_lines(
         fits_height = line_height * len(lines) <= max_height
         fits_width = all(draw.textlength(line, font=font) <= max_width for line in lines)
         if fits_height and fits_width:
-            return font, lines, line_height
+            return font, lines, line_height, True
     font = load_font(min_size, weight)
-    return font, wrap_text(draw, text, font, max_width), min_size * line_spacing
+    lines = wrap_text(draw, text, font, max_width)
+    line_height = min_size * line_spacing
+    fits = line_height * len(lines) <= max_height and all(
+        draw.textlength(line, font=font) <= max_width for line in lines
+    )
+    return font, lines, line_height, fits
+
+
+def fit_single_line(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    max_width: int,
+    weight: int,
+    max_size: int,
+    min_size: int = 14,
+) -> tuple[ImageFont.FreeTypeFont, bool]:
+    for size in range(max_size, min_size - 1, -2):
+        font = load_font(size, weight)
+        if draw.textlength(text, font=font) <= max_width:
+            return font, True
+    return load_font(min_size, weight), False

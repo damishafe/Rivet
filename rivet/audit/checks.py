@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 from rivet.audit.semantic import SemanticJudge, check_semantic
 from rivet.compositor.compose import contained_box
 from rivet.compositor.geometry import GEOMETRY, SAFE_MARGIN, rect_px
+from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.layouts import LayoutTemplate
 from rivet.domain.models import AuditCheck
 
@@ -125,13 +126,17 @@ def check_palette(scene: SceneAudit) -> AuditCheck:
     brand_hues = [_hue(_hex_to_rgb(h)) for h in scene.palette if not _is_neutral(_hex_to_rgb(h))]
     indices = np.asarray(quantized).ravel()
     counts = np.bincount(indices, minlength=6)
+    floor = max(1, int(counts.sum()) // 20)
     worst = 0.0
-    for index in counts.argsort()[::-1][:4]:
+    for index in counts.argsort()[::-1]:
         base = int(index) * 3
-        if counts[index] == 0 or base + 2 >= len(table):
+        if counts[index] < floor or base + 2 >= len(table):
             continue
         rgb = (table[base], table[base + 1], table[base + 2])
-        if _is_neutral(rgb) or not brand_hues:
+        if _is_neutral(rgb):
+            continue
+        if not brand_hues:
+            worst = max(worst, scene.palette_threshold + 1.0)
             continue
         nearest = min(_hue_distance(_hue(rgb), hue) for hue in brand_hues)
         worst = max(worst, nearest)
@@ -144,6 +149,24 @@ def check_palette(scene: SceneAudit) -> AuditCheck:
         passed=ok,
         owner_stage="background/layout",
     )
+
+
+def _text_overflow(scene: SceneAudit, boxes: dict[str, tuple[float, float, float, float]]) -> int:
+    scratch = ImageDraw.Draw(Image.new("RGB", scene.canvas))
+    count = 0
+    for key, weight, text in (("headline", 800, scene.headline), ("support", 400, scene.support)):
+        if not text:
+            continue
+        _, _, bw, bh = rect_px(boxes[key], scene.canvas)
+        _, _, _, fits = fit_lines(scratch, text, bw, bh, weight, max_size=min(bh, 150))
+        if not fits:
+            count += 1
+    if scene.cta:
+        _, _, cw, ch = rect_px(boxes["cta"], scene.canvas)
+        _, fits = fit_single_line(scratch, scene.cta, int(cw * 0.82), 700, int(ch * 0.5))
+        if not fits:
+            count += 1
+    return count
 
 
 def check_safe_area(scene: SceneAudit) -> AuditCheck:
@@ -162,12 +185,13 @@ def check_safe_area(scene: SceneAudit) -> AuditCheck:
             bx, by, bw, bh = boxes[keys[j]]
             if ax < bx + bw and bx < ax + aw and ay < by + bh and by < ay + ah:
                 overlaps += 1
-    ok = inside and overlaps == 0
+    overflow = _text_overflow(scene, boxes)
+    ok = inside and overlaps == 0 and overflow == 0
     return AuditCheck(
         check_id="A05",
-        metric="template safe-area (static geometry)",
+        metric="safe-area geometry and rendered text overflow",
         threshold="0 violations",
-        observed=0 if ok else (overlaps if inside else -1),
+        observed=0 if ok else (overlaps + overflow if inside else -1),
         passed=ok,
         owner_stage="layout",
     )
@@ -186,7 +210,7 @@ def check_prominence(scene: SceneAudit) -> AuditCheck:
     ok = frame_share >= scene.prominence_threshold
     return AuditCheck(
         check_id="A06",
-        metric="product share of frame",
+        metric="planned product share of frame",
         threshold=f">= {scene.prominence_threshold}",
         observed=round(frame_share, 3),
         passed=ok,

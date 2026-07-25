@@ -7,7 +7,7 @@ import pytest
 import soundfile as sf
 from PIL import Image
 
-from rivet.render.assemble import assemble_scenes, mix_narration
+from rivet.render.assemble import assemble_scenes, mix_narration, write_srt
 from rivet.render.motion import animate_still
 
 ffmpeg_missing = shutil.which("ffmpeg") is None
@@ -70,6 +70,15 @@ def test_assemble_sums_durations(tmp_path: Path) -> None:
 def test_assemble_rejects_empty(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         assemble_scenes([], tmp_path / "x.mp4")
+
+
+def test_write_srt_reindexes_around_empty_cues(tmp_path: Path) -> None:
+    out = tmp_path / "captions.srt"
+    write_srt([("hello", 0.0, 2.0), ("", 2.0, 4.0), ("world", 4.0, 6.0)], out)
+    body = out.read_text()
+    indices = [line for line in body.splitlines() if line.strip().isdigit()]
+    assert indices == ["1", "2"]
+    assert "hello" in body and "world" in body
 
 
 @pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")

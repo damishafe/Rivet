@@ -11,10 +11,10 @@ def _srt_time(seconds: float) -> str:
 
 
 def write_srt(cues: list[tuple[str, float, float]], out_path: Path) -> None:
+    spoken = [(text, start, end) for text, start, end in cues if text]
     blocks = [
         f"{index}\n{_srt_time(start)} --> {_srt_time(end)}\n{text}\n"
-        for index, (text, start, end) in enumerate(cues, start=1)
-        if text
+        for index, (text, start, end) in enumerate(spoken, start=1)
     ]
     out_path.write_text("\n".join(blocks))
 

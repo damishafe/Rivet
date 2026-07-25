@@ -19,12 +19,14 @@ def build_scene(
     forbidden: list[str] | None = None,
     required: list[str] | None = None,
     narration: str = "",
+    palette: list[str] | None = None,
+    bg_color: tuple[int, int, int] = (44, 40, 32),
     product_used: str = "psha",
     product_expected: str = "psha",
     logo_used: str = "lsha",
     logo_expected: str = "lsha",
 ) -> SceneAudit:
-    background = Image.new("RGB", (768, 1344), (44, 40, 32))
+    background = Image.new("RGB", (768, 1344), bg_color)
     bg_path = tmp_path / "bg.png"
     background.save(bg_path)
     cutout = Image.new("RGBA", (400, 500), (0, 0, 0, 0))
@@ -45,7 +47,7 @@ def build_scene(
         headline=headline,
         support=support,
         cta=cta,
-        palette=["#FF3B00", "#2C2820"],
+        palette=palette or ["#FF3B00", "#2C2820"],
         required_text=required or [],
         forbidden_claims=forbidden or [],
         narration=narration,
@@ -164,3 +166,23 @@ def test_required_phrase_requires_whole_word(tmp_path: Path) -> None:
     scene = build_scene(tmp_path, support="Total freedom of movement", required=["free"])
     report = audit_scene(scene, {**APPROVED, "support": "Total freedom of movement"})
     assert not next(c for c in report.checks if c.check_id == "A07").passed
+
+
+def test_overflowing_headline_fails_a05(tmp_path: Path) -> None:
+    huge = "Supercalifragilisticexpialidocious" * 6
+    scene = build_scene(tmp_path, headline=huge)
+    a05 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A05")
+    assert not a05.passed
+
+
+def test_fitting_copy_passes_a05(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    a05 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A05")
+    assert a05.passed
+
+
+def test_all_neutral_brand_flags_saturated_background(tmp_path: Path) -> None:
+    scene = build_scene(
+        tmp_path, palette=["#141414", "#EDEDED"], bg_color=(200, 30, 30)
+    )
+    assert not check_palette(scene).passed
