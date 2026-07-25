@@ -4,4 +4,4 @@ Every model, font, music track and demo asset shipped or downloaded by Rivet is 
 
 | Kind | Name | Revision | License | Notes |
 |----|----|----|----|----|
-| | | | | |
+| Font | Inter (variable) | google/fonts | SIL OFL 1.1 | bundled in `rivet/compositor/fonts/` for deterministic ad typography |
