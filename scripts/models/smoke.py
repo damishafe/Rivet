@@ -187,11 +187,59 @@ def probe_sdxl(device: str) -> ProbeResult:
     )
 
 
+def probe_qwen_vl(device: str) -> ProbeResult:
+    import numpy as np
+    import torch
+    from PIL import Image
+    from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
+
+    name = "Qwen/Qwen3-VL-4B-Instruct"
+    _reset_peak(device)
+    t0 = time.perf_counter()
+    proc = AutoProcessor.from_pretrained(name)
+    model = Qwen3VLForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to(device)
+    load_s = time.perf_counter() - t0
+
+    canvas = np.full((256, 256, 3), 40, dtype="uint8")
+    canvas[64:192, 64:192] = (255, 90, 0)
+    image = Image.fromarray(canvas)
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image},
+                {"type": "text", "text": "Name the main color and shape in one short sentence."},
+            ],
+        }
+    ]
+    inputs = proc.apply_chat_template(
+        messages, tokenize=True, add_generation_prompt=True, return_dict=True, return_tensors="pt"
+    ).to(device)
+    t1 = time.perf_counter()
+    out = model.generate(**inputs, max_new_tokens=32, do_sample=False)
+    _sync(device)
+    infer_s = time.perf_counter() - t1
+    text = proc.batch_decode(
+        out[:, inputs["input_ids"].shape[1] :], skip_special_tokens=True
+    )[0].strip()
+    return ProbeResult(
+        stage="vlm",
+        name=name,
+        device=device,
+        ok=len(text) > 0,
+        load_s=round(load_s, 1),
+        infer_s=round(infer_s, 1),
+        peak_mb=round(_peak_mb(device) or 0, 0),
+        note=f"reply={text[:60]!r}",
+    )
+
+
 PROBES: tuple[Probe, ...] = (
     Probe("transcription", "whisper-tiny.en", probe_whisper),
     Probe("segmentation", "sam2.1-hiera-small", probe_sam2),
     Probe("narration", "kokoro-82M", probe_kokoro),
     Probe("background", "sdxl-base-1.0", probe_sdxl),
+    Probe("vlm", "qwen3-vl-4b", probe_qwen_vl),
 )
 
 
