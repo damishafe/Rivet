@@ -23,6 +23,10 @@ def fake_narrator(text: str, device: str, out_path: Path) -> float:
     return 1.0
 
 
+def fake_judge(image_path: str, question: str) -> tuple[int, str]:
+    return 92, "Strong fit for the audience and message."
+
+
 def fake_segmenter(image_path: str, config: dict[str, Any], device: str, out_path: Path) -> float:
     cutout = Image.new("RGBA", (500, 600), (0, 0, 0, 0))
     ImageDraw.Draw(cutout).rounded_rectangle([30, 30, 470, 570], radius=48, fill=(40, 40, 44, 255))
@@ -50,6 +54,7 @@ def build_app(engine: Engine, tmp_path: Path) -> TestClient:
     app.state.segment_stage = SegmentStage(segmenter=fake_segmenter)
     app.state.background_stage = BackgroundStage(generator=fake_background)
     app.state.narrate_stage = NarrateStage(narrator=fake_narrator)
+    app.state.semantic_judge = fake_judge
     return TestClient(app)
 
 
@@ -72,7 +77,8 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     receipt = response.json()
     assert receipt["passed"] is True
     assert [s["shot_id"] for s in receipt["scenes"]] == ["hook", "proof", "cta"]
-    assert all(len(s["checks"]) == 7 for s in receipt["scenes"])
+    assert all(len(s["checks"]) == 8 for s in receipt["scenes"])
+    assert all(any(c["check_id"] == "A08" for c in s["checks"]) for s in receipt["scenes"])
     assert len(receipt["receipt_hash"]) == 64
     assert receipt["video_path"] and Path(receipt["video_path"]).exists()
     assert receipt["captions_path"] and Path(receipt["captions_path"]).exists()

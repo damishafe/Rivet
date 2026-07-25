@@ -8,6 +8,7 @@ from rivet.adapters.motion import MotionStage
 from rivet.adapters.narrate import NarrateStage
 from rivet.adapters.segment import SegmentStage
 from rivet.audit.receipt import build_campaign_receipt
+from rivet.audit.semantic import _qwen_judge
 from rivet.domain.models import PaletteColor
 from rivet.domain.receipt import CampaignReceipt
 from rivet.pipeline.runner import JobRunner, PlannedStage
@@ -167,9 +168,10 @@ async def generate_campaign(
         shot.shot_id: str(workdir / f"{shot.shot_id}.png") for shot in shots
     }
     accent_rgb = (accent[0], accent[1], accent[2])
+    judge = getattr(request.app.state, "semantic_judge", _qwen_judge)
     receipt = build_campaign_receipt(
         project_id, shots, workdir, brand, logo_path, cutout_path, backgrounds, accent_rgb,
-        video_path, captions_path,
+        video_path, captions_path, judge,
     )
     pack_path = str(workdir / "campaign-pack.zip")
     build_pack(workdir, receipt, Path(pack_path))

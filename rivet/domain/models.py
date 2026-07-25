@@ -142,6 +142,7 @@ class AuditCheck(BaseModel):
     passed: bool
     evidence_path: str | None = None
     owner_stage: str
+    advisory: bool = False
 
 
 class Export(BaseModel):

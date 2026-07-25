@@ -5,6 +5,7 @@ from PIL import Image
 
 from rivet.audit.checks import SceneAudit, audit_scene
 from rivet.audit.repair import claims_failed, repair_copy
+from rivet.audit.semantic import SemanticJudge
 from rivet.compositor.compose import compose_still
 from rivet.domain.layouts import LayoutTemplate, is_layout
 from rivet.domain.models import BrandDNA, ShotCopy, ShotPlan
@@ -46,6 +47,7 @@ def build_campaign_receipt(
     accent: Color,
     video_path: str | None = None,
     captions_path: str | None = None,
+    judge: SemanticJudge | None = None,
 ) -> CampaignReceipt:
     product_sha = _sha256(cutout_path)
     logo_sha = _sha256(logo_path)
@@ -58,7 +60,10 @@ def build_campaign_receipt(
         copy = shot.copy_
 
         def make_scene(
-            active: ShotCopy, layout: LayoutTemplate = layout, still_path: str = still_path
+            active: ShotCopy,
+            layout: LayoutTemplate = layout,
+            still_path: str = still_path,
+            purpose: str = shot.purpose,
         ) -> SceneAudit:
             return SceneAudit(
                 layout=layout, still_path=still_path, cutout_path=cutout_path, logo_path=logo_path,
@@ -67,13 +72,14 @@ def build_campaign_receipt(
                 forbidden_claims=brand.forbidden_claims,
                 product_sha_expected=product_sha, product_sha_used=product_sha,
                 logo_sha_expected=logo_sha, logo_sha_used=logo_sha,
+                purpose=purpose, audience=brand.audience,
             )
 
-        report = audit_scene(make_scene(copy), copy.model_dump(by_alias=True))
+        report = audit_scene(make_scene(copy), copy.model_dump(by_alias=True), judge)
         if not report.passed and claims_failed(report.checks) and shot.shot_id in backgrounds:
             fixed = repair_copy(copy, brand.forbidden_claims, brand.required_text)
             _recomposite(backgrounds[shot.shot_id], cutout_path, logo_path, fixed, layout, accent, still_path)
-            report = audit_scene(make_scene(fixed), fixed.model_dump(by_alias=True))
+            report = audit_scene(make_scene(fixed), fixed.model_dump(by_alias=True), judge)
             repairs.append(
                 RepairRecord(
                     shot_id=shot.shot_id, kind="copy", before_passed=False,

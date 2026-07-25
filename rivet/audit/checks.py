@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from PIL import Image, ImageDraw
 
+from rivet.audit.semantic import SemanticJudge, check_semantic
 from rivet.compositor.compose import contained_box
 from rivet.compositor.geometry import GEOMETRY, SAFE_MARGIN, rect_px
 from rivet.domain.layouts import LayoutTemplate
@@ -29,6 +30,8 @@ class SceneAudit:
     product_sha_used: str
     logo_sha_expected: str
     logo_sha_used: str
+    purpose: str = ""
+    audience: str = ""
     canvas: tuple[int, int] = (1080, 1920)
     palette_threshold: float = 40.0
     prominence_threshold: float = 0.05
@@ -216,18 +219,24 @@ class AuditReport:
 
     @property
     def passed(self) -> bool:
-        return all(check.passed for check in self.checks)
+        return all(check.passed for check in self.checks if not check.advisory)
 
 
-def audit_scene(scene: SceneAudit, approved_copy: dict[str, str]) -> AuditReport:
-    return AuditReport(
-        checks=[
-            check_lineage(scene),
-            check_logo_presence(scene),
-            check_text_integrity(scene, approved_copy),
-            check_palette(scene),
-            check_safe_area(scene),
-            check_prominence(scene),
-            check_claims(scene),
-        ]
-    )
+def audit_scene(
+    scene: SceneAudit, approved_copy: dict[str, str], judge: SemanticJudge | None = None
+) -> AuditReport:
+    checks = [
+        check_lineage(scene),
+        check_logo_presence(scene),
+        check_text_integrity(scene, approved_copy),
+        check_palette(scene),
+        check_safe_area(scene),
+        check_prominence(scene),
+        check_claims(scene),
+    ]
+    if judge is not None:
+        message = f"{scene.headline} {scene.support} {scene.cta}".strip()
+        checks.append(
+            check_semantic(scene.still_path, scene.purpose, scene.audience, message, judge)
+        )
+    return AuditReport(checks=checks)
