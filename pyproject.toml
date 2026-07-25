@@ -17,10 +17,14 @@ dependencies = [
 [project.optional-dependencies]
 gpu = [
     "torch",
+    "torchvision",
     "diffusers",
     "transformers",
     "accelerate",
     "safetensors",
+    "soundfile",
+    "numpy",
+    "kokoro",
 ]
 
 [project.scripts]
@@ -59,6 +63,11 @@ packages = ["rivet", "cli", "services"]
 [[tool.mypy.overrides]]
 module = ["torch", "torch.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["transformers.*", "soundfile", "diffusers.*", "accelerate.*", "kokoro.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
