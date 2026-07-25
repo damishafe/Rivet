@@ -38,7 +38,7 @@ def mix_narration(video_path: str, clips: list[tuple[str, int]], out_path: Path)
     subprocess.run(
         [
             "ffmpeg", "-y", *inputs, "-filter_complex", filter_complex,
-            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-shortest",
+            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac",
             str(out_path),
         ],
         check=True,

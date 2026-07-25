@@ -2,10 +2,12 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import numpy as np
 import pytest
+import soundfile as sf
 from PIL import Image
 
-from rivet.render.assemble import assemble_scenes
+from rivet.render.assemble import assemble_scenes, mix_narration
 from rivet.render.motion import animate_still
 
 ffmpeg_missing = shutil.which("ffmpeg") is None
@@ -68,3 +70,16 @@ def test_assemble_sums_durations(tmp_path: Path) -> None:
 def test_assemble_rejects_empty(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         assemble_scenes([], tmp_path / "x.mp4")
+
+
+@pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
+def test_mix_narration_keeps_video_duration(tmp_path: Path) -> None:
+    still = tmp_path / "still.png"
+    Image.new("RGB", (1080, 1920), (40, 40, 44)).save(still)
+    video = tmp_path / "video.mp4"
+    animate_still(str(still), video, 3.0, "zoom_in")
+    wav = tmp_path / "narration.wav"
+    sf.write(wav, np.zeros(24000, dtype="float32"), 24000)
+    out = tmp_path / "mixed.mp4"
+    mix_narration(str(video), [(str(wav), 0)], out)
+    assert abs(_duration(out) - 3.0) < 0.4
