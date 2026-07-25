@@ -2231,6 +2231,8 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pillow" },
     { name = "pydantic" },
     { name = "python-multipart" },
@@ -2268,6 +2270,7 @@ requires-dist = [
     { name = "diffusers", marker = "extra == 'gpu'" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "kokoro", marker = "extra == 'gpu'" },
+    { name = "numpy", specifier = ">=2.0" },
     { name = "numpy", marker = "extra == 'gpu'" },
     { name = "pillow", specifier = ">=12.0" },
     { name = "pydantic", specifier = ">=2.9" },

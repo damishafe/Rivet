@@ -1,10 +1,12 @@
 import colorsys
+import re
 from dataclasses import dataclass, field
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
-from rivet.compositor.geometry import GEOMETRY, rect_px
+from rivet.compositor.compose import contained_box
+from rivet.compositor.geometry import GEOMETRY, SAFE_MARGIN, rect_px
 from rivet.domain.layouts import LayoutTemplate
 from rivet.domain.models import AuditCheck
 
@@ -16,6 +18,7 @@ class SceneAudit:
     layout: LayoutTemplate
     still_path: str
     cutout_path: str
+    logo_path: str
     headline: str
     support: str
     cta: str
@@ -29,20 +32,12 @@ class SceneAudit:
     canvas: tuple[int, int] = (1080, 1920)
     palette_threshold: float = 40.0
     prominence_threshold: float = 0.05
-    safe_margin: float = 0.04
+    safe_margin: float = SAFE_MARGIN
 
 
 def _hex_to_rgb(value: str) -> Color:
     v = value.lstrip("#")
     return (int(v[0:2], 16), int(v[2:4], 16), int(v[4:6], 16))
-
-
-def _redmean(a: Color, b: Color) -> float:
-    rmean = (a[0] + b[0]) / 2
-    dr, dg, db = a[0] - b[0], a[1] - b[1], a[2] - b[2]
-    return float(
-        ((2 + rmean / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rmean) / 256) * db * db) ** 0.5
-    )
 
 
 def _is_neutral(rgb: Color) -> bool:
@@ -78,15 +73,26 @@ def check_lineage(scene: SceneAudit) -> AuditCheck:
 
 def check_logo_presence(scene: SceneAudit) -> AuditCheck:
     still = np.asarray(Image.open(scene.still_path).convert("RGB"))
-    x, y, w, h = rect_px(GEOMETRY[scene.layout]["logo"], scene.canvas)
-    region = still[y : y + h, x : x + w]
-    variance = float(region.std()) if region.size else 0.0
-    ok = variance > 3.0
+    logo = Image.open(scene.logo_path).convert("RGBA")
+    box = rect_px(GEOMETRY[scene.layout]["logo"], scene.canvas)
+    px, py, placed_w, placed_h = contained_box((logo.width, logo.height), box)
+    placed = np.asarray(logo.resize((placed_w, placed_h)))
+    region = still[py : py + placed_h, px : px + placed_w]
+    opaque = placed[:, :, 3] > 128
+    fits = region.shape[0] == placed.shape[0] and region.shape[1] == placed.shape[1]
+    if fits and opaque.any():
+        diff = np.abs(
+            region[opaque].astype(np.float64) - placed[:, :, :3][opaque].astype(np.float64)
+        )
+        mean_diff = float(diff.mean())
+    else:
+        mean_diff = 255.0
+    ok = mean_diff <= 40.0
     return AuditCheck(
         check_id="A02",
-        metric="logo region content variance",
-        threshold=">3.0",
-        observed=round(variance, 1),
+        metric="logo fidelity mean pixel diff",
+        threshold="<= 40",
+        observed=round(mean_diff, 1),
         passed=ok,
         owner_stage="layout",
     )
@@ -106,8 +112,11 @@ def check_text_integrity(scene: SceneAudit, approved: dict[str, str]) -> AuditCh
 
 
 def check_palette(scene: SceneAudit) -> AuditCheck:
-    still = Image.open(scene.still_path).convert("RGB").resize((64, 64))
-    quantized = still.quantize(6)
+    still = Image.open(scene.still_path).convert("RGB")
+    px, py, pw, ph = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    masked = still.copy()
+    ImageDraw.Draw(masked).rectangle([px, py, px + pw, py + ph], fill=(0, 0, 0))
+    quantized = masked.resize((64, 64)).quantize(6)
     table = quantized.getpalette() or []
     brand_hues = [_hue(_hex_to_rgb(h)) for h in scene.palette if not _is_neutral(_hex_to_rgb(h))]
     indices = np.asarray(quantized).ravel()
@@ -115,6 +124,8 @@ def check_palette(scene: SceneAudit) -> AuditCheck:
     worst = 0.0
     for index in counts.argsort()[::-1][:4]:
         base = int(index) * 3
+        if counts[index] == 0 or base + 2 >= len(table):
+            continue
         rgb = (table[base], table[base + 1], table[base + 2])
         if _is_neutral(rgb) or not brand_hues:
             continue
@@ -150,7 +161,7 @@ def check_safe_area(scene: SceneAudit) -> AuditCheck:
     ok = inside and overlaps == 0
     return AuditCheck(
         check_id="A05",
-        metric="safe-area and overlap violations",
+        metric="template safe-area (static geometry)",
         threshold="0 violations",
         observed=0 if ok else (overlaps if inside else -1),
         passed=ok,
@@ -159,10 +170,15 @@ def check_safe_area(scene: SceneAudit) -> AuditCheck:
 
 
 def check_prominence(scene: SceneAudit) -> AuditCheck:
-    cutout = np.asarray(Image.open(scene.cutout_path).convert("RGBA"))
+    cutout_image = Image.open(scene.cutout_path).convert("RGBA")
+    cutout = np.asarray(cutout_image)
     alpha_fraction = float((cutout[:, :, 3] > 128).mean()) if cutout.size else 0.0
-    _, _, w, h = GEOMETRY[scene.layout]["product"]
-    frame_share = alpha_fraction * w * h
+    cw, ch = cutout_image.size
+    _, _, box_w, box_h = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    scale = min(box_w / cw, box_h / ch)
+    placed_opaque_area = alpha_fraction * cw * ch * scale**2
+    canvas_w, canvas_h = scene.canvas
+    frame_share = placed_opaque_area / (canvas_w * canvas_h)
     ok = frame_share >= scene.prominence_threshold
     return AuditCheck(
         check_id="A06",
@@ -176,7 +192,11 @@ def check_prominence(scene: SceneAudit) -> AuditCheck:
 
 def check_claims(scene: SceneAudit) -> AuditCheck:
     joined = f"{scene.headline} {scene.support} {scene.cta}".lower()
-    forbidden_hits = [f for f in scene.forbidden_claims if f.lower() in joined]
+    forbidden_hits = [
+        f
+        for f in scene.forbidden_claims
+        if re.search(r"\b" + re.escape(f.lower()) + r"\b", joined)
+    ]
     missing_required = [r for r in scene.required_text if r.lower() not in joined]
     ok = not forbidden_hits and not missing_required
     detail = "clean" if ok else f"forbidden={forbidden_hits} missing={missing_required}"

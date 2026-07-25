@@ -33,14 +33,20 @@ def _scrim(base: Image.Image) -> None:
     base.paste(overlay, (0, 0), overlay)
 
 
-def _place_contained(base: Image.Image, overlay: Image.Image, box: Box) -> None:
+def contained_box(overlay_size: tuple[int, int], box: Box) -> Box:
+    overlay_w, overlay_h = overlay_size
     x, y, w, h = box
-    scale = min(w / overlay.width, h / overlay.height)
-    resized = overlay.resize(
-        (max(1, round(overlay.width * scale)), max(1, round(overlay.height * scale)))
-    ).convert("RGBA")
-    px = x + (w - resized.width) // 2
-    py = y + (h - resized.height) // 2
+    scale = min(w / overlay_w, h / overlay_h)
+    placed_w = max(1, round(overlay_w * scale))
+    placed_h = max(1, round(overlay_h * scale))
+    px = x + (w - placed_w) // 2
+    py = y + (h - placed_h) // 2
+    return (px, py, placed_w, placed_h)
+
+
+def _place_contained(base: Image.Image, overlay: Image.Image, box: Box) -> None:
+    px, py, placed_w, placed_h = contained_box((overlay.width, overlay.height), box)
+    resized = overlay.resize((placed_w, placed_h)).convert("RGBA")
     base.paste(resized, (px, py), resized)
 
 

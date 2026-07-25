@@ -12,6 +12,7 @@ dependencies = [
     "typer>=0.15",
     "sse-starlette>=2.1",
     "python-multipart>=0.0.12",
+    "numpy>=2.0",
 ]
 
 [project.optional-dependencies]

@@ -2,7 +2,7 @@ from rivet.domain.layouts import LayoutTemplate
 
 Rect = tuple[float, float, float, float]
 
-SAFE_MARGIN = 0.06
+SAFE_MARGIN = 0.04
 
 GEOMETRY: dict[LayoutTemplate, dict[str, Rect]] = {
     "center_hero": {
