@@ -7,6 +7,14 @@ from pydantic import BaseModel, Field
 from rivet.domain.models import AuditCheck, utcnow
 
 
+class RepairRecord(BaseModel):
+    shot_id: str
+    kind: str
+    before_passed: bool
+    after_passed: bool
+    detail: str
+
+
 class SceneResult(BaseModel):
     shot_id: str
     still_path: str
@@ -21,6 +29,7 @@ class CampaignReceipt(BaseModel):
     product_sha256: str
     logo_sha256: str
     scenes: list[SceneResult]
+    repairs: list[RepairRecord] = Field(default_factory=list)
     video_path: str | None = None
     captions_path: str | None = None
     passed: bool

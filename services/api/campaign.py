@@ -162,8 +162,13 @@ async def generate_campaign(
     captions_path = str(workdir / "campaign.srt")
     write_srt(cues, Path(captions_path))
 
+    backgrounds: dict[str, str] = {
+        shot.shot_id: str(workdir / f"{shot.shot_id}.png") for shot in shots
+    }
+    accent_rgb = (accent[0], accent[1], accent[2])
     receipt = build_campaign_receipt(
-        project_id, shots, workdir, brand, logo_path, cutout_path, video_path, captions_path
+        project_id, shots, workdir, brand, logo_path, cutout_path, backgrounds, accent_rgb,
+        video_path, captions_path,
     )
     (workdir / "receipt.json").write_text(receipt.model_dump_json(indent=2))
     return receipt
