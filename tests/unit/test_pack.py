@@ -2,6 +2,7 @@ import json
 import zipfile
 from pathlib import Path
 
+import pytest
 from PIL import Image
 
 from rivet.domain.models import AuditCheck
@@ -49,3 +50,22 @@ def test_pack_bundles_files_and_manifest(tmp_path: Path) -> None:
         assert {entry["name"] for entry in manifest["files"]} == {
             "receipt.json", "campaign.mp4", "campaign.srt", "hook-still.png",
         }
+
+
+def test_pack_raises_when_referenced_evidence_missing(tmp_path: Path) -> None:
+    workdir = tmp_path / "work"
+    workdir.mkdir()
+    receipt = CampaignReceipt(
+        project_id="p1",
+        product_sha256="a" * 64,
+        logo_sha256="b" * 64,
+        scenes=[
+            SceneResult(
+                shot_id="hook", still_path=str(workdir / "gone.png"), seed=1,
+                checks=_checks(), passed=True,
+            )
+        ],
+        passed=True,
+    ).finalize()
+    with pytest.raises(FileNotFoundError):
+        build_pack(workdir, receipt, workdir / "pack.zip")

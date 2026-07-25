@@ -61,7 +61,9 @@ def build_campaign_receipt(
     scenes: list[SceneResult] = []
     repairs: list[RepairRecord] = []
     for shot in shots:
-        layout: LayoutTemplate = shot.layout_template if is_layout(shot.layout_template) else "center_hero"
+        if not is_layout(shot.layout_template):
+            raise ValueError(f"unknown layout template: {shot.layout_template}")
+        layout: LayoutTemplate = shot.layout_template
         still_path = str(workdir / f"{shot.shot_id}-still.png")
         copy = shot.copy_
 

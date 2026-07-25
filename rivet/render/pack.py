@@ -20,7 +20,9 @@ def build_pack(workdir: Path, receipt: CampaignReceipt, out_path: Path) -> None:
     if receipt.captions_path:
         members.append(Path(receipt.captions_path))
     members.extend(Path(scene.still_path) for scene in receipt.scenes)
-    members = [path for path in members if path.exists()]
+    missing = [str(path) for path in members if not path.exists()]
+    if missing:
+        raise FileNotFoundError(f"pack references missing evidence: {missing}")
 
     manifest = {
         "project_id": receipt.project_id,
