@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 
+import pytest
 from PIL import Image
 
 from rivet.adapters.composite import CompositeStage
@@ -44,9 +45,9 @@ def test_composes_still_from_inputs(tmp_path: Path) -> None:
     assert result.metrics == {"width": 1080.0, "height": 1920.0}
 
 
-def test_unknown_layout_falls_back(tmp_path: Path) -> None:
+def test_unknown_layout_raises(tmp_path: Path) -> None:
     config = make_inputs(tmp_path)
     config.update({"shot_id": "proof", "layout": "fancy_grid", "headline": "X"})
     request = StageRequest(stage="composite.proof", seed=1, config=config)
-    result = asyncio.run(CompositeStage().run(make_context(tmp_path), request))
-    assert Path(result.artifacts["still"]).exists()
+    with pytest.raises(ValueError):
+        asyncio.run(CompositeStage().run(make_context(tmp_path), request))

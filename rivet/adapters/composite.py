@@ -28,7 +28,11 @@ class CompositeStage:
         cutout = Image.open(config["cutout_path"]).convert("RGBA")
         logo = Image.open(config["logo_path"]).convert("RGBA")
         raw_layout = str(config["layout"])
-        layout: LayoutTemplate = raw_layout if is_layout(raw_layout) else "center_hero"
+        layout: LayoutTemplate
+        if is_layout(raw_layout):
+            layout = raw_layout
+        else:
+            raise ValueError(f"unknown layout {raw_layout}")
         raw = config.get("accent", [255, 59, 0])
         accent = (int(raw[0]), int(raw[1]), int(raw[2]))
         still = compose_still(
