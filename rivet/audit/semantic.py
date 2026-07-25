@@ -8,7 +8,7 @@ SemanticJudge = Callable[[str, str], tuple[int, str]]
 SEMANTIC_THRESHOLD = 80
 
 
-def _qwen_judge(image_path: str, question: str) -> tuple[int, str]:
+def qwen_judge(image_path: str, question: str) -> tuple[int, str]:
     import torch
     from PIL import Image
     from transformers import AutoProcessor, Qwen3VLForConditionalGeneration

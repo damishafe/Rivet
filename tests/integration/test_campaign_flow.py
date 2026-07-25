@@ -109,6 +109,8 @@ def test_campaign_flags_tampered_product_asset(engine: Engine, tmp_path: Path) -
     assert a01["passed"] is False
     assert receipt["pack_path"] is None
     assert status == "needs_repair"
+    saved = tmp_path / "projects" / project_id / "work" / "campaign" / "receipt.json"
+    assert saved.is_file(), "a failing receipt must still be persisted as evidence"
 
 
 def test_campaign_without_plan_409(engine: Engine, tmp_path: Path) -> None:
