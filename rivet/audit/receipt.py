@@ -48,9 +48,15 @@ def build_campaign_receipt(
     video_path: str | None = None,
     captions_path: str | None = None,
     judge: SemanticJudge | None = None,
+    product_sha_expected: str | None = None,
+    product_sha_used: str | None = None,
+    logo_sha_expected: str | None = None,
+    logo_sha_used: str | None = None,
 ) -> CampaignReceipt:
-    product_sha = _sha256(cutout_path)
-    logo_sha = _sha256(logo_path)
+    product_used = product_sha_used if product_sha_used is not None else _sha256(cutout_path)
+    product_expected = product_sha_expected if product_sha_expected is not None else product_used
+    logo_used = logo_sha_used if logo_sha_used is not None else _sha256(logo_path)
+    logo_expected = logo_sha_expected if logo_sha_expected is not None else logo_used
     palette = [color.hex for color in brand.palette]
     scenes: list[SceneResult] = []
     repairs: list[RepairRecord] = []
@@ -64,15 +70,16 @@ def build_campaign_receipt(
             layout: LayoutTemplate = layout,
             still_path: str = still_path,
             purpose: str = shot.purpose,
+            narration: str = shot.narration,
         ) -> SceneAudit:
             return SceneAudit(
                 layout=layout, still_path=still_path, cutout_path=cutout_path, logo_path=logo_path,
                 headline=active.headline, support=active.support, cta=active.cta,
                 palette=palette, required_text=brand.required_text,
                 forbidden_claims=brand.forbidden_claims,
-                product_sha_expected=product_sha, product_sha_used=product_sha,
-                logo_sha_expected=logo_sha, logo_sha_used=logo_sha,
-                purpose=purpose, audience=brand.audience,
+                product_sha_expected=product_expected, product_sha_used=product_used,
+                logo_sha_expected=logo_expected, logo_sha_used=logo_used,
+                purpose=purpose, audience=brand.audience, narration=narration,
             )
 
         report = audit_scene(make_scene(copy), copy.model_dump(by_alias=True), judge)
@@ -84,7 +91,7 @@ def build_campaign_receipt(
                 RepairRecord(
                     shot_id=shot.shot_id, kind="copy", before_passed=False,
                     after_passed=report.passed,
-                    detail="stripped forbidden claim and restored required phrase",
+                    detail="rewrote copy to satisfy claims policy",
                 )
             )
             copy = fixed
@@ -95,7 +102,7 @@ def build_campaign_receipt(
             )
         )
     receipt = CampaignReceipt(
-        project_id=project_id, product_sha256=product_sha, logo_sha256=logo_sha,
+        project_id=project_id, product_sha256=product_used, logo_sha256=logo_used,
         scenes=scenes, repairs=repairs, video_path=video_path, captions_path=captions_path,
         passed=all(scene.passed for scene in scenes),
     )

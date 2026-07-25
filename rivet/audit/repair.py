@@ -6,7 +6,8 @@ from rivet.domain.models import AuditCheck, ShotCopy
 def _strip_forbidden(text: str, forbidden: list[str]) -> str:
     result = text
     for claim in forbidden:
-        result = re.sub(r"\b" + re.escape(claim) + r"\b", "", result, flags=re.IGNORECASE)
+        pattern = r"(?<!\w)" + re.escape(claim) + r"(?!\w)"
+        result = re.sub(pattern, "", result, flags=re.IGNORECASE)
     return re.sub(r"\s+", " ", result).strip()
 
 

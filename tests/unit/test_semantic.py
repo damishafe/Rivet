@@ -24,6 +24,20 @@ def test_check_semantic_passes_above_threshold(tmp_path: Path) -> None:
     assert str(check.observed).startswith("90")
 
 
+def raising_judge(image_path: str, question: str) -> tuple[int, str]:
+    raise RuntimeError("weights missing")
+
+
+def test_check_semantic_survives_judge_failure(tmp_path: Path) -> None:
+    still = tmp_path / "s.png"
+    Image.new("RGB", (10, 10), (0, 0, 0)).save(still)
+    check = check_semantic(str(still), "hook", "campus creators", "Kora Arc", raising_judge)
+    assert check.check_id == "A08"
+    assert not check.passed
+    assert check.advisory
+    assert "judge unavailable" in str(check.observed)
+
+
 def make_scene(tmp_path: Path) -> SceneAudit:
     still = tmp_path / "still.png"
     Image.new("RGB", (10, 10), (0, 0, 0)).save(still)

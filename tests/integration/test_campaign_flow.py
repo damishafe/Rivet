@@ -85,6 +85,30 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     assert receipt["pack_path"] and Path(receipt["pack_path"]).exists()
     saved = tmp_path / "projects" / project_id / "work"
     assert any(p.name == "receipt.json" for p in saved.rglob("receipt.json"))
+    with build_app(engine, tmp_path) as client:
+        status = client.get(f"/api/projects/{project_id}").json()["status"]
+        assert status == "exported"
+        rerun = client.post(f"/api/projects/{project_id}/generate/campaign")
+        assert rerun.status_code == 409
+
+
+@pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
+def test_campaign_flags_tampered_product_asset(engine: Engine, tmp_path: Path) -> None:
+    from rivet.storage.assets import AssetStore
+
+    with build_app(engine, tmp_path) as client:
+        project_id = planned_project(client)
+        product = AssetStore(engine, tmp_path).find(project_id, "product")[0]
+        Path(product.path).write_bytes(b"tampered-bytes-different-from-registered")
+        response = client.post(f"/api/projects/{project_id}/generate/campaign")
+        status = client.get(f"/api/projects/{project_id}").json()["status"]
+    assert response.status_code == 200, response.text
+    receipt = response.json()
+    assert receipt["passed"] is False
+    a01 = next(c for s in receipt["scenes"] for c in s["checks"] if c["check_id"] == "A01")
+    assert a01["passed"] is False
+    assert receipt["pack_path"] is None
+    assert status == "needs_repair"
 
 
 def test_campaign_without_plan_409(engine: Engine, tmp_path: Path) -> None:

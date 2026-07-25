@@ -48,7 +48,18 @@ def check_semantic(
         f"Rate from 0 to 100 how well this vertical ad image fits audience '{audience}', "
         f"scene purpose '{purpose}', and message '{message}'. Begin your reply with the number."
     )
-    score, rationale = judge(still_path, question)
+    try:
+        score, rationale = judge(still_path, question)
+    except Exception as error:
+        return AuditCheck(
+            check_id="A08",
+            metric="semantic alignment score",
+            threshold=f">= {threshold}",
+            observed=f"judge unavailable: {error}"[:96],
+            passed=False,
+            owner_stage="plan/background",
+            advisory=True,
+        )
     return AuditCheck(
         check_id="A08",
         metric="semantic alignment score",

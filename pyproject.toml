@@ -55,6 +55,7 @@ extend-immutable-calls = ["fastapi.Depends"]
 
 [tool.ruff.lint.per-file-ignores]
 "rivet/pipeline/runner.py" = ["BLE001"]
+"rivet/audit/semantic.py" = ["BLE001"]
 
 [tool.mypy]
 python_version = "3.11"

@@ -32,6 +32,7 @@ class SceneAudit:
     logo_sha_used: str
     purpose: str = ""
     audience: str = ""
+    narration: str = ""
     canvas: tuple[int, int] = (1080, 1920)
     palette_threshold: float = 40.0
     prominence_threshold: float = 0.05
@@ -193,14 +194,14 @@ def check_prominence(scene: SceneAudit) -> AuditCheck:
     )
 
 
+def _mentions(phrase: str, text: str) -> bool:
+    return re.search(r"(?<!\w)" + re.escape(phrase.lower()) + r"(?!\w)", text) is not None
+
+
 def check_claims(scene: SceneAudit) -> AuditCheck:
-    joined = f"{scene.headline} {scene.support} {scene.cta}".lower()
-    forbidden_hits = [
-        f
-        for f in scene.forbidden_claims
-        if re.search(r"\b" + re.escape(f.lower()) + r"\b", joined)
-    ]
-    missing_required = [r for r in scene.required_text if r.lower() not in joined]
+    joined = f"{scene.headline} {scene.support} {scene.cta} {scene.narration}".lower()
+    forbidden_hits = [f for f in scene.forbidden_claims if _mentions(f, joined)]
+    missing_required = [r for r in scene.required_text if not _mentions(r, joined)]
     ok = not forbidden_hits and not missing_required
     detail = "clean" if ok else f"forbidden={forbidden_hits} missing={missing_required}"
     return AuditCheck(

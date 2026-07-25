@@ -18,6 +18,7 @@ def build_scene(
     cta: str = "Shop now",
     forbidden: list[str] | None = None,
     required: list[str] | None = None,
+    narration: str = "",
     product_used: str = "psha",
     product_expected: str = "psha",
     logo_used: str = "lsha",
@@ -47,6 +48,7 @@ def build_scene(
         palette=["#FF3B00", "#2C2820"],
         required_text=required or [],
         forbidden_claims=forbidden or [],
+        narration=narration,
         product_sha_expected=product_expected,
         product_sha_used=product_used,
         logo_sha_expected=logo_expected,
@@ -140,3 +142,25 @@ def test_forbidden_claim_respects_word_boundary(tmp_path: Path) -> None:
     hit_scene = build_scene(tmp_path, support="Buy one, get one free", forbidden=["free"])
     hit_report = audit_scene(hit_scene, {**APPROVED, "support": "Buy one, get one free"})
     assert not next(c for c in hit_report.checks if c.check_id == "A07").passed
+
+
+def test_forbidden_claim_with_punctuation_edges_is_caught(tmp_path: Path) -> None:
+    scene = build_scene(
+        tmp_path, support="Satisfaction 100% guaranteed", forbidden=["100%", "#1"]
+    )
+    report = audit_scene(scene, {**APPROVED, "support": "Satisfaction 100% guaranteed"})
+    a07 = next(c for c in report.checks if c.check_id == "A07")
+    assert not a07.passed
+    assert "100%" in str(a07.observed)
+
+
+def test_forbidden_claim_in_narration_is_caught(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path, narration="Now fully waterproof for the beach", forbidden=["waterproof"])
+    report = audit_scene(scene, APPROVED)
+    assert not next(c for c in report.checks if c.check_id == "A07").passed
+
+
+def test_required_phrase_requires_whole_word(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path, support="Total freedom of movement", required=["free"])
+    report = audit_scene(scene, {**APPROVED, "support": "Total freedom of movement"})
+    assert not next(c for c in report.checks if c.check_id == "A07").passed
