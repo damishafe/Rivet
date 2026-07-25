@@ -1,3 +1,4 @@
+import colorsys
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -26,7 +27,7 @@ class SceneAudit:
     logo_sha_expected: str
     logo_sha_used: str
     canvas: tuple[int, int] = (1080, 1920)
-    palette_threshold: float = 110.0
+    palette_threshold: float = 40.0
     prominence_threshold: float = 0.05
     safe_margin: float = 0.04
 
@@ -42,6 +43,22 @@ def _redmean(a: Color, b: Color) -> float:
     return float(
         ((2 + rmean / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rmean) / 256) * db * db) ** 0.5
     )
+
+
+def _is_neutral(rgb: Color) -> bool:
+    high, low = max(rgb), min(rgb)
+    saturation = 0.0 if high == 0 else (high - low) / high
+    return saturation < 0.30 or high < 45
+
+
+def _hue(rgb: Color) -> float:
+    h, _, _ = colorsys.rgb_to_hsv(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
+    return h * 360
+
+
+def _hue_distance(a: float, b: float) -> float:
+    diff = abs(a - b) % 360
+    return min(diff, 360 - diff)
 
 
 def check_lineage(scene: SceneAudit) -> AuditCheck:
@@ -92,20 +109,22 @@ def check_palette(scene: SceneAudit) -> AuditCheck:
     still = Image.open(scene.still_path).convert("RGB").resize((64, 64))
     quantized = still.quantize(6)
     table = quantized.getpalette() or []
-    targets = [_hex_to_rgb(h) for h in scene.palette] or [(0, 0, 0)]
+    brand_hues = [_hue(_hex_to_rgb(h)) for h in scene.palette if not _is_neutral(_hex_to_rgb(h))]
     indices = np.asarray(quantized).ravel()
     counts = np.bincount(indices, minlength=6)
     worst = 0.0
     for index in counts.argsort()[::-1][:4]:
         base = int(index) * 3
         rgb = (table[base], table[base + 1], table[base + 2])
-        nearest = min(_redmean(rgb, target) for target in targets)
+        if _is_neutral(rgb) or not brand_hues:
+            continue
+        nearest = min(_hue_distance(_hue(rgb), hue) for hue in brand_hues)
         worst = max(worst, nearest)
     ok = worst <= scene.palette_threshold
     return AuditCheck(
         check_id="A04",
-        metric="dominant colour distance to palette",
-        threshold=f"<= {scene.palette_threshold}",
+        metric="saturated colour hue vs palette",
+        threshold=f"<= {scene.palette_threshold} degrees",
         observed=round(worst, 1),
         passed=ok,
         owner_stage="background/layout",
