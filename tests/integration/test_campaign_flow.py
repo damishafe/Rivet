@@ -1,7 +1,9 @@
+import shutil
 from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import pytest
 from fastapi.testclient import TestClient
 from PIL import Image, ImageDraw
 from sqlalchemy.engine import Engine
@@ -9,6 +11,8 @@ from sqlalchemy.engine import Engine
 from rivet.adapters.background import BackgroundStage
 from rivet.adapters.segment import SegmentStage
 from services.api.main import create_app
+
+ffmpeg_missing = shutil.which("ffmpeg") is None
 
 
 def fake_segmenter(image_path: str, config: dict[str, Any], device: str, out_path: Path) -> float:
@@ -50,6 +54,7 @@ def planned_project(client: TestClient) -> str:
     return project_id
 
 
+@pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
 def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> None:
     with build_app(engine, tmp_path) as client:
         project_id = planned_project(client)
@@ -60,6 +65,7 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     assert [s["shot_id"] for s in receipt["scenes"]] == ["hook", "proof", "cta"]
     assert all(len(s["checks"]) == 7 for s in receipt["scenes"])
     assert len(receipt["receipt_hash"]) == 64
+    assert receipt["video_path"] and Path(receipt["video_path"]).exists()
     saved = tmp_path / "projects" / project_id / "work"
     assert any(p.name == "receipt.json" for p in saved.rglob("receipt.json"))
 

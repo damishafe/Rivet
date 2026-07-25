@@ -4,12 +4,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from rivet.adapters.background import BackgroundStage
 from rivet.adapters.composite import CompositeStage
+from rivet.adapters.motion import MotionStage
 from rivet.adapters.segment import SegmentStage
 from rivet.audit.receipt import build_campaign_receipt
 from rivet.domain.models import PaletteColor
 from rivet.domain.receipt import CampaignReceipt
 from rivet.pipeline.runner import JobRunner, PlannedStage
 from rivet.pipeline.stage import Stage, StageRequest
+from rivet.render.assemble import assemble_scenes
 from rivet.storage.assets import AssetStore
 from rivet.storage.jobs import ActiveJobError, JobStore
 from rivet.storage.plans import PlanStore
@@ -68,6 +70,7 @@ async def generate_campaign(
     segment = _stage(request, "segment_stage", SegmentStage())
     background = _stage(request, "background_stage", BackgroundStage())
     composite = CompositeStage()
+    motion = MotionStage()
 
     plan = [
         PlannedStage(
@@ -111,10 +114,28 @@ async def generate_campaign(
                 ),
             )
         )
+        plan.append(
+            PlannedStage(
+                stage=motion,
+                request=StageRequest(
+                    stage=f"motion.{shot.shot_id}", seed=shot.seed,
+                    config={
+                        "shot_id": shot.shot_id,
+                        "still_path": str(workdir / f"{shot.shot_id}-still.png"),
+                        "duration_s": shot.duration_s,
+                    },
+                ),
+            )
+        )
 
     finished = await JobRunner(engine, asset_root).run(job, plan)
     if finished.status != "succeeded":
         raise HTTPException(status_code=500, detail=f"generation failed: {finished.error}")
-    receipt = build_campaign_receipt(project_id, shots, workdir, brand, logo_path, cutout_path)
+    clips = [str(workdir / f"{shot.shot_id}.mp4") for shot in shots]
+    video_path = str(workdir / "campaign.mp4")
+    assemble_scenes(clips, Path(video_path))
+    receipt = build_campaign_receipt(
+        project_id, shots, workdir, brand, logo_path, cutout_path, video_path
+    )
     (workdir / "receipt.json").write_text(receipt.model_dump_json(indent=2))
     return receipt
