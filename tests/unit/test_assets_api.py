@@ -80,3 +80,26 @@ def test_upload_derived_role_415(engine: Engine, tmp_path: Path) -> None:
             files={"file": png_upload()},
         )
     assert response.status_code == 415
+
+
+def test_upload_brief_audio(engine: Engine, tmp_path: Path) -> None:
+    with make_client(engine, tmp_path) as client:
+        project_id = create_project(client)
+        response = client.post(
+            f"/api/projects/{project_id}/assets",
+            data={"role": "brief_audio"},
+            files={"file": ("brief.wav", BytesIO(b"RIFFxxxxWAVEfmt "), "audio/wav")},
+        )
+    assert response.status_code == 201
+    assert response.json()["role"] == "brief_audio"
+
+
+def test_upload_brief_audio_wrong_mime_415(engine: Engine, tmp_path: Path) -> None:
+    with make_client(engine, tmp_path) as client:
+        project_id = create_project(client)
+        response = client.post(
+            f"/api/projects/{project_id}/assets",
+            data={"role": "brief_audio"},
+            files={"file": ("b.mp4", BytesIO(b"data"), "video/mp4")},
+        )
+    assert response.status_code == 415
