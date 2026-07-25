@@ -32,11 +32,14 @@ class CampaignReceipt(BaseModel):
     repairs: list[RepairRecord] = Field(default_factory=list)
     video_path: str | None = None
     captions_path: str | None = None
+    pack_path: str | None = None
     passed: bool
     receipt_hash: str = ""
 
     def finalize(self) -> "CampaignReceipt":
-        payload = self.model_dump(mode="json", exclude={"receipt_hash", "created_at"})
+        payload = self.model_dump(
+            mode="json", exclude={"receipt_hash", "created_at", "pack_path"}
+        )
         digest = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()

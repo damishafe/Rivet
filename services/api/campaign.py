@@ -13,6 +13,7 @@ from rivet.domain.receipt import CampaignReceipt
 from rivet.pipeline.runner import JobRunner, PlannedStage
 from rivet.pipeline.stage import Stage, StageRequest
 from rivet.render.assemble import assemble_scenes, mix_narration, write_srt
+from rivet.render.pack import build_pack
 from rivet.storage.assets import AssetStore
 from rivet.storage.jobs import ActiveJobError, JobStore
 from rivet.storage.plans import PlanStore
@@ -170,5 +171,6 @@ async def generate_campaign(
         project_id, shots, workdir, brand, logo_path, cutout_path, backgrounds, accent_rgb,
         video_path, captions_path,
     )
-    (workdir / "receipt.json").write_text(receipt.model_dump_json(indent=2))
-    return receipt
+    pack_path = str(workdir / "campaign-pack.zip")
+    build_pack(workdir, receipt, Path(pack_path))
+    return receipt.model_copy(update={"pack_path": pack_path})

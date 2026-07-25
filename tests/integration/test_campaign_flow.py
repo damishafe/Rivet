@@ -76,6 +76,7 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     assert len(receipt["receipt_hash"]) == 64
     assert receipt["video_path"] and Path(receipt["video_path"]).exists()
     assert receipt["captions_path"] and Path(receipt["captions_path"]).exists()
+    assert receipt["pack_path"] and Path(receipt["pack_path"]).exists()
     saved = tmp_path / "projects" / project_id / "work"
     assert any(p.name == "receipt.json" for p in saved.rglob("receipt.json"))
 
