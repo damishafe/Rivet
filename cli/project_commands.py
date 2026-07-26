@@ -7,6 +7,7 @@ from PIL import Image
 from cli.workspace import open_workspace, require_project
 from rivet.adapters.heuristic_brand import propose_brand_dna
 from rivet.adapters.heuristic_planner import propose_shots
+from rivet.adapters.qwen_planner import propose_shots_vlm
 from rivet.domain.models import AssetRole, utcnow
 from rivet.storage.assets import AssetStore
 from rivet.storage.plans import PlanStore
@@ -47,7 +48,7 @@ def ingest(project_id: str, product: Path, logo: Path, brief: str | None = None)
 
 
 @app.command()
-def plan(project_id: str) -> None:
+def plan(project_id: str, vlm: bool = True) -> None:
     """Derive and confirm brand DNA, then propose the three-scene storyboard."""
     engine, root = open_workspace()
     project = require_project(engine, project_id)
@@ -58,10 +59,23 @@ def plan(project_id: str) -> None:
         typer.echo("product and logo assets required — run 'rivet ingest' first", err=True)
         raise typer.Exit(code=1)
     product, logo = products[-1], logos[-1]
-    dna = propose_brand_dna(project.name, product.id, logo.id, Path(product.path).read_bytes())
+    dna = propose_brand_dna(
+        project.name,
+        product.id,
+        logo.id,
+        Path(product.path).read_bytes(),
+        Path(logo.path).read_bytes(),
+    )
     projects = ProjectStore(engine)
-    projects.set_brand_dna(project_id, dna.model_copy(update={"confirmed_at": utcnow()}))
-    shots = propose_shots(dna, project.campaign_seed)
+    confirmed = dna.model_copy(update={"confirmed_at": utcnow()})
+    projects.set_brand_dna(project_id, confirmed)
+    if vlm:
+        shots = propose_shots_vlm(
+            confirmed, project.campaign_seed, product.path, project.brief or ""
+        )
+    else:
+        shots = propose_shots(confirmed, project.campaign_seed)
     PlanStore(engine).set_plan(project_id, shots)
     for shot in shots:
-        typer.echo(f"  {shot.shot_id:<6} {shot.duration_s:>4.1f}s  {shot.copy_.headline}")
+        typer.echo(f"  {shot.shot_id:<6} {shot.copy_.headline}  |  {shot.copy_.support}")
+        typer.echo(f"         cta: {shot.copy_.cta}   narration: {shot.narration}")

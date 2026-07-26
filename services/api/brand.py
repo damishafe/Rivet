@@ -30,9 +30,14 @@ def derive_brand(
     logos = assets.find(project_id, "logo")
     if not products or not logos:
         raise HTTPException(status_code=409, detail="product and logo assets required")
-    product = products[-1]
-    image_bytes = Path(product.path).read_bytes()
-    return propose_brand_dna(project.name, product.id, logos[-1].id, image_bytes)
+    product, logo = products[-1], logos[-1]
+    return propose_brand_dna(
+        project.name,
+        product.id,
+        logo.id,
+        Path(product.path).read_bytes(),
+        Path(logo.path).read_bytes(),
+    )
 
 
 @router.put("/{project_id}/brand")

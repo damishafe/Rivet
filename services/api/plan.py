@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from pathlib import Path
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from rivet.adapters.heuristic_planner import propose_shots
+from rivet.adapters.qwen_planner import propose_shots_vlm
 from rivet.domain.models import PlanValidationError, Project, ShotPlan
 from rivet.domain.states import ProjectStatus
+from rivet.storage.assets import AssetStore
 from rivet.storage.plans import PlanStore
 from rivet.storage.projects import ProjectStore
-from services.api.deps import get_plan_store, get_project_store
+from services.api.deps import get_asset_store, get_plan_store, get_project_store
 
 router = APIRouter(prefix="/api/projects", tags=["plan"])
 
@@ -25,8 +29,10 @@ def _require_writable(project: Project) -> None:
 @router.post("/{project_id}/plan")
 def derive_plan(
     project_id: str,
+    request: Request,
     projects: ProjectStore = Depends(get_project_store),
     plans: PlanStore = Depends(get_plan_store),
+    assets: AssetStore = Depends(get_asset_store),
 ) -> PlanResponse:
     project = projects.get(project_id)
     if project is None:
@@ -35,7 +41,14 @@ def derive_plan(
     dna = projects.get_brand_dna(project_id)
     if dna is None or dna.confirmed_at is None:
         raise HTTPException(status_code=409, detail="confirmed brand dna required")
-    shots = propose_shots(dna, project.campaign_seed)
+    product = assets.get(dna.product_asset_id)
+    writer = getattr(request.app.state, "scene_writer", None)
+    if product is not None and Path(product.path).is_file():
+        shots = propose_shots_vlm(
+            dna, project.campaign_seed, product.path, project.brief or "", writer
+        )
+    else:
+        shots = propose_shots(dna, project.campaign_seed)
     plans.set_plan(project_id, shots)
     return PlanResponse(shots=shots)
 
