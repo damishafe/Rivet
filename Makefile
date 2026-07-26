@@ -37,7 +37,7 @@ benchmark-hot:
 	uv run rivet benchmark --fixture $(FIXTURE) --mode hot
 
 offline-demo:
-	@echo "offline-demo: not implemented until D12 (Aug 3)" && exit 1
+	uv run rivet offline-demo --fixture $(FIXTURE)
 
 submission-check:
 	@echo "submission-check: not implemented until D12 (Aug 3)" && exit 1
