@@ -125,6 +125,24 @@ def test_plan_shape_matches_heuristic_contract() -> None:
         assert produced.motion == expected.motion
 
 
+def test_narration_clips_on_sentence_boundaries() -> None:
+    payload = {
+        "scenes": [
+            {
+                "shot_id": "proof",
+                "narration": (
+                    "Lightweight, tough, and built to move. "
+                    "Perfect for campus creators everywhere."
+                ),
+            }
+        ]
+    }
+    shots = propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(payload)))
+    spoken = shots[1].narration
+    assert spoken == "Lightweight, tough, and built to move."
+    assert spoken.endswith((".", "!", "?")), "spoken copy must not stop mid-phrase"
+
+
 def test_narration_is_clipped_to_scene_duration() -> None:
     long_line = "This narration is far too long to be spoken aloud within a short scene."
     payload = {"scenes": [{"shot_id": s, "narration": long_line} for s in ("hook", "proof", "cta")]}

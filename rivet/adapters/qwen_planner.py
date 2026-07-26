@@ -69,8 +69,9 @@ def build_prompt(dna: BrandDNA, brief: str) -> str:
         f"- headline at most {LIMITS['headline']} characters\n"
         f"- support at most {LIMITS['support']} characters\n"
         f"- cta at most {LIMITS['cta']} characters\n"
-        "- narration is spoken aloud over the scene and must fit its length: at most "
-        f"{narration_limit(4.0)} characters for hook and cta, {narration_limit(5.0)} for proof\n"
+        "- narration is one short complete sentence spoken aloud over the scene and must fit "
+        f"its length: at most {narration_limit(4.0)} characters for hook and cta, "
+        f"{narration_limit(5.0)} for proof\n"
         "- background_prompt describes ONLY the empty environment behind the product: "
         "surfaces, materials, light and colour. The product is added afterwards, so never "
         "mention the product, a speaker, a microphone, a device or any object that could be "
@@ -111,6 +112,23 @@ def parse_scenes(raw: str) -> dict[str, dict[str, Any]]:
     return scenes
 
 
+def clip_narration(text: str, limit: int) -> str:
+    spoken = re.sub(r"\s+", " ", text).strip().strip('"').strip()
+    if len(spoken) <= limit:
+        return spoken
+    kept = ""
+    for sentence in re.findall(r"[^.!?]+[.!?]?", spoken):
+        candidate = f"{kept}{sentence}".strip()
+        if len(candidate) > limit:
+            break
+        kept = f"{candidate} "
+    complete = kept.strip()
+    if complete:
+        return complete
+    clipped = spoken[:limit].rsplit(" ", 1)[0].rstrip(",;:- ")
+    return f"{clipped}." if clipped else spoken[:limit]
+
+
 def safe_background(prompt: str, product_name: str) -> str:
     lowered = prompt.lower()
     banned = [word for word in BANNED_BACKGROUND_WORDS if word in lowered]
@@ -125,9 +143,12 @@ def _merge(shot: ShotPlan, fields: dict[str, Any], product_name: str) -> ShotPla
         support=_clean(fields.get("support"), LIMITS["support"]) or shot.copy_.support,
         cta=_clean(fields.get("cta"), LIMITS["cta"]) or shot.copy_.cta,
     )
+    spoken = fields.get("narration")
     narration = (
-        _clean(fields.get("narration"), narration_limit(shot.duration_s)) or shot.narration
-    )
+        clip_narration(spoken, narration_limit(shot.duration_s))
+        if isinstance(spoken, str)
+        else ""
+    ) or shot.narration
     background = (
         safe_background(
             _clean(fields.get("background_prompt"), LIMITS["background_prompt"]), product_name
