@@ -63,7 +63,7 @@ def test_clean_scene_passes_all_checks(tmp_path: Path) -> None:
     scene = build_scene(tmp_path, required=["Make every space your studio"])
     report = audit_scene(scene, APPROVED)
     assert [c.check_id for c in report.checks] == [
-        "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A09",
+        "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A09", "A10",
     ]
     assert report.passed, [(c.check_id, c.observed) for c in report.checks if not c.passed]
 
@@ -213,6 +213,22 @@ def test_faithful_product_passes_a09(tmp_path: Path) -> None:
     scene = build_scene(tmp_path)
     a09 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A09")
     assert a09.passed, a09.observed
+
+
+def test_bright_background_still_renders_legible_text(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path, bg_color=(245, 245, 245))
+    a10 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A10")
+    assert a10.passed, f"white studio background left text at {a10.observed}:1"
+
+
+def test_washed_out_text_fails_a10(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    still = Image.open(scene.still_path).convert("RGB")
+    x, y, w, h = rect_px(GEOMETRY["center_hero"]["headline"], scene.canvas)
+    ImageDraw.Draw(still).rectangle([x, y, x + w, y + h], fill=(252, 252, 252))
+    still.save(scene.still_path)
+    a10 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A10")
+    assert not a10.passed
 
 
 def test_all_neutral_brand_flags_saturated_background(tmp_path: Path) -> None:

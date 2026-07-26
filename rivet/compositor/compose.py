@@ -1,5 +1,7 @@
+import numpy as np
 from PIL import Image, ImageDraw
 
+from rivet.compositor.contrast import SCRIM_RGB, needed_darkening
 from rivet.compositor.geometry import GEOMETRY, rect_px
 from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.layouts import LayoutTemplate
@@ -31,6 +33,32 @@ def _scrim(base: Image.Image) -> None:
         alpha = int(150 * (y - start) / (height - start))
         draw.line([(0, y), (width, y)], fill=(5, 5, 8, alpha))
     base.paste(overlay, (0, 0), overlay)
+
+
+def _mean_color(base: Image.Image, box: Box) -> Color:
+    x, y, w, h = box
+    patch = np.asarray(base.crop((x, y, x + w, y + h)).convert("RGB")).reshape(-1, 3)
+    return (
+        round(float(patch[:, 0].mean())),
+        round(float(patch[:, 1].mean())),
+        round(float(patch[:, 2].mean())),
+    )
+
+
+def _legibility_scrim(
+    base: Image.Image, layout: LayoutTemplate, headline: str, support: str, canvas: tuple[int, int]
+) -> None:
+    geo = GEOMETRY[layout]
+    strongest = 0.0
+    for key, color, text in (("headline", WHITE, headline), ("support", MUTED, support)):
+        if not text:
+            continue
+        measured = _mean_color(base, rect_px(geo[key], canvas))
+        strongest = max(strongest, needed_darkening(measured, color))
+    if strongest <= 0:
+        return
+    veil = Image.new("RGBA", base.size, (*SCRIM_RGB, round(strongest * 255)))
+    base.paste(veil, (0, 0), veil)
 
 
 def contained_box(overlay_size: tuple[int, int], box: Box) -> Box:
@@ -89,6 +117,7 @@ def compose_still(
     canvas: tuple[int, int] = CANVAS,
 ) -> Image.Image:
     base = cover_fit(background, canvas)
+    _legibility_scrim(base, layout, headline, support, canvas)
     _scrim(base)
     draw = ImageDraw.Draw(base, "RGBA")
     geo = GEOMETRY[layout]

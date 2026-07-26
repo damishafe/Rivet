@@ -2,7 +2,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from rivet.audit.scene import SceneAudit, hex_to_rgb, hue, hue_distance, is_neutral
-from rivet.compositor.compose import contained_box
+from rivet.compositor.compose import MUTED, WHITE, contained_box
+from rivet.compositor.contrast import LEGIBILITY_FLOOR, contrast_ratio
 from rivet.compositor.geometry import GEOMETRY, rect_px
 from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.models import AuditCheck
@@ -59,6 +60,35 @@ def check_product_fidelity(scene: SceneAudit) -> AuditCheck:
         observed=round(mean_diff, 1),
         passed=ok,
         owner_stage="compose",
+    )
+
+
+def check_legibility(scene: SceneAudit) -> AuditCheck:
+    still = Image.open(scene.still_path).convert("RGB")
+    boxes = GEOMETRY[scene.layout]
+    worst = 21.0
+    for key, color, text in (
+        ("headline", WHITE, scene.headline),
+        ("support", MUTED, scene.support),
+    ):
+        if not text:
+            continue
+        x, y, w, h = rect_px(boxes[key], scene.canvas)
+        patch = np.asarray(still.crop((x, y, x + w, y + h))).reshape(-1, 3)
+        measured = (
+            round(float(patch[:, 0].mean())),
+            round(float(patch[:, 1].mean())),
+            round(float(patch[:, 2].mean())),
+        )
+        worst = min(worst, contrast_ratio(measured, color))
+    ok = worst >= LEGIBILITY_FLOOR
+    return AuditCheck(
+        check_id="A10",
+        metric="text contrast ratio",
+        threshold=f">= {LEGIBILITY_FLOOR}:1",
+        observed=round(worst, 2),
+        passed=ok,
+        owner_stage="layout",
     )
 
 

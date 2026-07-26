@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from rivet.audit.scene import SceneAudit, mentions
 from rivet.audit.semantic import SemanticJudge, check_semantic
 from rivet.audit.visual_checks import (
+    check_legibility,
     check_logo_presence,
     check_palette,
     check_product_fidelity,
@@ -16,6 +17,7 @@ __all__ = [
     "SceneAudit",
     "audit_scene",
     "check_claims",
+    "check_legibility",
     "check_lineage",
     "check_logo_presence",
     "check_palette",
@@ -91,6 +93,7 @@ def audit_scene(
         check_prominence(scene),
         check_claims(scene),
         check_product_fidelity(scene),
+        check_legibility(scene),
     ]
     if judge is not None:
         message = f"{scene.headline} {scene.support} {scene.cta}".strip()
