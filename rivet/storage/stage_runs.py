@@ -21,6 +21,14 @@ class StageRunStore:
             )
             session.commit()
 
+    def list_for_project(self, project_id: str) -> list[StageRun]:
+        with Session(self._engine) as session:
+            rows = session.exec(
+                select(StageRunRow).where(StageRunRow.project_id == project_id)
+            ).all()
+        runs = [StageRun.model_validate(row.payload) for row in rows]
+        return sorted(runs, key=lambda run: run.started_at)
+
     def list_for_job(self, job_id: str) -> list[StageRun]:
         with Session(self._engine) as session:
             rows = session.exec(

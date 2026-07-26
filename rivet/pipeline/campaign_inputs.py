@@ -82,6 +82,38 @@ def resolve_campaign_inputs(engine: Engine, asset_root: Path, project_id: str) -
     return CampaignInputs(project=project, shots=shots, brand=brand, product=product, logo=logo)
 
 
+def render_plan(
+    inputs: CampaignInputs, stages: CampaignStages, workdir: Path
+) -> list[PlannedStage]:
+    plan: list[PlannedStage] = []
+    for shot in inputs.shots:
+        still_path = str(workdir / f"{shot.shot_id}-still.png")
+        plan.append(
+            PlannedStage(
+                stage=stages.motion,
+                request=StageRequest(
+                    stage=f"motion.{shot.shot_id}", seed=shot.seed,
+                    config={
+                        "shot_id": shot.shot_id,
+                        "still_path": still_path,
+                        "duration_s": shot.duration_s,
+                    },
+                ),
+                input_paths=[still_path],
+            )
+        )
+        plan.append(
+            PlannedStage(
+                stage=stages.narrate,
+                request=StageRequest(
+                    stage=f"narration.{shot.shot_id}", seed=shot.seed,
+                    config={"shot_id": shot.shot_id, "text": shot.narration},
+                ),
+            )
+        )
+    return plan
+
+
 def generation_plan(
     inputs: CampaignInputs, stages: CampaignStages, workdir: Path, accent: Color
 ) -> list[PlannedStage]:

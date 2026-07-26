@@ -26,11 +26,15 @@ lint:
 	uv run mypy
 	cd apps/web && npm run lint
 
+FIXTURE ?= fixtures/kora-arc
+
 benchmark-cold:
-	@echo "benchmark-cold: not implemented until D11 (Aug 2)" && exit 1
+	rm -rf .benchmark/cold-0
+	uv run rivet benchmark --fixture $(FIXTURE) --mode cold
 
 benchmark-hot:
-	@echo "benchmark-hot: not implemented until D11 (Aug 2)" && exit 1
+	rm -rf .benchmark/hot-0 .benchmark/hot-1
+	uv run rivet benchmark --fixture $(FIXTURE) --mode hot
 
 offline-demo:
 	@echo "offline-demo: not implemented until D12 (Aug 3)" && exit 1

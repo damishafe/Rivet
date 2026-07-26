@@ -1,5 +1,6 @@
 import typer
 
+from cli.benchmark_command import benchmark
 from cli.campaign_commands import export, run
 from cli.doctor_command import doctor
 from cli.project_commands import create, ingest, plan
@@ -18,6 +19,7 @@ app.command()(ingest)
 app.command()(plan)
 app.command()(run)
 app.command()(export)
+app.command()(benchmark)
 
 
 if __name__ == "__main__":

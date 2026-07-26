@@ -13,45 +13,25 @@ from rivet.pipeline.campaign_inputs import (
     CampaignStages,
     accent_rgb,
     generation_plan,
+    render_plan,
     resolve_campaign_inputs,
     sha256_file,
 )
 from rivet.pipeline.runner import JobRunner
-from rivet.pipeline.stage import StageContext, StageRequest
 from rivet.render.assemble import assemble_scenes, mix_narration, write_srt
 from rivet.render.pack import build_pack
 from rivet.storage.jobs import ActiveJobError, JobStore
 from rivet.storage.projects import ProjectStore
 
 
-async def _render_scenes(
-    inputs: CampaignInputs, stages: CampaignStages, context: StageContext, workdir: Path
-) -> tuple[str, str]:
+def _assemble_campaign(inputs: CampaignInputs, workdir: Path) -> tuple[str, str]:
     clips: list[str] = []
     narration_clips: list[tuple[str, int]] = []
     cues: list[tuple[str, float, float]] = []
     offset = 0.0
     for shot in inputs.shots:
-        moved = await stages.motion.run(
-            context,
-            StageRequest(
-                stage=f"motion.{shot.shot_id}", seed=shot.seed,
-                config={
-                    "shot_id": shot.shot_id,
-                    "still_path": str(workdir / f"{shot.shot_id}-still.png"),
-                    "duration_s": shot.duration_s,
-                },
-            ),
-        )
-        clips.append(moved.artifacts["clip"])
-        spoken = await stages.narrate.run(
-            context,
-            StageRequest(
-                stage=f"narration.{shot.shot_id}", seed=shot.seed,
-                config={"shot_id": shot.shot_id, "text": shot.narration},
-            ),
-        )
-        wav = Path(spoken.artifacts["narration"])
+        clips.append(str(workdir / f"{shot.shot_id}.mp4"))
+        wav = workdir / f"{shot.shot_id}-narration.wav"
         if wav.exists():
             narration_clips.append((str(wav), int(offset * 1000)))
         cues.append((shot.narration, offset, offset + shot.duration_s))
@@ -87,11 +67,16 @@ async def run_campaign(
     cutout_path = str(workdir / "cutout.png")
     accent = accent_rgb(inputs.brand.palette)
 
-    plan = generation_plan(inputs, stages, workdir, accent)
-    finished = await JobRunner(engine, asset_root).run(job, plan, workdir=workdir)
-    if finished.status != "succeeded":
+    runner = JobRunner(engine, asset_root)
+    jobs = JobStore(engine)
+    jobs.set_status(job.id, "running")
+    generation = await runner.run_phase(
+        job, generation_plan(inputs, stages, workdir, accent), workdir
+    )
+    if generation.status != "succeeded":
+        jobs.set_status(job.id, generation.status, error=generation.error)
         projects.advance(project_id, ProjectStatus.FAILED)
-        raise CampaignFailed(f"generation failed: {finished.error}")
+        raise CampaignFailed(f"generation failed: {generation.error}")
     projects.advance(project_id, ProjectStatus.COMPOSED)
     projects.advance(project_id, ProjectStatus.AUDITING)
 
@@ -108,8 +93,10 @@ async def run_campaign(
             logo_sha_expected=inputs.logo.sha256,
             logo_sha_used=sha256_file(inputs.logo.path),
         )
-        context = StageContext(project_id=project_id, job_id=job.id, workdir=workdir)
-        video_path, captions_path = await _render_scenes(inputs, stages, context, workdir)
+        render = await runner.run_phase(job, render_plan(inputs, stages, workdir), workdir)
+        if render.status != "succeeded":
+            raise CampaignFailed(f"render failed: {render.error}")
+        video_path, captions_path = _assemble_campaign(inputs, workdir)
         receipt = receipt.model_copy(
             update={"video_path": video_path, "captions_path": captions_path}
         ).finalize()
@@ -120,8 +107,10 @@ async def run_campaign(
         pack_path = str(workdir / "campaign-pack.zip")
         build_pack(workdir, receipt, Path(pack_path))
     except Exception as error:
+        jobs.set_status(job.id, "failed", error=str(error))
         projects.advance(project_id, ProjectStatus.FAILED)
         raise CampaignFailed(f"campaign failed after generation: {error}") from error
+    jobs.set_status(job.id, "succeeded")
     projects.advance(project_id, ProjectStatus.READY)
     projects.advance(project_id, ProjectStatus.EXPORTED)
     return receipt.model_copy(update={"pack_path": pack_path})
