@@ -12,6 +12,10 @@ SceneWriter = Callable[[str, str], str]
 
 LIMITS = {"headline": 28, "support": 48, "cta": 22, "background_prompt": 220}
 SHOT_IDS = ("hook", "proof", "cta")
+BANNED_BACKGROUND_WORDS = (
+    "speaker", "microphone", "headphone", "earbud", "device", "gadget", "product",
+    "bottle", "phone", "laptop", "camera", "watermark", "logo",
+)
 SPOKEN_CHARS_PER_SECOND = 14
 
 
@@ -67,8 +71,11 @@ def build_prompt(dna: BrandDNA, brief: str) -> str:
         f"- cta at most {LIMITS['cta']} characters\n"
         "- narration is spoken aloud over the scene and must fit its length: at most "
         f"{narration_limit(4.0)} characters for hook and cta, {narration_limit(5.0)} for proof\n"
-        "- background_prompt describes an empty photographic setting with no text, "
-        "no logos and no people; keep colours neutral or close to the brand colours\n"
+        "- background_prompt describes ONLY the empty environment behind the product: "
+        "surfaces, materials, light and colour. The product is added afterwards, so never "
+        "mention the product, a speaker, a microphone, a device or any object that could be "
+        "mistaken for it, and never mention people, text or logos. Keep colours neutral or "
+        "close to the brand colours\n"
         "- give all three shot_ids: hook, proof, cta\n"
         "- each scene must say something different: hook grabs attention, proof gives a "
         "concrete reason to believe, cta closes with the action\n"
@@ -104,7 +111,15 @@ def parse_scenes(raw: str) -> dict[str, dict[str, Any]]:
     return scenes
 
 
-def _merge(shot: ShotPlan, fields: dict[str, Any]) -> ShotPlan:
+def safe_background(prompt: str, product_name: str) -> str:
+    lowered = prompt.lower()
+    banned = [word for word in BANNED_BACKGROUND_WORDS if word in lowered]
+    if banned or (product_name and product_name.lower() in lowered):
+        return ""
+    return prompt
+
+
+def _merge(shot: ShotPlan, fields: dict[str, Any], product_name: str) -> ShotPlan:
     copy_ = ShotCopy(
         headline=_clean(fields.get("headline"), LIMITS["headline"]) or shot.copy_.headline,
         support=_clean(fields.get("support"), LIMITS["support"]) or shot.copy_.support,
@@ -114,7 +129,9 @@ def _merge(shot: ShotPlan, fields: dict[str, Any]) -> ShotPlan:
         _clean(fields.get("narration"), narration_limit(shot.duration_s)) or shot.narration
     )
     background = (
-        _clean(fields.get("background_prompt"), LIMITS["background_prompt"])
+        safe_background(
+            _clean(fields.get("background_prompt"), LIMITS["background_prompt"]), product_name
+        )
         or shot.background_prompt
     )
     return shot.model_copy(
@@ -145,4 +162,6 @@ def propose_shots_vlm(
         return baseline
     if not scenes:
         return baseline
-    return [_merge(shot, scenes.get(shot.shot_id, {})) for shot in baseline]
+    return [
+        _merge(shot, scenes.get(shot.shot_id, {}), dna.product_name) for shot in baseline
+    ]

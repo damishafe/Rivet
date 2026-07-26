@@ -134,6 +134,33 @@ def test_narration_is_clipped_to_scene_duration() -> None:
         assert spoken_seconds <= shot.duration_s, f"{shot.shot_id} narration overruns its scene"
 
 
+def test_background_naming_the_product_is_rejected() -> None:
+    payload = {
+        "scenes": [
+            {
+                "shot_id": "hook",
+                "background_prompt": "studio centered on a matte black speaker with orange button",
+            },
+            {"shot_id": "proof", "background_prompt": "neutral wall behind the Kora Arc"},
+            {"shot_id": "cta", "background_prompt": "warm empty gradient wall, soft light"},
+        ]
+    }
+    shots = propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(payload)))
+    assert "speaker" not in shots[0].background_prompt.lower()
+    assert "kora arc" not in shots[1].background_prompt.lower()
+    assert shots[2].background_prompt == "warm empty gradient wall, soft light"
+
+
+def test_every_shot_carries_a_background_negative_prompt() -> None:
+    for shots in (
+        propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(SCENES))),
+        propose_shots_vlm(brand(), 7, "p.png", "", writer_of("garbage")),
+    ):
+        for shot in shots:
+            assert "product" in shot.negative_prompt
+            assert "text" in shot.negative_prompt
+
+
 def test_prompt_carries_brand_constraints() -> None:
     prompt = build_prompt(brand(), "launch for campus creators")
     assert "waterproof" in prompt
