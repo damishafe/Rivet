@@ -8,6 +8,8 @@ from rivet.compositor.geometry import GEOMETRY, rect_px
 from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.models import AuditCheck
 
+TEXT_INK_DISTANCE = 90
+
 
 def check_logo_presence(scene: SceneAudit) -> AuditCheck:
     still = np.asarray(Image.open(scene.still_path).convert("RGB"))
@@ -63,6 +65,17 @@ def check_product_fidelity(scene: SceneAudit) -> AuditCheck:
     )
 
 
+def _background_under_text(patch: np.ndarray, color: tuple[int, int, int]) -> tuple[int, int, int]:
+    ink = np.abs(patch.astype(np.int16) - np.array(color, dtype=np.int16)).sum(axis=1)
+    background = patch[ink > TEXT_INK_DISTANCE]
+    sample = background if background.size else patch
+    return (
+        round(float(sample[:, 0].mean())),
+        round(float(sample[:, 1].mean())),
+        round(float(sample[:, 2].mean())),
+    )
+
+
 def check_legibility(scene: SceneAudit) -> AuditCheck:
     still = Image.open(scene.still_path).convert("RGB")
     boxes = GEOMETRY[scene.layout]
@@ -75,12 +88,7 @@ def check_legibility(scene: SceneAudit) -> AuditCheck:
             continue
         x, y, w, h = rect_px(boxes[key], scene.canvas)
         patch = np.asarray(still.crop((x, y, x + w, y + h))).reshape(-1, 3)
-        measured = (
-            round(float(patch[:, 0].mean())),
-            round(float(patch[:, 1].mean())),
-            round(float(patch[:, 2].mean())),
-        )
-        worst = min(worst, contrast_ratio(measured, color))
+        worst = min(worst, contrast_ratio(_background_under_text(patch, color), color))
     ok = worst >= LEGIBILITY_FLOOR
     return AuditCheck(
         check_id="A10",
