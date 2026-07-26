@@ -44,7 +44,7 @@ def to_markdown(report: BenchmarkReport) -> str:
         "",
         "## Runs",
         "",
-        "| mode | plan s | campaign s | total s | peak VRAM | checks | repairs | receipt |",
+        "| mode | plan s | campaign s | total s | peak VRAM | checks | repairs | content |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
     for run in report.runs:
@@ -52,9 +52,13 @@ def to_markdown(report: BenchmarkReport) -> str:
             f"| {run.mode} | {run.plan_seconds:.1f} | {run.campaign_seconds:.1f} "
             f"| {run.total_seconds:.1f} | {_vram(run.peak_vram_mb)} "
             f"| {run.checks_passed}/{run.checks_total} | {run.repairs} "
-            f"| `{run.receipt_hash[:16]}` |"
+            f"| `{run.content_digest[:16]}` |"
         )
-    verdict = "identical receipt hash across runs" if report.deterministic else "not verified"
+    verdict = (
+        "identical stills and audit observations across runs"
+        if report.deterministic
+        else "not verified"
+    )
     lines += ["", f"**Determinism:** {verdict}", "", "## Stages", ""]
     for run in report.runs:
         lines += [

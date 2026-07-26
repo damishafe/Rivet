@@ -1,4 +1,7 @@
+import hashlib
+import json
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 
 from rivet.domain.models import StageRun
 from rivet.domain.receipt import CampaignReceipt
@@ -21,6 +24,7 @@ class RunReport:
     total_seconds: float
     stages: list[StageTiming]
     receipt_hash: str
+    content_digest: str
     passed: bool
     checks_passed: int
     checks_total: int
@@ -41,8 +45,8 @@ class BenchmarkReport:
 
     @property
     def deterministic(self) -> bool:
-        hashes = {run.receipt_hash for run in self.runs if run.receipt_hash}
-        return len(hashes) == 1 and len(self.runs) > 1
+        digests = {run.content_digest for run in self.runs if run.content_digest}
+        return len(digests) == 1 and len(self.runs) > 1
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -72,6 +76,28 @@ def stage_timings(runs: list[StageRun]) -> list[StageTiming]:
             )
         )
     return timings
+
+
+def content_digest(receipt: CampaignReceipt) -> str:
+    payload = []
+    for scene in receipt.scenes:
+        still = Path(scene.still_path)
+        payload.append(
+            {
+                "shot_id": scene.shot_id,
+                "seed": scene.seed,
+                "still_sha256": (
+                    hashlib.sha256(still.read_bytes()).hexdigest() if still.is_file() else None
+                ),
+                "checks": [
+                    [check.check_id, str(check.observed), check.passed]
+                    for check in scene.checks
+                    if not check.advisory
+                ],
+            }
+        )
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def check_totals(receipt: CampaignReceipt) -> tuple[int, int]:

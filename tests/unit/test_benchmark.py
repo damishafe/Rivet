@@ -1,5 +1,6 @@
 import json
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from rivet.domain.models import AuditCheck, StageRun
 from rivet.domain.receipt import CampaignReceipt, SceneResult
@@ -8,6 +9,7 @@ from rivet.telemetry.benchmark import (
     RunReport,
     StageTiming,
     check_totals,
+    content_digest,
     stage_timings,
 )
 from rivet.telemetry.benchmark_format import to_csv, to_json, to_markdown
@@ -49,6 +51,7 @@ def make_run_report(mode: str, receipt_hash: str) -> RunReport:
             StageTiming("background.hook", 9.0, 8400, False, "succeeded"),
         ],
         receipt_hash=receipt_hash,
+        content_digest=receipt_hash,
         passed=True,
         checks_passed=27,
         checks_total=27,
@@ -113,10 +116,53 @@ def test_check_totals_ignore_advisory_checks() -> None:
     assert check_totals(receipt) == (1, 1)
 
 
+def _receipt_for(project_id: str, still: Path, observed: str) -> CampaignReceipt:
+    check = AuditCheck(
+        check_id="A04", metric="hue", threshold="<= 40", observed=observed,
+        passed=True, owner_stage="background",
+    )
+    return CampaignReceipt(
+        project_id=project_id, product_sha256="a" * 64, logo_sha256="b" * 64,
+        scenes=[
+            SceneResult(
+                shot_id="hook", still_path=str(still), seed=7, checks=[check], passed=True
+            )
+        ],
+        passed=True,
+    )
+
+
+def test_content_digest_ignores_run_specific_identifiers(tmp_path: Path) -> None:
+    first = tmp_path / "a" / "hook-still.png"
+    second = tmp_path / "b" / "hook-still.png"
+    for path in (first, second):
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b"identical pixels")
+    left = content_digest(_receipt_for("project-one", first, "12.5"))
+    right = content_digest(_receipt_for("project-two", second, "12.5"))
+    assert left == right, "digest must not depend on project id or workdir path"
+
+
+def test_content_digest_changes_when_pixels_change(tmp_path: Path) -> None:
+    still = tmp_path / "hook-still.png"
+    still.write_bytes(b"first render")
+    before = content_digest(_receipt_for("p", still, "12.5"))
+    still.write_bytes(b"second render")
+    assert content_digest(_receipt_for("p", still, "12.5")) != before
+
+
+def test_content_digest_changes_when_observations_change(tmp_path: Path) -> None:
+    still = tmp_path / "hook-still.png"
+    still.write_bytes(b"pixels")
+    assert content_digest(_receipt_for("p", still, "12.5")) != content_digest(
+        _receipt_for("p", still, "31.9")
+    )
+
+
 def test_markdown_reports_environment_and_determinism() -> None:
     body = to_markdown(make_report(make_run_report("warmup", "c" * 64), make_run_report("hot", "c" * 64)))
     assert "Radeon PRO W7900" in body
-    assert "identical receipt hash across runs" in body
+    assert "identical stills and audit observations across runs" in body
     assert "8400 MB" in body
     assert "27/27" in body
 

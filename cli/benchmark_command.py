@@ -15,6 +15,7 @@ from rivet.telemetry.benchmark import (
     BenchmarkReport,
     RunReport,
     check_totals,
+    content_digest,
     stage_timings,
 )
 from rivet.telemetry.benchmark_format import to_csv, to_json, to_markdown
@@ -49,6 +50,7 @@ def _one_run(root: Path, fixture: Path, mode: str, vlm: bool, semantic: bool) ->
         total_seconds=round(plan_seconds + campaign_seconds, 3),
         stages=stage_timings(StageRunStore(engine).list_for_project(project.id)),
         receipt_hash=receipt.receipt_hash,
+        content_digest=content_digest(receipt),
         passed=receipt.passed,
         checks_passed=passed,
         checks_total=total,
