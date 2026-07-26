@@ -35,6 +35,33 @@ def check_logo_presence(scene: SceneAudit) -> AuditCheck:
     )
 
 
+def check_product_fidelity(scene: SceneAudit) -> AuditCheck:
+    still = np.asarray(Image.open(scene.still_path).convert("RGB"))
+    product = Image.open(scene.cutout_path).convert("RGBA")
+    box = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    px, py, placed_w, placed_h = contained_box((product.width, product.height), box)
+    placed = np.asarray(product.resize((placed_w, placed_h)))
+    region = still[py : py + placed_h, px : px + placed_w]
+    opaque = placed[:, :, 3] > 250
+    fits = region.shape[0] == placed.shape[0] and region.shape[1] == placed.shape[1]
+    if fits and opaque.any():
+        diff = np.abs(
+            region[opaque].astype(np.float64) - placed[:, :, :3][opaque].astype(np.float64)
+        )
+        mean_diff = float(diff.mean())
+    else:
+        mean_diff = 255.0
+    ok = mean_diff <= 10.0
+    return AuditCheck(
+        check_id="A09",
+        metric="product fidelity mean pixel diff",
+        threshold="<= 10",
+        observed=round(mean_diff, 1),
+        passed=ok,
+        owner_stage="compose",
+    )
+
+
 def check_palette(scene: SceneAudit) -> AuditCheck:
     still = Image.open(scene.still_path).convert("RGB")
     px, py, pw, ph = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)

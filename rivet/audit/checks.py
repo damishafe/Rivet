@@ -5,6 +5,7 @@ from rivet.audit.semantic import SemanticJudge, check_semantic
 from rivet.audit.visual_checks import (
     check_logo_presence,
     check_palette,
+    check_product_fidelity,
     check_prominence,
     check_safe_area,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "check_lineage",
     "check_logo_presence",
     "check_palette",
+    "check_product_fidelity",
     "check_prominence",
     "check_safe_area",
     "check_text_integrity",
@@ -88,6 +90,7 @@ def audit_scene(
         check_safe_area(scene),
         check_prominence(scene),
         check_claims(scene),
+        check_product_fidelity(scene),
     ]
     if judge is not None:
         message = f"{scene.headline} {scene.support} {scene.cta}".strip()

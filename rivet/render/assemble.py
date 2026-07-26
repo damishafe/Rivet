@@ -19,7 +19,12 @@ def write_srt(cues: list[tuple[str, float, float]], out_path: Path) -> None:
     out_path.write_text("\n".join(blocks))
 
 
-def mix_narration(video_path: str, clips: list[tuple[str, int]], out_path: Path) -> None:
+def mix_narration(
+    video_path: str,
+    clips: list[tuple[str, int]],
+    out_path: Path,
+    duration_s: float | None = None,
+) -> None:
     if not clips:
         subprocess.run(
             ["ffmpeg", "-y", "-i", video_path, "-c", "copy", str(out_path)],
@@ -35,10 +40,12 @@ def mix_narration(video_path: str, clips: list[tuple[str, int]], out_path: Path)
         filters.append(f"[{index}]adelay={offset_ms}|{offset_ms}[a{index}]")
         labels.append(f"[a{index}]")
     filter_complex = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(clips)}:normalize=0[a]"
+    limit = ["-t", f"{duration_s:.3f}"] if duration_s is not None else []
     subprocess.run(
         [
             "ffmpeg", "-y", *inputs, "-filter_complex", filter_complex,
             "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac",
+            *limit,
             str(out_path),
         ],
         check=True,

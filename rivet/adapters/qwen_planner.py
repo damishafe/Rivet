@@ -16,7 +16,8 @@ BANNED_BACKGROUND_WORDS = (
     "speaker", "microphone", "headphone", "earbud", "device", "gadget", "product",
     "bottle", "phone", "laptop", "camera", "watermark", "logo",
 )
-SPOKEN_CHARS_PER_SECOND = 14
+SPOKEN_CHARS_PER_SECOND = 15
+SPOKEN_OVERSHOOT = 1.2
 
 
 def narration_limit(duration_s: float) -> int:
@@ -125,6 +126,9 @@ def clip_narration(text: str, limit: int) -> str:
     complete = kept.strip()
     if complete:
         return complete
+    first = re.split(r"(?<=[.!?])\s+", spoken)[0].strip()
+    if first and len(first) <= limit * SPOKEN_OVERSHOOT:
+        return first
     clipped = spoken[:limit].rsplit(" ", 1)[0].rstrip(",;:- ")
     return f"{clipped}." if clipped else spoken[:limit]
 

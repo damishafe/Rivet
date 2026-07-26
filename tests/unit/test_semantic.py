@@ -59,8 +59,9 @@ def test_advisory_semantic_does_not_fail_report(tmp_path: Path) -> None:
     assert report.passed == deterministic_pass
 
 
-def test_audit_scene_without_judge_has_seven_checks(tmp_path: Path) -> None:
+def test_audit_scene_without_judge_has_only_deterministic_checks(tmp_path: Path) -> None:
     scene = make_scene(tmp_path)
     report = audit_scene(scene, {"headline": "Kora Arc", "support": "s", "cta": "c"})
-    assert len(report.checks) == 7
+    assert len(report.checks) == 8
     assert not any(c.check_id == "A08" for c in report.checks)
+    assert not any(c.advisory for c in report.checks)

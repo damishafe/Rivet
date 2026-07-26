@@ -82,6 +82,19 @@ def test_write_srt_reindexes_around_empty_cues(tmp_path: Path) -> None:
 
 
 @pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
+def test_long_narration_cannot_outrun_the_video(tmp_path: Path) -> None:
+    still = tmp_path / "still.png"
+    Image.new("RGB", (1080, 1920), (40, 40, 44)).save(still)
+    video = tmp_path / "video.mp4"
+    animate_still(str(still), video, 3.0, "zoom_in")
+    wav = tmp_path / "long.wav"
+    sf.write(wav, np.zeros(24000 * 6, dtype="float32"), 24000)
+    out = tmp_path / "mixed.mp4"
+    mix_narration(str(video), [(str(wav), 0)], out, duration_s=3.0)
+    assert _duration(out) <= 3.3
+
+
+@pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
 def test_mix_narration_keeps_video_duration(tmp_path: Path) -> None:
     still = tmp_path / "still.png"
     Image.new("RGB", (1080, 1920), (40, 40, 44)).save(still)

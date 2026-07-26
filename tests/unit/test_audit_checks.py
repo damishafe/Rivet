@@ -62,7 +62,9 @@ def build_scene(
 def test_clean_scene_passes_all_checks(tmp_path: Path) -> None:
     scene = build_scene(tmp_path, required=["Make every space your studio"])
     report = audit_scene(scene, APPROVED)
-    assert [c.check_id for c in report.checks] == ["A01", "A02", "A03", "A04", "A05", "A06", "A07"]
+    assert [c.check_id for c in report.checks] == [
+        "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A09",
+    ]
     assert report.passed, [(c.check_id, c.observed) for c in report.checks if not c.passed]
 
 
@@ -195,6 +197,22 @@ def test_every_layout_satisfies_prominence_policy(tmp_path: Path) -> None:
         scene.layout = layout  # type: ignore[assignment]
         check = check_prominence(scene)
         assert check.passed, f"{layout} renders the product at {check.observed} of frame"
+
+
+def test_repainted_product_fails_a09(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    still = Image.open(scene.still_path).convert("RGB")
+    x, y, w, h = rect_px(GEOMETRY["center_hero"]["product"], scene.canvas)
+    ImageDraw.Draw(still).rectangle([x, y, x + w, y + h], fill=(255, 0, 0))
+    still.save(scene.still_path)
+    a09 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A09")
+    assert not a09.passed
+
+
+def test_faithful_product_passes_a09(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    a09 = next(c for c in audit_scene(scene, APPROVED).checks if c.check_id == "A09")
+    assert a09.passed, a09.observed
 
 
 def test_all_neutral_brand_flags_saturated_background(tmp_path: Path) -> None:

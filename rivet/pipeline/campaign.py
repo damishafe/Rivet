@@ -60,7 +60,7 @@ async def _render_scenes(
     silent_path = workdir / "silent.mp4"
     assemble_scenes(clips, silent_path)
     video_path = str(workdir / "campaign.mp4")
-    mix_narration(str(silent_path), narration_clips, Path(video_path))
+    mix_narration(str(silent_path), narration_clips, Path(video_path), duration_s=offset)
     captions_path = str(workdir / "campaign.srt")
     write_srt(cues, Path(captions_path))
     return video_path, captions_path

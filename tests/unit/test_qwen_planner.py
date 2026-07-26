@@ -5,6 +5,7 @@ import pytest
 from rivet.adapters.qwen_planner import (
     LIMITS,
     SPOKEN_CHARS_PER_SECOND,
+    SPOKEN_OVERSHOOT,
     build_prompt,
     parse_scenes,
     propose_shots_vlm,
@@ -143,13 +144,21 @@ def test_narration_clips_on_sentence_boundaries() -> None:
     assert spoken.endswith((".", "!", "?")), "spoken copy must not stop mid-phrase"
 
 
+def test_slightly_long_single_sentence_is_kept_whole() -> None:
+    sentence = "Your ideas deserve a clear sound, no matter where you are."
+    payload = {"scenes": [{"shot_id": "hook", "narration": sentence}]}
+    shots = propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(payload)))
+    assert shots[0].narration == sentence, "a 2-char overshoot must not truncate speech"
+
+
 def test_narration_is_clipped_to_scene_duration() -> None:
     long_line = "This narration is far too long to be spoken aloud within a short scene."
     payload = {"scenes": [{"shot_id": s, "narration": long_line} for s in ("hook", "proof", "cta")]}
     shots = propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(payload)))
     for shot in shots:
         spoken_seconds = len(shot.narration) / SPOKEN_CHARS_PER_SECOND
-        assert spoken_seconds <= shot.duration_s, f"{shot.shot_id} narration overruns its scene"
+        budget = shot.duration_s * SPOKEN_OVERSHOOT
+        assert spoken_seconds <= budget, f"{shot.shot_id} narration overruns its scene"
 
 
 def test_background_naming_the_product_is_rejected() -> None:
