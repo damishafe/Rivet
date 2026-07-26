@@ -133,6 +133,23 @@ def test_csv_has_a_row_per_stage() -> None:
     assert rows[1].startswith("cold,segment,3.500,2100,false")
 
 
+def test_report_states_how_vram_was_measured() -> None:
+    from rivet.telemetry.vram import accelerator_report, peak_mb, vram_metric
+
+    report = accelerator_report()
+    assert report["vram_metric"] == vram_metric()
+    if report["device"] != "cuda":
+        assert peak_mb() is None, "only cuda/rocm expose a true per-stage peak"
+        assert "unavailable" in report["vram_metric"]
+
+
+def test_markdown_shows_na_when_vram_is_unmeasurable() -> None:
+    run = make_run_report("cold", "f" * 64)
+    run.stages = [StageTiming("segment", 1.0, None, False, "succeeded")]
+    body = to_markdown(make_report(run))
+    assert "n/a" in body
+
+
 def test_json_round_trips_with_derived_fields() -> None:
     payload = json.loads(to_json(make_report(make_run_report("cold", "e" * 64))))
     assert payload["environment"]["device"] == "cuda"
