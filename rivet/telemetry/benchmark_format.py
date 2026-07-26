@@ -59,7 +59,22 @@ def to_markdown(report: BenchmarkReport) -> str:
         if report.deterministic
         else "not verified"
     )
-    lines += ["", f"**Determinism:** {verdict}", "", "## Stages", ""]
+    lines += ["", f"**Determinism:** {verdict}"]
+    summary = report.summary
+    if summary:
+        measured_line = (
+            f"**Measured total ({summary['runs']} run(s)):** median "
+            f"{summary['median_total_s']}s, min {summary['min_total_s']}s, "
+            f"max {summary['max_total_s']}s ({summary['spread_pct']}% spread)"
+        )
+        lines += ["", measured_line]
+        if summary["runs"] < 3:
+            lines.append("")
+            lines.append(
+                "> Fewer than three measured runs: treat the total as indicative, "
+                "not as a variance-bounded figure."
+            )
+    lines += ["", "## Stages", ""]
     for run in report.runs:
         lines += [
             f"### {run.mode}",

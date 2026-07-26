@@ -159,6 +159,30 @@ def test_content_digest_changes_when_observations_change(tmp_path: Path) -> None
     )
 
 
+def test_summary_excludes_the_warmup_pass() -> None:
+    warmup = make_run_report("warmup", "a" * 64)
+    warmup.total_seconds = 999.0
+    fast = make_run_report("hot-1", "a" * 64)
+    fast.total_seconds = 100.0
+    slow = make_run_report("hot-2", "a" * 64)
+    slow.total_seconds = 120.0
+    summary = make_report(warmup, fast, slow).summary
+    assert summary["runs"] == 2
+    assert summary["min_total_s"] == 100.0
+    assert summary["max_total_s"] == 120.0
+    assert summary["spread_pct"] == 20.0
+
+
+def test_markdown_warns_when_variance_is_unbounded() -> None:
+    body = to_markdown(make_report(make_run_report("cold", "a" * 64)))
+    assert "treat the total as indicative" in body
+
+
+def test_markdown_omits_the_warning_with_enough_runs() -> None:
+    runs = [make_run_report(f"cold-{n}", "a" * 64) for n in range(3)]
+    assert "treat the total as indicative" not in to_markdown(make_report(*runs))
+
+
 def test_markdown_reports_environment_and_determinism() -> None:
     body = to_markdown(make_report(make_run_report("warmup", "c" * 64), make_run_report("hot", "c" * 64)))
     assert "Radeon PRO W7900" in body

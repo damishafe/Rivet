@@ -2,6 +2,7 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from statistics import median
 
 from rivet.domain.models import StageRun
 from rivet.domain.receipt import CampaignReceipt
@@ -44,9 +45,26 @@ class BenchmarkReport:
     runs: list[RunReport] = field(default_factory=list)
 
     @property
+    def measured(self) -> list[RunReport]:
+        return [run for run in self.runs if not run.mode.startswith("warmup")]
+
+    @property
     def deterministic(self) -> bool:
         digests = {run.content_digest for run in self.runs if run.content_digest}
         return len(digests) == 1 and len(self.runs) > 1
+
+    @property
+    def summary(self) -> dict[str, float | int]:
+        totals = sorted(run.total_seconds for run in self.measured)
+        if not totals:
+            return {}
+        return {
+            "runs": len(totals),
+            "median_total_s": round(median(totals), 2),
+            "min_total_s": round(totals[0], 2),
+            "max_total_s": round(totals[-1], 2),
+            "spread_pct": round((totals[-1] - totals[0]) / totals[0] * 100, 1),
+        }
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -54,6 +72,7 @@ class BenchmarkReport:
             "created_at": self.created_at,
             "environment": self.environment,
             "deterministic": self.deterministic,
+            "summary": self.summary,
             "runs": [
                 {**asdict(run), "peak_vram_mb": run.peak_vram_mb} for run in self.runs
             ],

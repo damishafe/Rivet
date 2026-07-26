@@ -63,6 +63,7 @@ def benchmark(
     mode: str = "cold",
     out: Path = Path("docs/benchmarks"),
     workdir: Path = Path(".benchmark"),
+    repeat: int = 1,
     vlm: bool = True,
     semantic: bool = False,
 ) -> None:
@@ -80,7 +81,11 @@ def benchmark(
         created_at=datetime.now(UTC).isoformat(timespec="seconds"),
         environment=accelerator_report(),
     )
-    passes = ["cold"] if mode == "cold" else ["warmup", "hot"]
+    if repeat < 1:
+        typer.echo("repeat must be at least 1", err=True)
+        raise typer.Exit(code=2)
+    measured = [mode] if repeat == 1 else [f"{mode}-{n + 1}" for n in range(repeat)]
+    passes = measured if mode == "cold" else ["warmup", *measured]
     for index, label in enumerate(passes):
         root = workdir / f"{mode}-{index}"
         typer.echo(f"running {label} pass in {root}")
