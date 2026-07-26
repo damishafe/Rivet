@@ -2,7 +2,13 @@ import json
 
 import pytest
 
-from rivet.adapters.qwen_planner import LIMITS, build_prompt, parse_scenes, propose_shots_vlm
+from rivet.adapters.qwen_planner import (
+    LIMITS,
+    SPOKEN_CHARS_PER_SECOND,
+    build_prompt,
+    parse_scenes,
+    propose_shots_vlm,
+)
 from rivet.domain.models import BrandDNA, PaletteColor
 
 SCENES = {
@@ -117,6 +123,15 @@ def test_plan_shape_matches_heuristic_contract() -> None:
         assert produced.duration_s == expected.duration_s
         assert produced.seed == expected.seed
         assert produced.motion == expected.motion
+
+
+def test_narration_is_clipped_to_scene_duration() -> None:
+    long_line = "This narration is far too long to be spoken aloud within a short scene."
+    payload = {"scenes": [{"shot_id": s, "narration": long_line} for s in ("hook", "proof", "cta")]}
+    shots = propose_shots_vlm(brand(), 7, "p.png", "", writer_of(json.dumps(payload)))
+    for shot in shots:
+        spoken_seconds = len(shot.narration) / SPOKEN_CHARS_PER_SECOND
+        assert spoken_seconds <= shot.duration_s, f"{shot.shot_id} narration overruns its scene"
 
 
 def test_prompt_carries_brand_constraints() -> None:

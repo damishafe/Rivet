@@ -10,8 +10,13 @@ from rivet.pipeline.device import resolve_device
 
 SceneWriter = Callable[[str, str], str]
 
-LIMITS = {"headline": 28, "support": 48, "cta": 22, "narration": 120, "background_prompt": 220}
+LIMITS = {"headline": 28, "support": 48, "cta": 22, "background_prompt": 220}
 SHOT_IDS = ("hook", "proof", "cta")
+SPOKEN_CHARS_PER_SECOND = 14
+
+
+def narration_limit(duration_s: float) -> int:
+    return max(40, int(duration_s * SPOKEN_CHARS_PER_SECOND))
 
 
 def qwen_writer(image_path: str, prompt: str) -> str:
@@ -60,7 +65,8 @@ def build_prompt(dna: BrandDNA, brief: str) -> str:
         f"- headline at most {LIMITS['headline']} characters\n"
         f"- support at most {LIMITS['support']} characters\n"
         f"- cta at most {LIMITS['cta']} characters\n"
-        f"- narration at most {LIMITS['narration']} characters, one spoken sentence\n"
+        "- narration is spoken aloud over the scene and must fit its length: at most "
+        f"{narration_limit(4.0)} characters for hook and cta, {narration_limit(5.0)} for proof\n"
         "- background_prompt describes an empty photographic setting with no text, "
         "no logos and no people; keep colours neutral or close to the brand colours\n"
         "- give all three shot_ids: hook, proof, cta\n"
@@ -104,7 +110,9 @@ def _merge(shot: ShotPlan, fields: dict[str, Any]) -> ShotPlan:
         support=_clean(fields.get("support"), LIMITS["support"]) or shot.copy_.support,
         cta=_clean(fields.get("cta"), LIMITS["cta"]) or shot.copy_.cta,
     )
-    narration = _clean(fields.get("narration"), LIMITS["narration"]) or shot.narration
+    narration = (
+        _clean(fields.get("narration"), narration_limit(shot.duration_s)) or shot.narration
+    )
     background = (
         _clean(fields.get("background_prompt"), LIMITS["background_prompt"])
         or shot.background_prompt
