@@ -2,6 +2,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from PIL import Image
+
+from rivet.adapters.cutout import deterministic_alpha, write_cutout
 from rivet.pipeline.device import resolve_device
 from rivet.pipeline.fingerprint import cache_key
 from rivet.pipeline.stage import (
@@ -42,12 +45,22 @@ def _sam_segment(image_path: str, config: dict[str, Any], device: str, out_path:
     return float(scores[best])
 
 
+def _default_segment(image_path: str, config: dict[str, Any], device: str, out_path: Path) -> float:
+    with Image.open(image_path) as source:
+        image = source.copy()
+    alpha = deterministic_alpha(image)
+    if alpha is not None:
+        write_cutout(image, alpha, str(out_path))
+        return 1.0
+    return _sam_segment(image_path, config, device, out_path)
+
+
 class SegmentStage:
     name = "segmentation"
-    version = "1"
+    version = "2"
 
     def __init__(self, segmenter: Segmenter | None = None) -> None:
-        self._segmenter = segmenter or _sam_segment
+        self._segmenter = segmenter or _default_segment
 
     def fingerprint(self, request: StageRequest, manifest: ModelManifest | None) -> str:
         return cache_key(self.name, self.version, request, manifest)
