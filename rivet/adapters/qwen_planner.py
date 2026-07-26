@@ -5,6 +5,7 @@ from collections.abc import Callable
 from typing import Any
 
 from rivet.adapters.heuristic_planner import propose_shots
+from rivet.adapters.model_cache import resolve_model
 from rivet.domain.models import BrandDNA, ShotCopy, ShotPlan
 from rivet.pipeline.device import resolve_device
 
@@ -29,7 +30,7 @@ def qwen_writer(image_path: str, prompt: str) -> str:
     from PIL import Image
     from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
-    name = "Qwen/Qwen3-VL-4B-Instruct"
+    name = resolve_model("Qwen/Qwen3-VL-4B-Instruct")
     device = resolve_device()
     proc = AutoProcessor.from_pretrained(name)
     model = Qwen3VLForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to(device)

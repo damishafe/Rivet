@@ -5,6 +5,7 @@ from typing import Any
 from PIL import Image
 
 from rivet.adapters.cutout import deterministic_alpha, write_cutout
+from rivet.adapters.model_cache import resolve_model
 from rivet.pipeline.device import resolve_device
 from rivet.pipeline.fingerprint import cache_key
 from rivet.pipeline.stage import (
@@ -24,7 +25,7 @@ def _sam_segment(image_path: str, config: dict[str, Any], device: str, out_path:
     from PIL import Image
     from transformers import Sam2Model, Sam2Processor
 
-    name = "facebook/sam2.1-hiera-small"
+    name = resolve_model("facebook/sam2.1-hiera-small")
     proc = Sam2Processor.from_pretrained(name)
     model = Sam2Model.from_pretrained(name).to(device)
     image = Image.open(image_path).convert("RGB")

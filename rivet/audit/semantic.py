@@ -1,6 +1,7 @@
 import re
 from collections.abc import Callable
 
+from rivet.adapters.model_cache import resolve_model
 from rivet.domain.models import AuditCheck
 from rivet.pipeline.device import resolve_device
 
@@ -13,7 +14,7 @@ def qwen_judge(image_path: str, question: str) -> tuple[int, str]:
     from PIL import Image
     from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
-    name = "Qwen/Qwen3-VL-4B-Instruct"
+    name = resolve_model("Qwen/Qwen3-VL-4B-Instruct")
     device = resolve_device()
     proc = AutoProcessor.from_pretrained(name)
     model = Qwen3VLForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to(device)

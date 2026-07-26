@@ -2,6 +2,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from rivet.adapters.model_cache import resolve_model
 from rivet.pipeline.device import resolve_device
 from rivet.pipeline.fingerprint import cache_key
 from rivet.pipeline.stage import (
@@ -24,9 +25,11 @@ def _sdxl_generate(config: dict[str, Any], seed: int, device: str, out_path: Pat
     import torch
     from diffusers import AutoencoderKL, StableDiffusionXLPipeline
 
-    vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
+    vae = AutoencoderKL.from_pretrained(
+        resolve_model("madebyollin/sdxl-vae-fp16-fix"), torch_dtype=torch.float16
+    )
     pipe = StableDiffusionXLPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-xl-base-1.0",
+        resolve_model("stabilityai/stable-diffusion-xl-base-1.0"),
         vae=vae,
         torch_dtype=torch.float16,
         variant="fp16",
