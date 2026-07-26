@@ -72,6 +72,19 @@ def test_assemble_rejects_empty(tmp_path: Path) -> None:
         assemble_scenes([], tmp_path / "x.mp4")
 
 
+@pytest.mark.skipif(ffmpeg_missing, reason="requires ffmpeg")
+def test_assemble_works_from_relative_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    still = Path("still.png")
+    Image.new("RGB", (1080, 1920), (30, 30, 34)).save(still)
+    clip = Path("hook.mp4")
+    animate_still(str(still), clip, 1.0, "zoom_in")
+    out = Path("work/silent.mp4")
+    out.parent.mkdir()
+    assemble_scenes([str(clip)], out)
+    assert out.is_file(), "concat must not depend on the caller's working directory"
+
+
 def test_write_srt_reindexes_around_empty_cues(tmp_path: Path) -> None:
     out = tmp_path / "captions.srt"
     write_srt([("hello", 0.0, 2.0), ("", 2.0, 4.0), ("world", 4.0, 6.0)], out)

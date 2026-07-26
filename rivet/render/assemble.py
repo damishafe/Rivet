@@ -57,7 +57,9 @@ def assemble_scenes(clip_paths: list[str], out_path: Path, audio_path: str | Non
     if not clip_paths:
         raise ValueError("no clips to assemble")
     concat_file = out_path.with_suffix(".txt")
-    concat_file.write_text("".join(f"file '{path}'\n" for path in clip_paths))
+    concat_file.write_text(
+        "".join(f"file '{Path(path).resolve()}'\n" for path in clip_paths)
+    )
     command = [
         "ffmpeg",
         "-y",
