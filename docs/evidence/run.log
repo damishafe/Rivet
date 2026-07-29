@@ -19,3 +19,7 @@ Rivet evidence run — 2026-07-29T12:07:01Z
 
 === offline gate G2 ===
   ok in 67s → docs/evidence/offline-demo.txt
+  PUSH FAILED — results exist only on this instance
+
+=== benchmark cold ===
+  ok in 72s → docs/evidence/benchmark-cold.txt
