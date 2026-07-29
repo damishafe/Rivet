@@ -93,7 +93,11 @@ def benchmark(
         typer.echo("repeat must be at least 1", err=True)
         raise typer.Exit(code=2)
     if mode == "residency":
-        passes = ["resident", "reload-per-stage"]
+        # A single resident-then-reload pair cannot separate the optimisation from
+        # run order: the second arm inherits a warm page cache and warm allocator,
+        # which is worth more than the effect being measured. Discard a warmup, then
+        # alternate the arms so each is measured once early and once late.
+        passes = ["warmup", "resident", "reload-per-stage", "resident", "reload-per-stage"]
     else:
         measured = [mode] if repeat == 1 else [f"{mode}-{n + 1}" for n in range(repeat)]
         passes = measured if mode == "cold" else ["warmup", *measured]
@@ -101,6 +105,7 @@ def benchmark(
         root = workdir / f"{mode}-{index}"
         if mode == "residency":
             os.environ[residency.ENV_FLAG] = "0" if label == "reload-per-stage" else "1"
+            residency.release_all()
         typer.echo(f"running {label} pass in {root}")
         run = _one_run(root, fixture, label, vlm, semantic)
         report.runs.append(run)

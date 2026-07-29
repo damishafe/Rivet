@@ -32,6 +32,17 @@ def _vram(value: int | None) -> str:
     return "n/a" if value is None else f"{value} MB"
 
 
+
+def _arm_medians(report: BenchmarkReport) -> dict[str, tuple[int, float]]:
+    from statistics import median
+
+    arms: dict[str, list[float]] = {}
+    for run in report.runs:
+        if run.mode in ("resident", "reload-per-stage"):
+            arms.setdefault(run.mode, []).append(run.total_seconds)
+    return {arm: (len(v), median(v)) for arm, v in arms.items()}
+
+
 def to_markdown(report: BenchmarkReport) -> str:
     lines = [
         "# Rivet benchmark",
@@ -74,6 +85,21 @@ def to_markdown(report: BenchmarkReport) -> str:
                 "> Fewer than three measured runs: treat the total as indicative, "
                 "not as a variance-bounded figure."
             )
+    arms = _arm_medians(report)
+    if arms:
+        lines += ["", "## Model residency", "", "| arm | runs | median total s |", "| --- | ---: | ---: |"]
+        for arm, (count, median) in arms.items():
+            lines.append(f"| {arm} | {count} | {median:.1f} |")
+        resident, reload = arms.get("resident"), arms.get("reload-per-stage")
+        if resident and reload:
+            delta = reload[1] - resident[1]
+            direction = "faster" if delta > 0 else "slower"
+            verdict_line = (
+                f"Keeping one model resident is **{abs(delta):.1f}s {direction}** than "
+                "reloading per stage. Arms alternate after a discarded warmup, so "
+                "neither is advantaged by page-cache warmth."
+            )
+            lines += ["", verdict_line]
     lines += ["", "## Stages", ""]
     for run in report.runs:
         lines += [
