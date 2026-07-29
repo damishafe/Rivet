@@ -23,3 +23,7 @@ Rivet evidence run — 2026-07-29T12:07:01Z
 
 === benchmark cold ===
   ok in 72s → docs/evidence/benchmark-cold.txt
+  PUSH FAILED — results exist only on this instance
+
+=== benchmark hot (determinism across runs) ===
+  ok in 105s → docs/evidence/benchmark-hot.txt
