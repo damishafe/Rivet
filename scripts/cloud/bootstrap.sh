@@ -61,12 +61,25 @@ source .venv/bin/activate
 say "model cache"
 # Persistent storage keeps the weights between sessions; on metered hardware the
 # second session should never pay for the same download twice.
-MODEL_DIR="${MODEL_DIR:-/workspace/models}"
+# Prefer a mounted PVC: weights survive the instance and the next session skips
+# the download. Fall back through the workspace to the home directory.
+if [ -z "${MODEL_DIR:-}" ]; then
+  for candidate in /persistent /workspace "$HOME"; do
+    if [ -d "$candidate" ] && [ -w "$candidate" ]; then
+      MODEL_DIR="$candidate/rivet-models"
+      break
+    fi
+  done
+  MODEL_DIR="${MODEL_DIR:-$HOME/rivet-models}"
+fi
 if ! mkdir -p "$MODEL_DIR/hub" 2>/dev/null; then
   MODEL_DIR="$HOME/rivet-models"
   mkdir -p "$MODEL_DIR/hub"
-  echo "  /workspace not writable, falling back to $MODEL_DIR" >&2
 fi
+case "$MODEL_DIR" in
+  /persistent/*) echo "  persistent volume — a later session will reuse these weights" ;;
+  *) echo "  NOT on a persistent volume — a new instance will download again" >&2 ;;
+esac
 export HF_HOME="$MODEL_DIR" HF_HUB_CACHE="$MODEL_DIR/hub"
 if ! grep -q "RIVET_MODEL_CACHE" .venv/bin/activate 2>/dev/null; then
   {
