@@ -1,3 +1,3 @@
 Running 2 items in this shard
 [32m.[0m[32m.[0m[32m                                                                       [100%][0m
-[32m[32m[1m2 passed[0m[32m in 2.13s[0m[0m
+[32m[32m[1m2 passed[0m[32m in 2.16s[0m[0m
