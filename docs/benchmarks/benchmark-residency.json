@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-07-29T12:12:04+00:00",
+  "created_at": "2026-07-29T12:24:27+00:00",
   "deterministic": true,
   "environment": {
     "accelerator": "AMD Radeon Graphics",
@@ -13,56 +13,56 @@
   "fixture": "fixtures/kora-arc",
   "runs": [
     {
-      "campaign_seconds": 41.167,
+      "campaign_seconds": 43.467,
       "checks_passed": 27,
       "checks_total": 27,
       "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
-      "mode": "resident",
+      "mode": "warmup",
       "passed": true,
       "peak_vram_mb": 9168,
-      "plan_seconds": 16.817,
-      "receipt_hash": "0c6c54622f87371d31451f5b175add6f6b15f1a810752393708dcc941b67fa49",
+      "plan_seconds": 17.386,
+      "receipt_hash": "d63c41f7028e90e6afcb0bb699fc6ef4813a17850f2977d3c3ede9d1b342dfcc",
       "repairs": 0,
       "stages": [
         {
           "cache_hit": false,
           "peak_vram_mb": 8595,
-          "seconds": 0.077,
+          "seconds": 0.079,
           "stage": "segment",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 9168,
-          "seconds": 11.015,
+          "seconds": 12.214,
           "stage": "background.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 6800,
-          "seconds": 0.412,
+          "seconds": 0.421,
           "stage": "composite.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 9164,
-          "seconds": 3.292,
+          "seconds": 3.275,
           "stage": "background.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 6800,
-          "seconds": 0.591,
+          "seconds": 0.6,
           "stage": "composite.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 9164,
-          "seconds": 3.356,
+          "seconds": 3.361,
           "stage": "background.cta",
           "status": "succeeded"
         },
@@ -76,63 +76,63 @@
         {
           "cache_hit": false,
           "peak_vram_mb": 6800,
-          "seconds": 0.863,
+          "seconds": 0.891,
           "stage": "motion.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 6800,
-          "seconds": 7.788,
+          "seconds": 8.779,
           "stage": "narration.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 616,
-          "seconds": 0.972,
+          "seconds": 0.999,
           "stage": "motion.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 756,
-          "seconds": 3.436,
+          "seconds": 3.362,
           "stage": "narration.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 618,
-          "seconds": 0.876,
+          "seconds": 0.909,
           "stage": "motion.cta",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 737,
-          "seconds": 3.031,
+          "seconds": 3.071,
           "stage": "narration.cta",
           "status": "succeeded"
         }
       ],
-      "total_seconds": 57.983
+      "total_seconds": 60.853
     },
     {
-      "campaign_seconds": 40.265,
+      "campaign_seconds": 28.35,
       "checks_passed": 27,
       "checks_total": 27,
       "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
-      "mode": "reload-per-stage",
+      "mode": "resident",
       "passed": true,
       "peak_vram_mb": 9165,
-      "plan_seconds": 13.322,
-      "receipt_hash": "cae7fc5cde5732ce735e7f887847671289db44660b7089dfde7b4fb7f6fdb0c8",
+      "plan_seconds": 13.405,
+      "receipt_hash": "723e45d8d36e913c929ce0f88763380c71550b2b3e75fdcfbaa83e193df23e64",
       "repairs": 0,
       "stages": [
         {
           "cache_hit": false,
-          "peak_vram_mb": 76,
+          "peak_vram_mb": 8596,
           "seconds": 0.078,
           "stage": "segment",
           "status": "succeeded"
@@ -140,42 +140,148 @@
         {
           "cache_hit": false,
           "peak_vram_mb": 9165,
-          "seconds": 7.228,
+          "seconds": 8.1,
           "stage": "background.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
-          "peak_vram_mb": 76,
-          "seconds": 0.421,
+          "peak_vram_mb": 6801,
+          "seconds": 0.417,
           "stage": "composite.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 9165,
-          "seconds": 7.22,
+          "seconds": 3.283,
           "stage": "background.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
-          "peak_vram_mb": 76,
-          "seconds": 0.592,
+          "peak_vram_mb": 6801,
+          "seconds": 0.606,
           "stage": "composite.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 9165,
-          "seconds": 7.401,
+          "seconds": 3.368,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.606,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.898,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 3.458,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 617,
+          "seconds": 0.941,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 754,
+          "seconds": 0.41,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.909,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 734,
+          "seconds": 0.365,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 41.755
+    },
+    {
+      "campaign_seconds": 41.531,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "reload-per-stage",
+      "passed": true,
+      "peak_vram_mb": 9165,
+      "plan_seconds": 14.175,
+      "receipt_hash": "40356f9edde308b9803d2a2946430c5156176c6303fc7c3da0d72cf9170059a1",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.081,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.903,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.412,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.74,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.593,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.787,
           "stage": "background.cta",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 76,
-          "seconds": 0.595,
+          "seconds": 0.592,
           "stage": "composite.cta",
           "status": "succeeded"
         },
@@ -189,47 +295,259 @@
         {
           "cache_hit": false,
           "peak_vram_mb": 731,
-          "seconds": 3.12,
+          "seconds": 2.877,
           "stage": "narration.hook",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 76,
-          "seconds": 0.97,
+          "seconds": 0.991,
           "stage": "motion.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 757,
-          "seconds": 3.225,
+          "seconds": 3.397,
           "stage": "narration.proof",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 76,
-          "seconds": 0.863,
+          "seconds": 0.901,
           "stage": "motion.cta",
           "status": "succeeded"
         },
         {
           "cache_hit": false,
           "peak_vram_mb": 733,
-          "seconds": 3.186,
+          "seconds": 2.888,
           "stage": "narration.cta",
           "status": "succeeded"
         }
       ],
-      "total_seconds": 53.587
+      "total_seconds": 55.706
+    },
+    {
+      "campaign_seconds": 28.849,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "resident",
+      "passed": true,
+      "peak_vram_mb": 9165,
+      "plan_seconds": 13.778,
+      "receipt_hash": "5ad17962235572bf661bc3e40e5b98c363873b5511c62c096784bf62926bd8cf",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 8591,
+          "seconds": 0.076,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 8.201,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.413,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 3.286,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.592,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 3.375,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.587,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.856,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 3.923,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 617,
+          "seconds": 0.959,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 754,
+          "seconds": 0.412,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.908,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 734,
+          "seconds": 0.365,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 42.627
+    },
+    {
+      "campaign_seconds": 42.457,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "reload-per-stage",
+      "passed": true,
+      "peak_vram_mb": 9165,
+      "plan_seconds": 13.534,
+      "receipt_hash": "ad912aaebf061733df534fc0ad334ca2ab4642629da077cf272de3dfe8fc1a6d",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.077,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.815,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.42,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.747,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.597,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.829,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.594,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.856,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 731,
+          "seconds": 3.154,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.999,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 757,
+          "seconds": 3.723,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.877,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 733,
+          "seconds": 3.263,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 55.991
     }
   ],
   "summary": {
-    "max_total_s": 57.98,
-    "median_total_s": 55.78,
-    "min_total_s": 53.59,
-    "runs": 2,
-    "spread_pct": 8.2
+    "max_total_s": 55.99,
+    "median_total_s": 49.17,
+    "min_total_s": 41.76,
+    "runs": 4,
+    "spread_pct": 34.1
   }
 }
