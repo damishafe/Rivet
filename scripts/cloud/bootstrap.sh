@@ -58,6 +58,25 @@ uv venv --system-site-packages --allow-existing .venv
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
+say "model cache"
+# Persistent storage keeps the weights between sessions; on metered hardware the
+# second session should never pay for the same download twice.
+MODEL_DIR="${MODEL_DIR:-/workspace/models}"
+if ! mkdir -p "$MODEL_DIR/hub" 2>/dev/null; then
+  MODEL_DIR="$HOME/rivet-models"
+  mkdir -p "$MODEL_DIR/hub"
+  echo "  /workspace not writable, falling back to $MODEL_DIR" >&2
+fi
+export HF_HOME="$MODEL_DIR" HF_HUB_CACHE="$MODEL_DIR/hub"
+if ! grep -q "RIVET_MODEL_CACHE" .venv/bin/activate 2>/dev/null; then
+  {
+    echo "# RIVET_MODEL_CACHE"
+    echo "export HF_HOME=\"$MODEL_DIR\""
+    echo "export HF_HUB_CACHE=\"$MODEL_DIR/hub\""
+  } >>.venv/bin/activate
+fi
+echo "  $HF_HUB_CACHE"
+
 say "rivet and generative libraries"
 uv pip install -q -e .
 uv pip install -q diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub
