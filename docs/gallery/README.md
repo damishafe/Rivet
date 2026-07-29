@@ -1,10 +1,10 @@
 # Rivet results gallery
 
-Produced by `scripts/showcase.py` on the Radeon PRO W7900.
+Produced by `scripts/showcase.py` on **AMD Radeon Graphics** (torch 2.9.1+gitff65f5b, hip 7.2.53211-e1a6bc5663).
 
 ## Verified campaign
 
-- receipt `5fbfbec9c4336928`
+- receipt `c6914739cccdd9cb`
 - **passed: True**
 - export pack: written
 
@@ -15,7 +15,7 @@ Produced by `scripts/showcase.py` on the Radeon PRO W7900.
 
 ## Tampered product asset
 
-- receipt `18d48000eba66a84`
+- receipt `e5ca454919385062`
 - **passed: False**
 - export pack: withheld
 - failing checks:
