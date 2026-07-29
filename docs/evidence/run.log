@@ -27,3 +27,7 @@ Rivet evidence run — 2026-07-29T12:07:01Z
 
 === benchmark hot (determinism across runs) ===
   ok in 105s → docs/evidence/benchmark-hot.txt
+  PUSH FAILED — results exist only on this instance
+
+=== model residency A/B ===
+  ok in 117s → docs/evidence/benchmark-residency.txt
