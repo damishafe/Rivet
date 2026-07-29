@@ -1,0 +1,9 @@
+{
+  "device": "cuda",
+  "vram_metric": "torch.cuda.max_memory_allocated, peak reset before each stage",
+  "torch": "2.9.1+gitff65f5b",
+  "accelerator": "AMD Radeon Graphics",
+  "hip": "7.2.53211-e1a6bc5663",
+  "cuda": "n/a",
+  "total_vram_mb": "49136"
+}
