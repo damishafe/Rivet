@@ -15,3 +15,27 @@ Rivet evidence run — 2026-07-29T11:34:36Z
 
 === submission gates ===
   ok in 1s → docs/evidence/submission-check.txt
+  PUSH FAILED — results exist only on this instance
+
+=== offline gate G2 ===
+  FAILED in 409s → docs/evidence/offline-demo.txt
+    [31m│[0m [31m❱ [0m 687 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
+    [31m│[0m   [2m 688 [0m[2m│   [0m                                                                  [31m│[0m
+    [31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
+    [31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:113 in run_campaign             [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m   [2m110 [0m[2m│   [0m[94mexcept[0m [96mException[0m [94mas[0m error:                                         [31m│[0m
+    [31m│[0m   [2m111 [0m[2m│   │   [0mjobs.set_status(job.id, [33m"[0m[33mfailed[0m[33m"[0m, error=[96mstr[0m(error))            [31m│[0m
+    [31m│[0m   [2m112 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
+    [31m│[0m [31m❱ [0m113 [2m│   │   [0m[94mraise[0m CampaignFailed([33mf[0m[33m"[0m[33mcampaign failed after generation: [0m[33m{[0merro [31m│[0m
+    [31m│[0m   [2m114 [0m[2m│   [0m[94mfinally[0m:                                                           [31m│[0m
+    [31m│[0m   [2m115 [0m[2m│   │   [0m[1;4mresidency.release_all()[0m                                        [31m│[0m
+    [31m│[0m   [2m116 [0m[2m│   [0mjobs.set_status(job.id, [33m"[0m[33msucceeded[0m[33m"[0m)                               [31m│[0m
+    [31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+    [1;91mCampaignFailed: [0mcampaign failed after generation: render failed: An error 
+    happened while trying to locate the file on the Hub and we cannot find the 
+    requested files in the local cache. Please check your connection and try again 
+    or make sure your Internet connection is on.
+    WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
