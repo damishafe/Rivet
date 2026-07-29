@@ -9,6 +9,22 @@ set -uo pipefail
 cd "$(dirname "$0")/../.."
 mkdir -p docs/evidence
 
+# Use the interpreter that owns torch. `uv run` would build its own environment
+# and resolve a PyPI torch, which on a ROCm box silently turns every measurement
+# into a CPU measurement.
+find_python() {
+  for candidate in "${RIVET_PYTHON:-}" /opt/venv/bin/python python3 python; do
+    [ -n "$candidate" ] || continue
+    resolved="$(command -v "$candidate" 2>/dev/null)" || continue
+    if "$resolved" -c "import torch" >/dev/null 2>&1; then
+      printf '%s' "$resolved"; return 0
+    fi
+  done
+  command -v python3 || printf 'python3'
+}
+PYTHON="$(find_python)"
+RIVET=("$PYTHON" -m cli.main)
+
 FIXTURE="${FIXTURE:-fixtures/kora-arc}"
 STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 BRANCH="${BRANCH:-evidence/w7900-$(date -u +%Y%m%d-%H%M)}"
@@ -51,30 +67,30 @@ keep() {
 
 echo "Rivet evidence run — $STAMP" >"$LOG"
 
-step "environment" docs/evidence/doctor.txt rivet doctor
-step "accelerator" docs/evidence/accelerator.txt python -c \
+step "environment" docs/evidence/doctor.txt "${RIVET[@]}" doctor
+step "accelerator" docs/evidence/accelerator.txt "$PYTHON" -c \
   "import json;from rivet.telemetry.vram import accelerator_report;print(json.dumps(accelerator_report(),indent=2))"
 keep "environment"
 
-step "unit and integration tests" docs/evidence/tests.txt uv run pytest -q
-step "determinism (golden)" docs/evidence/golden.txt uv run pytest tests/golden -q
-step "submission gates" docs/evidence/submission-check.txt rivet submission-check
+step "unit and integration tests" docs/evidence/tests.txt "$PYTHON" -m pytest -q
+step "determinism (golden)" docs/evidence/golden.txt "$PYTHON" -m pytest tests/golden -q
+step "submission gates" docs/evidence/submission-check.txt "${RIVET[@]}" submission-check
 keep "tests and gates"
 
 step "offline gate G2" docs/evidence/offline-demo.txt \
-  rivet offline-demo --fixture "$FIXTURE" --workdir .evidence/offline
+  "${RIVET[@]}" offline-demo --fixture "$FIXTURE" --workdir .evidence/offline
 keep "offline gate"
 
 step "benchmark cold" docs/evidence/benchmark-cold.txt \
-  rivet benchmark --fixture "$FIXTURE" --mode cold --workdir .evidence/cold
+  "${RIVET[@]}" benchmark --fixture "$FIXTURE" --mode cold --workdir .evidence/cold
 keep "cold benchmark"
 
 step "benchmark hot (determinism across runs)" docs/evidence/benchmark-hot.txt \
-  rivet benchmark --fixture "$FIXTURE" --mode hot --workdir .evidence/hot
+  "${RIVET[@]}" benchmark --fixture "$FIXTURE" --mode hot --workdir .evidence/hot
 keep "hot benchmark"
 
 step "model residency A/B" docs/evidence/benchmark-residency.txt \
-  rivet benchmark --fixture "$FIXTURE" --mode residency --workdir .evidence/residency
+  "${RIVET[@]}" benchmark --fixture "$FIXTURE" --mode residency --workdir .evidence/residency
 keep "residency benchmark"
 
 say "summary"

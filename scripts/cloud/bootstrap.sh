@@ -11,8 +11,26 @@ cd "$(dirname "$0")/../.."
 
 say() { printf '\n=== %s ===\n' "$1"; }
 
+# The ROCm torch belongs to whichever interpreter the image installed it into,
+# which is often not the `python3` first on PATH. Asking the wrong one reports
+# "no torch", and an install based on that answer would quietly fetch a CPU
+# build from PyPI and turn every later measurement into a CPU number.
+find_python() {
+  for candidate in "${RIVET_PYTHON:-}" /opt/venv/bin/python python3 python; do
+    [ -n "$candidate" ] || continue
+    resolved="$(command -v "$candidate" 2>/dev/null)" || continue
+    if "$resolved" -c "import torch" >/dev/null 2>&1; then
+      printf '%s' "$resolved"
+      return 0
+    fi
+  done
+  command -v python3 || printf 'python3'
+}
+
+PYTHON="$(find_python)"
+
 torch_report() {
-  python3 - <<'PY' 2>/dev/null || echo "none"
+  "$PYTHON" - <<'PY' 2>/dev/null || echo "none"
 import torch
 name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "no device"
 hip = getattr(torch.version, "hip", None) or "n/a"
@@ -49,14 +67,8 @@ fi
 echo "  $(ffmpeg -version | head -1)"
 
 say "python environment"
-if ! command -v uv >/dev/null; then
-  echo "  installing uv"
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-fi
-uv venv --system-site-packages --allow-existing .venv
-# shellcheck disable=SC1091
-source .venv/bin/activate
+echo "  interpreter: $PYTHON"
+echo "  $("$PYTHON" -V)"
 
 say "model cache"
 # Persistent storage keeps the weights between sessions; on metered hardware the
@@ -91,8 +103,11 @@ fi
 echo "  $HF_HUB_CACHE"
 
 say "rivet and generative libraries"
-uv pip install -q -e .
-uv pip install -q diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub
+# Installed into the interpreter that already owns the ROCm torch, so pip sees the
+# requirement satisfied and never substitutes a PyPI build.
+"$PYTHON" -m pip install -q -e .
+"$PYTHON" -m pip install -q \
+  diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub pytest
 
 say "system torch after install"
 AFTER="$(torch_report)"
@@ -103,12 +118,17 @@ if [ "$BEFORE" != "none" ] && [ "$BEFORE" != "$AFTER" ]; then
   echo "  after:  $AFTER" >&2
   exit 1
 fi
+if [ "$BEFORE" = "none" ] && [ "$AFTER" != "none" ]; then
+  echo "  torch appeared during install: it came from PyPI, not the image." >&2
+  echo "  on a ROCm box that build is the CPU or CUDA one; measurements would be false." >&2
+  exit 1
+fi
 
 say "doctor"
-rivet doctor
+"$PYTHON" -m cli.main doctor
 
 say "models"
-python scripts/models/fetch.py
+"$PYTHON" scripts/models/fetch.py
 
 say "ready"
-echo "  source .venv/bin/activate && ./scripts/cloud/evidence.sh"
+echo "  PATH=$(dirname "$PYTHON"):\$PATH ./scripts/cloud/evidence.sh"
