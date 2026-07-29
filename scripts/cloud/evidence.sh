@@ -52,6 +52,9 @@ step() {
 PUSH_OK=1
 
 keep() {
+  # Both must exist before git add or the whole command is rejected and nothing
+  # is staged; docs/benchmarks only appears once the first benchmark has run.
+  mkdir -p docs/evidence docs/benchmarks
   git add -A docs/evidence docs/benchmarks 2>/dev/null || true
   git -c user.name="${GIT_NAME:-rivet}" -c user.email="${GIT_EMAIL:-rivet@local}" \
     commit -q -m "evidence: $1 on the W7900" 2>/dev/null || true
