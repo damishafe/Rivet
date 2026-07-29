@@ -1,0 +1,4 @@
+rivet 0.1.0 doctor
+  [     ok] python: 3.12.3
+  [     ok] ffmpeg: /usr/bin/ffmpeg
+  [     ok] torch: 2.9.1+gitff65f5b — AMD Radeon Graphics, 49136 MB, ROCm 7.2.53211-e1a6bc5663
