@@ -39,7 +39,10 @@ MODELS = (
         repo_id="madebyollin/sdxl-vae-fp16-fix",
         revision="207b116dae70ace3637169f1ddd2434b91b3a8cd",
         purpose="fp16-safe VAE",
-        ignore=[*WEIGHT_NOISE, "diffusion_pytorch_model.safetensors"],
+        # The whole repo is the fp16 fix: diffusion_pytorch_model.safetensors IS the
+        # model here, not a duplicate of an fp16 variant. Excluding it leaves a config
+        # with no weights, which only fails at load time.
+        ignore=WEIGHT_NOISE,
     ),
     Model(
         repo_id="Qwen/Qwen3-VL-4B-Instruct",
@@ -68,11 +71,18 @@ MODELS = (
 )
 
 
+WEIGHT_SUFFIXES = frozenset({".safetensors", ".bin", ".pth", ".pt", ".gguf"})
+
+
 def _cached(model: Model) -> bool:
     from rivet.adapters.model_cache import local_snapshot
 
     snapshot = local_snapshot(model.repo_id)
-    return snapshot is not None and snapshot.name == model.revision
+    if snapshot is None or snapshot.name != model.revision:
+        return False
+    # A snapshot holding only config files reports as present and fails at load
+    # time instead, which on metered hardware is discovered expensively.
+    return any(path.suffix in WEIGHT_SUFFIXES for path in snapshot.rglob("*"))
 
 
 def fetch(model: Model) -> float:
