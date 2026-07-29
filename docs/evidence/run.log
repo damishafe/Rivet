@@ -15,3 +15,27 @@ Rivet evidence run — 2026-07-29T11:27:31Z
 
 === submission gates ===
   ok in 1s → docs/evidence/submission-check.txt
+  PUSH FAILED — results exist only on this instance
+
+=== offline gate G2 ===
+  FAILED in 75s → docs/evidence/offline-demo.txt
+    [31m│[0m   [2m 686 [0m[2m│   │   [0m                                                              [31m│[0m
+    [31m│[0m [31m❱ [0m 687 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
+    [31m│[0m   [2m 688 [0m[2m│   [0m                                                                  [31m│[0m
+    [31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
+    [31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:80 in run_campaign              [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m   [2m 77 [0m[2m│   [0m[94mif[0m generation.status != [33m"[0m[33msucceeded[0m[33m"[0m:                               [31m│[0m
+    [31m│[0m   [2m 78 [0m[2m│   │   [0mjobs.set_status(job.id, generation.status, error=generation.er [31m│[0m
+    [31m│[0m   [2m 79 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
+    [31m│[0m [31m❱ [0m 80 [2m│   │   [0m[1;4;94mraise[0m[1;4m CampaignFailed([0m[1;4;33mf[0m[1;4;33m"[0m[1;4;33mgeneration failed: [0m[1;4;33m{[0m[1;4mgeneration.error[0m[1;4;33m}[0m[1;4;33m"[0m[1;4m)[0m [31m│[0m
+    [31m│[0m   [2m 81 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.COMPOSED)               [31m│[0m
+    [31m│[0m   [2m 82 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.AUDITING)               [31m│[0m
+    [31m│[0m   [2m 83 [0m                                                                       [31m│[0m
+    [31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+    [1;91mCampaignFailed: [0mgeneration failed: Error no file named 
+    diffusion_pytorch_model.bin found in directory 
+    [35m/persistent/rivet-models/hub/models--madebyollin--sdxl-vae-fp16-fix/snapshots/[0m[95m20[0m
+    [95m7b116dae70ace3637169f1ddd2434b91b3a8cd.[0m
