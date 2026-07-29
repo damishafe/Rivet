@@ -11,6 +11,8 @@ mkdir -p docs/evidence
 
 FIXTURE="${FIXTURE:-fixtures/kora-arc}"
 STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+BRANCH="${BRANCH:-evidence/w7900-$(date -u +%Y%m%d-%H%M)}"
+ARCHIVE="${ARCHIVE:-$HOME/rivet-evidence.tar.gz}"
 LOG=docs/evidence/run.log
 FAILED=0
 
@@ -31,11 +33,20 @@ step() {
   fi
 }
 
+PUSH_OK=1
+
 keep() {
   git add -A docs/evidence docs/benchmarks 2>/dev/null || true
   git -c user.name="${GIT_NAME:-rivet}" -c user.email="${GIT_EMAIL:-rivet@local}" \
     commit -q -m "evidence: $1 on the W7900" 2>/dev/null || true
-  git push -q 2>/dev/null && echo "  pushed" || echo "  (push skipped)"
+  # A branch of its own: this clone never races commits made anywhere else.
+  if git push -q origin "HEAD:$BRANCH" 2>/dev/null; then
+    echo "  pushed to $BRANCH" | tee -a "$LOG"
+  else
+    PUSH_OK=0
+    echo "  PUSH FAILED — results exist only on this instance" | tee -a "$LOG"
+  fi
+  tar czf "$ARCHIVE" docs/evidence docs/benchmarks 2>/dev/null || true
 }
 
 echo "Rivet evidence run — $STAMP" >"$LOG"
@@ -67,7 +78,14 @@ step "model residency A/B" docs/evidence/benchmark-residency.txt \
 keep "residency benchmark"
 
 say "summary"
-grep -E "^  (ok|FAILED)" "$LOG" | tee -a "$LOG"
+grep -E "^  (ok|FAILED)" "$LOG"
+echo "branch:  $BRANCH"
+echo "archive: $ARCHIVE"
+if [ "$PUSH_OK" -eq 0 ]; then
+  echo
+  echo "PUSH FAILED at least once. Before stopping the instance, copy the results:"
+  echo "  scp -P <port> <user>@<host>:$ARCHIVE ."
+fi
 if [ "$FAILED" -ne 0 ]; then
   echo "some stages failed — see docs/evidence" | tee -a "$LOG"
   exit 1

@@ -30,13 +30,21 @@ fi
 say "ffmpeg"
 if ! command -v ffmpeg >/dev/null; then
   echo "  installing ffmpeg"
-  if command -v apt-get >/dev/null; then
-    (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg) \
-      || apt-get update -qq && apt-get install -y -qq ffmpeg
-  else
-    echo "  install ffmpeg manually" >&2
+  if ! command -v apt-get >/dev/null; then
+    echo "  no apt-get; install ffmpeg manually" >&2
     exit 1
   fi
+  APT=""
+  if [ "$(id -u)" -eq 0 ]; then
+    APT="apt-get"
+  elif command -v sudo >/dev/null; then
+    APT="sudo apt-get"
+  else
+    echo "  need root or sudo to install ffmpeg" >&2
+    exit 1
+  fi
+  $APT update -qq
+  $APT install -y -qq ffmpeg
 fi
 echo "  $(ffmpeg -version | head -1)"
 
