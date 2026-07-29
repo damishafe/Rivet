@@ -1,16 +1,31 @@
 outbound network blocked; running the golden project
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:06<00:06,  6.34s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:13<00:00,  6.83s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:13<00:00,  6.75s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.02s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.05it/s]
 The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
 [aiter] WARNING: NUMA balancing is enabled, which may cause errors. It is recommended to disable NUMA balancing by running "sudo sh -c 'echo 0 > /proc/sys/kernel/numa_balancing'" for more details: https://rocm.docs.amd.com/en/latest/how-to/system-optimization/mi300x.html#disable-numa-auto-balancing
-[aiter] start build [module_aiter_enum] under /opt/venv/lib/python3.12/site-packages/aiter/jit/build/module_aiter_enum
-clang (LLVM option parsing): Unknown command line argument '-amdgpu-coerce-illegal-types=1'.  Try: 'clang (LLVM option parsing) --help'
-clang (LLVM option parsing): Did you mean '--amdgpu-mode-register=1'?
-failed to execute:/opt/rocm/lib/llvm/bin/clang++  --offload-arch=gfx1100 -O3  -mllvm -amdgpu-coerce-illegal-types=1 -x hip -E -P /dev/null -o "/dev/null"
-[aiter] -mllvm -amdgpu-coerce-illegal-types=1 is not supported by hipcc.
-[aiter] [32mfinish build [module_aiter_enum], cost 11.7s [0m
 [aiter] import [module_aiter_enum] under /opt/venv/lib/python3.12/site-packages/aiter/jit/module_aiter_enum.so
-An error occurred while trying to fetch /persistent/rivet-models/hub/models--madebyollin--sdxl-vae-fp16-fix/snapshots/207b116dae70ace3637169f1ddd2434b91b3a8cd: Error no file named diffusion_pytorch_model.safetensors found in directory /persistent/rivet-models/hub/models--madebyollin--sdxl-vae-fp16-fix/snapshots/207b116dae70ace3637169f1ddd2434b91b3a8cd.
-Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  14%|█▍        | 1/7 [00:00<00:02,  2.80it/s]Loading pipeline components...:  43%|████▎     | 3/7 [00:03<00:05,  1.39s/it]Loading pipeline components...:  86%|████████▌ | 6/7 [00:04<00:00,  1.33it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:04<00:00,  1.41it/s]
+/opt/venv/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:96: UserWarning: Using AOTriton backend for Efficient Attention forward... (Triggered internally at /app/pytorch/aten/src/ATen/native/transformers/hip/attention.hip:1452.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [01:10<08:15, 70.82s/it] 38%|███▊      | 3/8 [01:10<01:32, 18.41s/it] 62%|██████▎   | 5/8 [01:11<00:26,  8.97s/it] 88%|████████▊ | 7/8 [01:11<00:05,  5.20s/it]100%|██████████| 8/8 [01:11<00:00,  8.90s/it]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.56it/s] 50%|█████     | 4/8 [00:00<00:00, 16.88it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.97it/s]100%|██████████| 8/8 [00:00<00:00, 16.96it/s]100%|██████████| 8/8 [00:00<00:00, 16.92it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.81it/s] 50%|█████     | 4/8 [00:00<00:00, 16.92it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.95it/s]100%|██████████| 8/8 [00:00<00:00, 16.91it/s]100%|██████████| 8/8 [00:00<00:00, 16.91it/s]
+[31m╭─[0m[31m────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────[0m[31m─╮[0m
+[31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:99 in run_campaign              [31m│[0m
+[31m│[0m                                                                              [31m│[0m
+[31m│[0m   [2m 96 [0m[2m│   │   [0m)                                                              [31m│[0m
+[31m│[0m   [2m 97 [0m[2m│   │   [0mrender = [94mawait[0m runner.run_phase(job, render_plan(inputs, stage [31m│[0m
+[31m│[0m   [2m 98 [0m[2m│   │   [0m[94mif[0m render.status != [33m"[0m[33msucceeded[0m[33m"[0m:                               [31m│[0m
+[31m│[0m [31m❱ [0m 99 [2m│   │   │   [0m[94mraise[0m CampaignFailed([33mf[0m[33m"[0m[33mrender failed: [0m[33m{[0mrender.error[33m}[0m[33m"[0m)     [31m│[0m
+[31m│[0m   [2m100 [0m[2m│   │   [0mvideo_path, captions_path = _assemble_campaign(inputs, workdir [31m│[0m
+[31m│[0m   [2m101 [0m[2m│   │   [0mreceipt = receipt.model_copy(                                  [31m│[0m
+[31m│[0m   [2m102 [0m[2m│   │   │   [0mupdate={[33m"[0m[33mvideo_path[0m[33m"[0m: video_path, [33m"[0m[33mcaptions_path[0m[33m"[0m: caption [31m│[0m
+[31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+[1;91mCampaignFailed: [0mrender failed: An error happened while trying to locate the file
+on the Hub and we cannot find the requested files in the local cache. Please 
+check your connection and try again or make sure your Internet connection is on.
+
+[3mThe above exception was the direct cause of the following exception:[0m
+
 [31m╭─[0m[31m────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────[0m[31m─╮[0m
 [31m│[0m [2m/persistent/Rivet/cli/[0m[1moffline_command.py[0m:45 in offline_demo                  [31m│[0m
 [31m│[0m                                                                              [31m│[0m
@@ -52,17 +67,18 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
 [31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
 [31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
 [31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:80 in run_campaign              [31m│[0m
+[31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:113 in run_campaign             [31m│[0m
 [31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m 77 [0m[2m│   [0m[94mif[0m generation.status != [33m"[0m[33msucceeded[0m[33m"[0m:                               [31m│[0m
-[31m│[0m   [2m 78 [0m[2m│   │   [0mjobs.set_status(job.id, generation.status, error=generation.er [31m│[0m
-[31m│[0m   [2m 79 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
-[31m│[0m [31m❱ [0m 80 [2m│   │   [0m[1;4;94mraise[0m[1;4m CampaignFailed([0m[1;4;33mf[0m[1;4;33m"[0m[1;4;33mgeneration failed: [0m[1;4;33m{[0m[1;4mgeneration.error[0m[1;4;33m}[0m[1;4;33m"[0m[1;4m)[0m [31m│[0m
-[31m│[0m   [2m 81 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.COMPOSED)               [31m│[0m
-[31m│[0m   [2m 82 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.AUDITING)               [31m│[0m
-[31m│[0m   [2m 83 [0m                                                                       [31m│[0m
+[31m│[0m   [2m110 [0m[2m│   [0m[94mexcept[0m [96mException[0m [94mas[0m error:                                         [31m│[0m
+[31m│[0m   [2m111 [0m[2m│   │   [0mjobs.set_status(job.id, [33m"[0m[33mfailed[0m[33m"[0m, error=[96mstr[0m(error))            [31m│[0m
+[31m│[0m   [2m112 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
+[31m│[0m [31m❱ [0m113 [2m│   │   [0m[94mraise[0m CampaignFailed([33mf[0m[33m"[0m[33mcampaign failed after generation: [0m[33m{[0merro [31m│[0m
+[31m│[0m   [2m114 [0m[2m│   [0m[94mfinally[0m:                                                           [31m│[0m
+[31m│[0m   [2m115 [0m[2m│   │   [0m[1;4mresidency.release_all()[0m                                        [31m│[0m
+[31m│[0m   [2m116 [0m[2m│   [0mjobs.set_status(job.id, [33m"[0m[33msucceeded[0m[33m"[0m)                               [31m│[0m
 [31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
-[1;91mCampaignFailed: [0mgeneration failed: Error no file named 
-diffusion_pytorch_model.bin found in directory 
-[35m/persistent/rivet-models/hub/models--madebyollin--sdxl-vae-fp16-fix/snapshots/[0m[95m20[0m
-[95m7b116dae70ace3637169f1ddd2434b91b3a8cd.[0m
+[1;91mCampaignFailed: [0mcampaign failed after generation: render failed: An error 
+happened while trying to locate the file on the Hub and we cannot find the 
+requested files in the local cache. Please check your connection and try again 
+or make sure your Internet connection is on.
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
