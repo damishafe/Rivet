@@ -112,6 +112,11 @@ Two honesty rules are built into the harness:
   seeds and the deterministic audit observations, so the comparison cannot be satisfied by
   run-specific paths or ids. `hot` mode runs twice and reports whether those digests match.
 
+Heavy models are held one at a time by a residency scheduler, so SDXL is not rebuilt from disk for
+every scene. This trades memory held for time saved — right on 48 GB of VRAM, wrong on a small
+machine, where holding SDXL between scenes can push it into swap. Set `RIVET_MODEL_RESIDENCY=0` to
+disable it; `--mode residency` measures both paths.
+
 Published performance figures come from this command on the supplied Radeon PRO W7900. Numbers
 measured on a development machine are not comparable and are never quoted as results.
 

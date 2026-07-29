@@ -126,6 +126,11 @@ pipeline and VAE from disk for every scene.
 residency enabled and once with it disabled, and writes both to one report. The optimisation is
 reproducible by a command a judge runs, not a number quoted from a private session.
 
+Residency trades memory held for time saved, which is the right trade on 48 GB of VRAM and the wrong
+one on a small machine: holding SDXL between scenes on a 16 GB laptop pushes it into swap and the
+run slows to a crawl. `RIVET_MODEL_RESIDENCY=0` disables it, and the flag is what the benchmark's
+comparison pass sets.
+
 **Honest instrumentation.** Peak VRAM is reported only where a true per-stage peak exists —
 `torch.cuda.max_memory_allocated`, reset before each stage, which on ROCm covers the Radeon path.
 Where no such counter exists the report prints `n/a` and states why, rather than printing a
