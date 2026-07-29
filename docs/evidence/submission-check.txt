@@ -1,4 +1,4 @@
-checking 209 tracked files
+checking 212 tracked files
   [  ok] required deliverables present
   [  ok] internal planning files excluded
   [  ok] no secrets in tracked files
