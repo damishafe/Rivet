@@ -1,67 +1,114 @@
 running resident pass in .evidence/residency/residency-0
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.06s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.04it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.03it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.01it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.08it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.07it/s]
 The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
-[31m╭─[0m[31m────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────[0m[31m─╮[0m
-[31m│[0m [2m/persistent/Rivet/cli/[0m[1mbenchmark_command.py[0m:99 in benchmark                   [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m 96 [0m[2m│   │   [0m[94mif[0m mode == [33m"[0m[33mresidency[0m[33m"[0m:                                        [31m│[0m
-[31m│[0m   [2m 97 [0m[2m│   │   │   [0mos.environ[residency.ENV_FLAG] = [33m"[0m[33m0[0m[33m"[0m [94mif[0m label == [33m"[0m[33mreload-p[0m [31m│[0m
-[31m│[0m   [2m 98 [0m[2m│   │   [0mtyper.echo([33mf[0m[33m"[0m[33mrunning [0m[33m{[0mlabel[33m}[0m[33m pass in [0m[33m{[0mroot[33m}[0m[33m"[0m)                  [31m│[0m
-[31m│[0m [31m❱ [0m 99 [2m│   │   [0mrun = [1;4m_one_run(root, fixture, label, vlm, semantic)[0m            [31m│[0m
-[31m│[0m   [2m100 [0m[2m│   │   [0mreport.runs.append(run)                                        [31m│[0m
-[31m│[0m   [2m101 [0m[2m│   │   [0mtyper.echo(                                                    [31m│[0m
-[31m│[0m   [2m102 [0m[2m│   │   │   [0m[33mf[0m[33m"[0m[33m  [0m[33m{[0mlabel[33m}[0m[33m: total [0m[33m{[0mrun.total_seconds[33m:[0m[33m.1f[0m[33m}[0m[33ms  [0m[33m"[0m             [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/persistent/Rivet/cli/[0m[1mbenchmark_command.py[0m:44 in _one_run                    [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m 41 [0m[2m│   [0mplan_seconds = time.perf_counter() - plan_started                  [31m│[0m
-[31m│[0m   [2m 42 [0m[2m│   [0m                                                                   [31m│[0m
-[31m│[0m   [2m 43 [0m[2m│   [0mcampaign_started = time.perf_counter()                             [31m│[0m
-[31m│[0m [31m❱ [0m 44 [2m│   [0mreceipt = [1;4masyncio.run(run_campaign(engine, root, project.id, seman[0m [31m│[0m
-[31m│[0m   [2m 45 [0m[2m│   [0mcampaign_seconds = time.perf_counter() - campaign_started          [31m│[0m
-[31m│[0m   [2m 46 [0m[2m│   [0m                                                                   [31m│[0m
-[31m│[0m   [2m 47 [0m[2m│   [0mpassed, total = check_totals(receipt)                              [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/usr/lib/python3.12/asyncio/[0m[1mrunners.py[0m:194 in run                            [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m191 [0m[2m│   │   │   [0m[33m"[0m[33masyncio.run() cannot be called from a running event loop[0m[33m"[0m [31m│[0m
-[31m│[0m   [2m192 [0m[2m│   [0m                                                                   [31m│[0m
-[31m│[0m   [2m193 [0m[2m│   [0m[94mwith[0m Runner(debug=debug, loop_factory=loop_factory) [94mas[0m runner:     [31m│[0m
-[31m│[0m [31m❱ [0m194 [2m│   │   [0m[94mreturn[0m [1;4mrunner.run(main)[0m                                        [31m│[0m
-[31m│[0m   [2m195 [0m                                                                       [31m│[0m
-[31m│[0m   [2m196 [0m                                                                       [31m│[0m
-[31m│[0m   [2m197 [0m[94mdef[0m [92m_cancel_all_tasks[0m(loop):                                           [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/usr/lib/python3.12/asyncio/[0m[1mrunners.py[0m:118 in run                            [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m115 [0m[2m│   │   [0m                                                               [31m│[0m
-[31m│[0m   [2m116 [0m[2m│   │   [0m[96mself[0m._interrupt_count = [94m0[0m                                      [31m│[0m
-[31m│[0m   [2m117 [0m[2m│   │   [0m[94mtry[0m:                                                           [31m│[0m
-[31m│[0m [31m❱ [0m118 [2m│   │   │   [0m[94mreturn[0m [96mself[0m._loop.run_until_complete(task)                 [31m│[0m
-[31m│[0m   [2m119 [0m[2m│   │   [0m[94mexcept[0m exceptions.CancelledError:                              [31m│[0m
-[31m│[0m   [2m120 [0m[2m│   │   │   [0m[94mif[0m [96mself[0m._interrupt_count > [94m0[0m:                              [31m│[0m
-[31m│[0m   [2m121 [0m[2m│   │   │   │   [0muncancel = [96mgetattr[0m(task, [33m"[0m[33muncancel[0m[33m"[0m, [94mNone[0m)             [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/usr/lib/python3.12/asyncio/[0m[1mbase_events.py[0m:687 in run_until_complete         [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m 684 [0m[2m│   │   [0m[94mif[0m [95mnot[0m future.done():                                         [31m│[0m
-[31m│[0m   [2m 685 [0m[2m│   │   │   [0m[94mraise[0m [96mRuntimeError[0m([33m'[0m[33mEvent loop stopped before Future comp[0m [31m│[0m
-[31m│[0m   [2m 686 [0m[2m│   │   [0m                                                              [31m│[0m
-[31m│[0m [31m❱ [0m 687 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
-[31m│[0m   [2m 688 [0m[2m│   [0m                                                                  [31m│[0m
-[31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
-[31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:80 in run_campaign              [31m│[0m
-[31m│[0m                                                                              [31m│[0m
-[31m│[0m   [2m 77 [0m[2m│   [0m[94mif[0m generation.status != [33m"[0m[33msucceeded[0m[33m"[0m:                               [31m│[0m
-[31m│[0m   [2m 78 [0m[2m│   │   [0mjobs.set_status(job.id, generation.status, error=generation.er [31m│[0m
-[31m│[0m   [2m 79 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
-[31m│[0m [31m❱ [0m 80 [2m│   │   [0m[1;4;94mraise[0m[1;4m CampaignFailed([0m[1;4;33mf[0m[1;4;33m"[0m[1;4;33mgeneration failed: [0m[1;4;33m{[0m[1;4mgeneration.error[0m[1;4;33m}[0m[1;4;33m"[0m[1;4m)[0m [31m│[0m
-[31m│[0m   [2m 81 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.COMPOSED)               [31m│[0m
-[31m│[0m   [2m 82 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.AUDITING)               [31m│[0m
-[31m│[0m   [2m 83 [0m                                                                       [31m│[0m
-[31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
-[1;91mCampaignFailed: [0mgeneration failed: [1m[[0mErrno [1;36m2[0m[1m][0m No such file or directory: 
-[32m'.evidence/residency/residency-0/projects/8eb7b67c6185405481ba5397df4f9768/work/[0m
-[32mcampaign/hook.png'[0m
+[aiter] WARNING: NUMA balancing is enabled, which may cause errors. It is recommended to disable NUMA balancing by running "sudo sh -c 'echo 0 > /proc/sys/kernel/numa_balancing'" for more details: https://rocm.docs.amd.com/en/latest/how-to/system-optimization/mi300x.html#disable-numa-auto-balancing
+[aiter] import [module_aiter_enum] under /opt/venv/lib/python3.12/site-packages/aiter/jit/module_aiter_enum.so
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 25.58it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 20.76it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.44it/s]
+/opt/venv/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:96: UserWarning: Using AOTriton backend for Efficient Attention forward... (Triggered internally at /app/pytorch/aten/src/ATen/native/transformers/hip/attention.hip:1452.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  1.99it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.73it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.65it/s] 88%|████████▊ | 7/8 [00:00<00:00, 10.86it/s]100%|██████████| 8/8 [00:00<00:00,  8.69it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.44it/s] 50%|█████     | 4/8 [00:00<00:00, 16.61it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.70it/s]100%|██████████| 8/8 [00:00<00:00, 16.70it/s]100%|██████████| 8/8 [00:00<00:00, 16.67it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.73it/s] 50%|█████     | 4/8 [00:00<00:00, 16.81it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.84it/s]100%|██████████| 8/8 [00:00<00:00, 16.80it/s]100%|██████████| 8/8 [00:00<00:00, 16.80it/s]
+/opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 15482880, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 15482880, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 15482880, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 15482880, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 6635520, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 6635520, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 6635520, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 6635520, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 24330240, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 24330240, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 24330240, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 24330240, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 72996352, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 72996352, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 72996352, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 72996352, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 19908096, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 19908096, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 19908096, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 19908096, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 46452224, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 46452224, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 46452224, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 46452224, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 18636800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 18636800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 18636800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 18636800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 7987200, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 7987200, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 7987200, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 7987200, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 29286400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 29286400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 29286400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 29286400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 87864832, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 87864832, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 87864832, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 87864832, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 23963136, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 23963136, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 23963136, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 23963136, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 55913984, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 55913984, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 55913984, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 55913984, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 15769600, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 15769600, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 15769600, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 15769600, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 6758400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 6758400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 6758400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 6758400, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 24780800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 24780800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 24780800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 24780800, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 74348032, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 74348032, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 74348032, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 74348032, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 20276736, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 20276736, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 20276736, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 20276736, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 47312384, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 47312384, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <GemmFwdRest>, workspace required: 47312384, provided ptr: 0 size: 0
+MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 47312384, provided ptr: 0 size: 0
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+  resident: total 58.0s  checks 27/27  passed=True
+running reload-per-stage pass in .evidence/residency/residency-1
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.05s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.02it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.01it/s]
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 26.05it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.26it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.94it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.39it/s] 50%|█████     | 4/8 [00:00<00:00, 16.53it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.60it/s]100%|██████████| 8/8 [00:00<00:00, 16.60it/s]100%|██████████| 8/8 [00:00<00:00, 16.57it/s]
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 27.36it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.14it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.99it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.34it/s] 50%|█████     | 4/8 [00:00<00:00, 16.54it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.64it/s]100%|██████████| 8/8 [00:00<00:00, 16.68it/s]100%|██████████| 8/8 [00:00<00:00, 16.63it/s]
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 27.13it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.55it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 22.33it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.34it/s] 50%|█████     | 4/8 [00:00<00:00, 16.50it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.60it/s]100%|██████████| 8/8 [00:00<00:00, 16.59it/s]100%|██████████| 8/8 [00:00<00:00, 16.56it/s]
+/opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+/opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+/opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+  reload-per-stage: total 53.6s  checks 27/27  passed=True
+wrote docs/benchmarks/benchmark-residency.[json|csv|md]

@@ -1,0 +1,235 @@
+{
+  "created_at": "2026-07-29T12:12:04+00:00",
+  "deterministic": true,
+  "environment": {
+    "accelerator": "AMD Radeon Graphics",
+    "cuda": "n/a",
+    "device": "cuda",
+    "hip": "7.2.53211-e1a6bc5663",
+    "torch": "2.9.1+gitff65f5b",
+    "total_vram_mb": "49136",
+    "vram_metric": "torch.cuda.max_memory_allocated, peak reset before each stage"
+  },
+  "fixture": "fixtures/kora-arc",
+  "runs": [
+    {
+      "campaign_seconds": 41.167,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "resident",
+      "passed": true,
+      "peak_vram_mb": 9168,
+      "plan_seconds": 16.817,
+      "receipt_hash": "0c6c54622f87371d31451f5b175add6f6b15f1a810752393708dcc941b67fa49",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 8595,
+          "seconds": 0.077,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9168,
+          "seconds": 11.015,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.412,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.292,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.591,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.356,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.588,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.863,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 7.788,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 616,
+          "seconds": 0.972,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 756,
+          "seconds": 3.436,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.876,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 737,
+          "seconds": 3.031,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 57.983
+    },
+    {
+      "campaign_seconds": 40.265,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "reload-per-stage",
+      "passed": true,
+      "peak_vram_mb": 9165,
+      "plan_seconds": 13.322,
+      "receipt_hash": "cae7fc5cde5732ce735e7f887847671289db44660b7089dfde7b4fb7f6fdb0c8",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.078,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.228,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.421,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.22,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.592,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.401,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.595,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.873,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 731,
+          "seconds": 3.12,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.97,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 757,
+          "seconds": 3.225,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 76,
+          "seconds": 0.863,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 733,
+          "seconds": 3.186,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 53.587
+    }
+  ],
+  "summary": {
+    "max_total_s": 57.98,
+    "median_total_s": 55.78,
+    "min_total_s": 53.59,
+    "runs": 2,
+    "spread_pct": 8.2
+  }
+}
