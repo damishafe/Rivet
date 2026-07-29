@@ -41,3 +41,6 @@ offline-demo:
 
 submission-check:
 	@echo "submission-check: not implemented until D12 (Aug 3)" && exit 1
+
+docs:
+	./scripts/make-pdfs.sh
