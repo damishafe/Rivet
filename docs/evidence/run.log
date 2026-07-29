@@ -1,113 +1,7 @@
-Rivet evidence run — 2026-07-29T11:34:36Z
+Rivet evidence run — 2026-07-29T11:57:32Z
 
 === environment ===
-  ok in 2s → docs/evidence/doctor.txt
+  ok in 3s → docs/evidence/doctor.txt
 
 === accelerator ===
   ok in 1s → docs/evidence/accelerator.txt
-  pushed to evidence/w7900-20260729-1134
-
-=== unit and integration tests ===
-  ok in 31s → docs/evidence/tests.txt
-
-=== determinism (golden) ===
-  ok in 3s → docs/evidence/golden.txt
-
-=== submission gates ===
-  ok in 1s → docs/evidence/submission-check.txt
-  PUSH FAILED — results exist only on this instance
-
-=== offline gate G2 ===
-  FAILED in 409s → docs/evidence/offline-demo.txt
-    [31m│[0m [31m❱ [0m 687 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
-    [31m│[0m   [2m 688 [0m[2m│   [0m                                                                  [31m│[0m
-    [31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
-    [31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
-    [31m│[0m                                                                              [31m│[0m
-    [31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:113 in run_campaign             [31m│[0m
-    [31m│[0m                                                                              [31m│[0m
-    [31m│[0m   [2m110 [0m[2m│   [0m[94mexcept[0m [96mException[0m [94mas[0m error:                                         [31m│[0m
-    [31m│[0m   [2m111 [0m[2m│   │   [0mjobs.set_status(job.id, [33m"[0m[33mfailed[0m[33m"[0m, error=[96mstr[0m(error))            [31m│[0m
-    [31m│[0m   [2m112 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
-    [31m│[0m [31m❱ [0m113 [2m│   │   [0m[94mraise[0m CampaignFailed([33mf[0m[33m"[0m[33mcampaign failed after generation: [0m[33m{[0merro [31m│[0m
-    [31m│[0m   [2m114 [0m[2m│   [0m[94mfinally[0m:                                                           [31m│[0m
-    [31m│[0m   [2m115 [0m[2m│   │   [0m[1;4mresidency.release_all()[0m                                        [31m│[0m
-    [31m│[0m   [2m116 [0m[2m│   [0mjobs.set_status(job.id, [33m"[0m[33msucceeded[0m[33m"[0m)                               [31m│[0m
-    [31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
-    [1;91mCampaignFailed: [0mcampaign failed after generation: render failed: An error 
-    happened while trying to locate the file on the Hub and we cannot find the 
-    requested files in the local cache. Please check your connection and try again 
-    or make sure your Internet connection is on.
-    WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
-  PUSH FAILED — results exist only on this instance
-
-=== benchmark cold ===
-  FAILED in 56s → docs/evidence/benchmark-cold.txt
-      0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  1.92it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.60it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.56it/s] 88%|████████▊ | 7/8 [00:00<00:00, 10.85it/s]100%|██████████| 8/8 [00:00<00:00,  8.59it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.90it/s] 50%|█████     | 4/8 [00:00<00:00, 16.93it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.70it/s]100%|██████████| 8/8 [00:00<00:00, 16.80it/s]100%|██████████| 8/8 [00:00<00:00, 16.81it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.77it/s] 50%|█████     | 4/8 [00:00<00:00, 16.83it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.87it/s]100%|██████████| 8/8 [00:00<00:00, 16.88it/s]100%|██████████| 8/8 [00:00<00:00, 16.86it/s]
-    /opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
-      warnings.warn(
-    /opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
-      WeightNorm.apply(module, name, dim)
-    Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
-    Collecting en-core-web-sm==3.8.0
-    [33m  WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[31mERROR: Could not install packages due to an OSError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)')))
-    [0m[31m
-    [0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m26.0.1[0m[39;49m -> [0m[32;49m26.1.2[0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-    WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
-  PUSH FAILED — results exist only on this instance
-
-=== benchmark hot (determinism across runs) ===
-  FAILED in 55s → docs/evidence/benchmark-hot.txt
-      0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  1.94it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.60it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.49it/s] 88%|████████▊ | 7/8 [00:00<00:00, 10.71it/s]100%|██████████| 8/8 [00:00<00:00,  8.51it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.48it/s] 50%|█████     | 4/8 [00:00<00:00, 16.57it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.60it/s]100%|██████████| 8/8 [00:00<00:00, 16.58it/s]100%|██████████| 8/8 [00:00<00:00, 16.57it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.45it/s] 50%|█████     | 4/8 [00:00<00:00, 16.50it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.51it/s]100%|██████████| 8/8 [00:00<00:00, 16.49it/s]100%|██████████| 8/8 [00:00<00:00, 16.49it/s]
-    /opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
-      warnings.warn(
-    /opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
-      WeightNorm.apply(module, name, dim)
-    Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
-    Collecting en-core-web-sm==3.8.0
-    [33m  WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[31mERROR: Could not install packages due to an OSError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)')))
-    [0m[31m
-    [0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m26.0.1[0m[39;49m -> [0m[32;49m26.1.2[0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-    WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
-  PUSH FAILED — results exist only on this instance
-
-=== model residency A/B ===
-  FAILED in 56s → docs/evidence/benchmark-residency.txt
-      0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  1.98it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.69it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.56it/s] 88%|████████▊ | 7/8 [00:00<00:00, 10.73it/s]100%|██████████| 8/8 [00:00<00:00,  8.59it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.35it/s] 50%|█████     | 4/8 [00:00<00:00, 16.43it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.46it/s]100%|██████████| 8/8 [00:00<00:00, 16.39it/s]100%|██████████| 8/8 [00:00<00:00, 16.40it/s]
-      0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.19it/s] 50%|█████     | 4/8 [00:00<00:00, 16.28it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.34it/s]100%|██████████| 8/8 [00:00<00:00, 16.32it/s]100%|██████████| 8/8 [00:00<00:00, 16.30it/s]
-    /opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
-      warnings.warn(
-    /opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
-      WeightNorm.apply(module, name, dim)
-    Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
-    Collecting en-core-web-sm==3.8.0
-    [33m  WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[33m  WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)'))': /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl[0m[33m
-    [0m[31mERROR: Could not install packages due to an OSError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1000)')))
-    [0m[31m
-    [0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m26.0.1[0m[39;49m -> [0m[32;49m26.1.2[0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-    WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
