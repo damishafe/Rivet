@@ -48,6 +48,10 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+# The spaCy model is published as a GitHub release asset, not on PyPI.
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["rivet", "cli", "services"]
 
