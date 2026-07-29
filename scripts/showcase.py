@@ -144,7 +144,17 @@ def main() -> int:
     except CampaignFailed:
         print("    blocked before export, as intended")
 
-    body = ["# Rivet results gallery", "", "Produced by `scripts/showcase.py` on the Radeon PRO W7900.", ""]
+    from rivet.telemetry.vram import accelerator_report
+
+    env = accelerator_report()
+    where = env.get("accelerator") or env.get("device", "unknown device")
+    body = [
+        "# Rivet results gallery",
+        "",
+        f"Produced by `scripts/showcase.py` on **{where}** "
+        f"(torch {env.get('torch', 'n/a')}, hip {env.get('hip', 'n/a')}).",
+        "",
+    ]
     for result in results:
         body += _line(result)
     (GALLERY / "README.md").write_text("\n".join(body))
