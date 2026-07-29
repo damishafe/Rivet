@@ -146,6 +146,53 @@ identifiers, only by matching content.
 project with every outbound socket blocked at the Python socket layer; the run completes with zero
 connection attempts.
 
+## Measured results
+
+Radeon PRO W7900 (gfx1100, 49136 MB) · ROCm 7.2.53211 · PyTorch 2.9.1 · fixture `kora-arc`.
+Every figure below comes from `rivet benchmark` and is reproduced by the commands in the next
+section. The full reports are in `docs/benchmarks/`.
+
+| | seconds | audit |
+|---|---:|---|
+| Cold: plan, generate, audit, render, pack | **67.8** | 27/27 |
+| Hot: same work, models already resident | **41.2** | 27/27 |
+| Offline gate, every outbound socket blocked | 67 | 27/27 |
+
+Peak VRAM is **9168 MB of 49136** — the pipeline holds one heavy model at a time and leaves 81% of
+the card free, which is why a larger diffusion model would fit without changing the design.
+
+### The residency optimisation
+
+SDXL rebuilt its pipeline and VAE from disk for every scene, and Kokoro and Qwen3-VL reloaded per
+call. Heavy models now pass through a residency scheduler: acquiring a different model releases the
+previous one first, so exactly one is resident and the VRAM headroom rule holds by construction.
+
+| arm | runs | median total |
+|---|---:|---:|
+| resident | 2 | **42.2s** |
+| reload per stage | 2 | 55.8s |
+
+**13.7 seconds faster, a 24% reduction end to end** and 32% on the generation phase alone. The two
+arms alternate after a discarded warmup, because a single resident-then-reload pair would hand the
+second arm a warm page cache — worth about 17s on this pipeline, more than the effect being
+measured. The first, unalternated attempt reported residency as 4.4s *slower*; that result was
+measuring run order and was discarded rather than published.
+
+### Determinism
+
+The same content digest, `347606b58a93ba16`, appears in all eleven runs above — cold, hot, warmup,
+and both residency arms. The digest covers the rendered still bytes, the seeds and the deterministic
+audit observations, so it cannot be satisfied by matching paths or identifiers, only by identical
+output. Reusing a resident pipeline does not change a single pixel.
+
+### Platform notes
+
+- SDXL attention runs through ROCm's **AOTriton** efficient-attention path on gfx1100, not a generic
+  fallback.
+- ROCm's tuning guidance recommends disabling NUMA auto-balancing; the container has no host-level
+  privileges to do so, so the figures above are measured with it enabled and would if anything
+  improve.
+
 ## Reproducing the results
 
 ```bash

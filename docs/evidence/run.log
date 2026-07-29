@@ -1,0 +1,33 @@
+Rivet evidence run — 2026-07-29T12:07:01Z
+
+=== environment ===
+  ok in 3s → docs/evidence/doctor.txt
+
+=== accelerator ===
+  ok in 1s → docs/evidence/accelerator.txt
+  pushed to evidence/w7900-20260729-1207
+
+=== unit and integration tests ===
+  ok in 32s → docs/evidence/tests.txt
+
+=== determinism (golden) ===
+  ok in 3s → docs/evidence/golden.txt
+
+=== submission gates ===
+  ok in 1s → docs/evidence/submission-check.txt
+  PUSH FAILED — results exist only on this instance
+
+=== offline gate G2 ===
+  ok in 67s → docs/evidence/offline-demo.txt
+  PUSH FAILED — results exist only on this instance
+
+=== benchmark cold ===
+  ok in 72s → docs/evidence/benchmark-cold.txt
+  PUSH FAILED — results exist only on this instance
+
+=== benchmark hot (determinism across runs) ===
+  ok in 105s → docs/evidence/benchmark-hot.txt
+  PUSH FAILED — results exist only on this instance
+
+=== model residency A/B ===
+  ok in 117s → docs/evidence/benchmark-residency.txt

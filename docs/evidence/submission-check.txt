@@ -1,0 +1,7 @@
+checking 212 tracked files
+  [  ok] required deliverables present
+  [  ok] internal planning files excluded
+  [  ok] no secrets in tracked files
+  [  ok] every model has a license row
+  [  ok] no tracked file over 50 MB
+submission-check: pass

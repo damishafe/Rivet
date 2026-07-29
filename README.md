@@ -112,13 +112,30 @@ Two honesty rules are built into the harness:
   seeds and the deterministic audit observations, so the comparison cannot be satisfied by
   run-specific paths or ids. `hot` mode runs twice and reports whether those digests match.
 
-Heavy models are held one at a time by a residency scheduler, so SDXL is not rebuilt from disk for
-every scene. This trades memory held for time saved — right on 48 GB of VRAM, wrong on a small
-machine, where holding SDXL between scenes can push it into swap. Set `RIVET_MODEL_RESIDENCY=0` to
-disable it; `--mode residency` measures both paths.
+### Measured on the Radeon PRO W7900
 
-Published performance figures come from this command on the supplied Radeon PRO W7900. Numbers
-measured on a development machine are not comparable and are never quoted as results.
+gfx1100 · 49136 MB · ROCm 7.2.53211 · PyTorch 2.9.1 · fixture `kora-arc`
+
+| | seconds | audit |
+|---|---:|---|
+| Cold — plan, generate, audit, render, pack | **67.8** | 27/27 |
+| Hot — models already resident | **41.2** | 27/27 |
+| Offline, every outbound socket blocked | 67 | 27/27 |
+
+Peak VRAM **9168 MB of 49136**: one heavy model is held at a time, leaving 81% of the card free.
+
+**Model residency** — SDXL was rebuilt from disk for every scene. Holding one model resident and
+releasing it only when a different one is needed is **13.7s faster (24% end to end)**: median 42.2s
+resident against 55.8s reloading, over alternating arms after a discarded warmup. Set
+`RIVET_MODEL_RESIDENCY=0` to disable it.
+
+**Determinism** — the content digest `347606b58a93ba16` is identical across all eleven runs above,
+including both residency arms.
+
+Full reports, including per-stage timings and peak VRAM, are in [docs/benchmarks/](docs/benchmarks/);
+the raw run logs are in [docs/evidence/](docs/evidence/).
+
+Figures measured on a development machine are not comparable and are never quoted as results.
 
 ## Layout
 

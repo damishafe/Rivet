@@ -1,0 +1,235 @@
+{
+  "created_at": "2026-07-29T12:10:15+00:00",
+  "deterministic": true,
+  "environment": {
+    "accelerator": "AMD Radeon Graphics",
+    "cuda": "n/a",
+    "device": "cuda",
+    "hip": "7.2.53211-e1a6bc5663",
+    "torch": "2.9.1+gitff65f5b",
+    "total_vram_mb": "49136",
+    "vram_metric": "torch.cuda.max_memory_allocated, peak reset before each stage"
+  },
+  "fixture": "fixtures/kora-arc",
+  "runs": [
+    {
+      "campaign_seconds": 41.387,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "warmup",
+      "passed": true,
+      "peak_vram_mb": 9168,
+      "plan_seconds": 17.192,
+      "receipt_hash": "de8ccf8021e1c10baf0c69358592a695c0232eebfa5f3f971b6dc5a65bcccf4d",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 8595,
+          "seconds": 0.079,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9168,
+          "seconds": 11.461,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.417,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.273,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.596,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.365,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.589,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.931,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 7.701,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 616,
+          "seconds": 0.979,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 756,
+          "seconds": 3.271,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.904,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 737,
+          "seconds": 2.991,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 58.58
+    },
+    {
+      "campaign_seconds": 27.892,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "hot",
+      "passed": true,
+      "peak_vram_mb": 9165,
+      "plan_seconds": 13.309,
+      "receipt_hash": "38f863c8f3e24f4a585aec14b84843d50c8b45b8dd5d5436be150b2b24843a14",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 8596,
+          "seconds": 0.082,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 7.651,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.418,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 3.318,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.589,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9165,
+          "seconds": 3.4,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.593,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 0.874,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6801,
+          "seconds": 3.52,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 617,
+          "seconds": 0.96,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 754,
+          "seconds": 0.411,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.878,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 734,
+          "seconds": 0.364,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 41.201
+    }
+  ],
+  "summary": {
+    "max_total_s": 41.2,
+    "median_total_s": 41.2,
+    "min_total_s": 41.2,
+    "runs": 1,
+    "spread_pct": 0.0
+  }
+}
