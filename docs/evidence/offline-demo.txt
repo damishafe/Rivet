@@ -1,14 +1,14 @@
 outbound network blocked; running the golden project
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.02it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.07it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.06it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.02it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.03it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.03it/s]
 The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
 [aiter] WARNING: NUMA balancing is enabled, which may cause errors. It is recommended to disable NUMA balancing by running "sudo sh -c 'echo 0 > /proc/sys/kernel/numa_balancing'" for more details: https://rocm.docs.amd.com/en/latest/how-to/system-optimization/mi300x.html#disable-numa-auto-balancing
 [aiter] import [module_aiter_enum] under /opt/venv/lib/python3.12/site-packages/aiter/jit/module_aiter_enum.so
-Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 19.47it/s]Loading pipeline components...:  86%|████████▌ | 6/7 [00:00<00:00, 19.17it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.93it/s]
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  43%|████▎     | 3/7 [00:00<00:00, 26.93it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.26it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 21.84it/s]
 /opt/venv/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:96: UserWarning: Using AOTriton backend for Efficient Attention forward... (Triggered internally at /app/pytorch/aten/src/ATen/native/transformers/hip/attention.hip:1452.)
   attn_output = torch.nn.functional.scaled_dot_product_attention(
-  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  2.02it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.81it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.77it/s] 88%|████████▊ | 7/8 [00:00<00:00, 11.02it/s]100%|██████████| 8/8 [00:00<00:00,  8.80it/s]
-  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.69it/s] 50%|█████     | 4/8 [00:00<00:00, 16.87it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.94it/s]100%|██████████| 8/8 [00:00<00:00, 16.92it/s]100%|██████████| 8/8 [00:00<00:00, 16.90it/s]
-  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.91it/s] 50%|█████     | 4/8 [00:00<00:00, 16.98it/s] 75%|███████▌  | 6/8 [00:00<00:00, 17.03it/s]100%|██████████| 8/8 [00:00<00:00, 17.00it/s]100%|██████████| 8/8 [00:00<00:00, 16.99it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:03,  1.99it/s] 38%|███▊      | 3/8 [00:00<00:00,  5.70it/s] 62%|██████▎   | 5/8 [00:00<00:00,  8.59it/s] 88%|████████▊ | 7/8 [00:00<00:00, 10.77it/s]100%|██████████| 8/8 [00:00<00:00,  8.62it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.49it/s] 50%|█████     | 4/8 [00:00<00:00, 16.30it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.40it/s]100%|██████████| 8/8 [00:00<00:00, 16.40it/s]100%|██████████| 8/8 [00:00<00:00, 16.39it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 16.40it/s] 50%|█████     | 4/8 [00:00<00:00, 16.45it/s] 75%|███████▌  | 6/8 [00:00<00:00, 16.46it/s]100%|██████████| 8/8 [00:00<00:00, 16.40it/s]100%|██████████| 8/8 [00:00<00:00, 16.41it/s]
 /opt/venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
   warnings.warn(
 /opt/venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
@@ -87,7 +87,7 @@ MIOpen(HIP): Warning [IsEnoughWorkspace] [GetSolutionsFallback WTI] Solver <Gemm
 MIOpen(HIP): Warning [IsEnoughWorkspace] [EvaluateInvokers] Solver <GemmFwdRest>, workspace required: 46882304, provided ptr: 0 size: 0
 WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
   checks 27/27  passed=True
-  receipt 1f621cc6f8d8fa8c
-  pack .evidence/offline/projects/88d01815962f44a697f350f6a596cca8/work/campaign/campaign-pack.zip
+  receipt d9242ae09a1e95fa
+  pack .evidence/offline/projects/44fe4765d62c4bc08edae74b22e1d90b/work/campaign/campaign-pack.zip
   outbound attempts blocked: 0
 G2 offline gate: pass
