@@ -19,3 +19,27 @@ Rivet evidence run — 2026-07-29T11:57:32Z
 
 === offline gate G2 ===
   ok in 72s → docs/evidence/offline-demo.txt
+  PUSH FAILED — results exist only on this instance
+
+=== benchmark cold ===
+  FAILED in 22s → docs/evidence/benchmark-cold.txt
+    [31m│[0m   [2m 685 [0m[2m│   │   │   [0m[94mraise[0m [96mRuntimeError[0m([33m'[0m[33mEvent loop stopped before Future comp[0m [31m│[0m
+    [31m│[0m   [2m 686 [0m[2m│   │   [0m                                                              [31m│[0m
+    [31m│[0m [31m❱ [0m 687 [2m│   │   [0m[94mreturn[0m [1;4mfuture.result()[0m                                        [31m│[0m
+    [31m│[0m   [2m 688 [0m[2m│   [0m                                                                  [31m│[0m
+    [31m│[0m   [2m 689 [0m[2m│   [0m[94mdef[0m [92mstop[0m([96mself[0m):                                                   [31m│[0m
+    [31m│[0m   [2m 690 [0m[2;90m│   │   [0m[33m"""Stop running the event loop.[0m                               [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m [2m/persistent/Rivet/rivet/pipeline/[0m[1mcampaign.py[0m:80 in run_campaign              [31m│[0m
+    [31m│[0m                                                                              [31m│[0m
+    [31m│[0m   [2m 77 [0m[2m│   [0m[94mif[0m generation.status != [33m"[0m[33msucceeded[0m[33m"[0m:                               [31m│[0m
+    [31m│[0m   [2m 78 [0m[2m│   │   [0mjobs.set_status(job.id, generation.status, error=generation.er [31m│[0m
+    [31m│[0m   [2m 79 [0m[2m│   │   [0mprojects.advance(project_id, ProjectStatus.FAILED)             [31m│[0m
+    [31m│[0m [31m❱ [0m 80 [2m│   │   [0m[1;4;94mraise[0m[1;4m CampaignFailed([0m[1;4;33mf[0m[1;4;33m"[0m[1;4;33mgeneration failed: [0m[1;4;33m{[0m[1;4mgeneration.error[0m[1;4;33m}[0m[1;4;33m"[0m[1;4m)[0m [31m│[0m
+    [31m│[0m   [2m 81 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.COMPOSED)               [31m│[0m
+    [31m│[0m   [2m 82 [0m[2m│   [0mprojects.advance(project_id, ProjectStatus.AUDITING)               [31m│[0m
+    [31m│[0m   [2m 83 [0m                                                                       [31m│[0m
+    [31m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+    [1;91mCampaignFailed: [0mgeneration failed: [1m[[0mErrno [1;36m2[0m[1m][0m No such file or directory: 
+    [32m'.evidence/cold/cold-0/projects/212440f8f7a540968404046416002c2b/work/campaign/h[0m
+    [32mook.png'[0m
