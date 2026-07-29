@@ -40,7 +40,7 @@ offline-demo:
 	uv run rivet offline-demo --fixture $(FIXTURE)
 
 submission-check:
-	@echo "submission-check: not implemented until D12 (Aug 3)" && exit 1
+	uv run rivet submission-check
 
 docs:
 	./scripts/make-pdfs.sh
