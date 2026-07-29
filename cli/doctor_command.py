@@ -17,8 +17,13 @@ def _torch_detail() -> str | None:
         import torch
     except ImportError:
         return None
-    device = "cuda/rocm" if torch.cuda.is_available() else "cpu"
-    return f"{torch.__version__} ({device})"
+    if not torch.cuda.is_available():
+        return f"{torch.__version__} (cpu)"
+    name = torch.cuda.get_device_name(0)
+    vram = torch.cuda.get_device_properties(0).total_memory // (1024 * 1024)
+    hip = getattr(torch.version, "hip", None)
+    stack = f"ROCm {hip}" if hip else "CUDA"
+    return f"{torch.__version__} — {name}, {vram} MB, {stack}"
 
 
 def doctor() -> None:
