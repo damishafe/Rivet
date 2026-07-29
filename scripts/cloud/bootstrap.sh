@@ -107,7 +107,8 @@ say "rivet and generative libraries"
 # requirement satisfied and never substitutes a PyPI build.
 "$PYTHON" -m pip install -q -e .
 "$PYTHON" -m pip install -q \
-  diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub pytest
+  diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub pytest spacy \
+  "en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
 
 say "system torch after install"
 AFTER="$(torch_report)"

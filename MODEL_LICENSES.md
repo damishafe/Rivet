@@ -19,6 +19,7 @@ blocked.
 | Segmentation | `facebook/sam2.1-hiera-small` | `ee5bba1d82bb8749febdf90f45e84b687142ba03` | Apache 2.0 | product cutout when the source image needs segmenting |
 | Speech synthesis | `hexgrad/Kokoro-82M` | `f3ff3571791e39611d31c381e3a41a3af07b4987` | Apache 2.0 | scene narration |
 | Speech recognition | `openai/whisper-tiny.en` | `87c7102498dcde7456f24cfd30239ca606ed9063` | MIT | transcribes the spoken brief |
+| Linguistic model | `en_core_web_sm` (spaCy) | `3.8.0` | MIT | grapheme-to-phoneme for narration; pinned in `pyproject.toml` because Kokoro otherwise downloads it mid-generation |
 
 ## Fonts
 

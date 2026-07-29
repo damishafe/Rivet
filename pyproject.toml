@@ -26,6 +26,11 @@ gpu = [
     "soundfile",
     "numpy",
     "kokoro",
+    "spacy",
+    # Kokoro's grapheme-to-phoneme step pip-installs this model on first use if it
+    # is absent, which breaks any offline or restricted-network run mid-generation.
+    # Pinning it here makes narration self-contained after install.
+    "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
 ]
 
 [project.scripts]
