@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -27,6 +28,11 @@ BENCHMARK_SEED = 7
 
 
 def _one_run(root: Path, fixture: Path, mode: str, vlm: bool, semantic: bool) -> RunReport:
+    # A benchmark must measure work, not inherit it. A surviving database from an
+    # earlier run reports cache hits for stages whose artifacts belong to that run's
+    # project directory, so the pipeline skips the generation it is meant to time and
+    # then fails looking for files under the new project id.
+    shutil.rmtree(root, ignore_errors=True)
     engine = make_engine(root / "rivet.db")
     projects = ProjectStore(engine)
     assets = AssetStore(engine, root)
