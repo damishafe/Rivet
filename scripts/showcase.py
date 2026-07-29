@@ -148,13 +148,11 @@ def main() -> int:
 
     env = accelerator_report()
     where = env.get("accelerator") or env.get("device", "unknown device")
-    body = [
-        "# Rivet results gallery",
-        "",
+    provenance = (
         f"Produced by `scripts/showcase.py` on **{where}** "
-        f"(torch {env.get('torch', 'n/a')}, hip {env.get('hip', 'n/a')}).",
-        "",
-    ]
+        f"(torch {env.get('torch', 'n/a')}, hip {env.get('hip', 'n/a')})."
+    )
+    body = ["# Rivet results gallery", "", provenance, ""]
     for result in results:
         body += _line(result)
     (GALLERY / "README.md").write_text("\n".join(body))
