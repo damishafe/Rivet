@@ -1,0 +1,129 @@
+{
+  "created_at": "2026-07-29T12:08:59+00:00",
+  "deterministic": false,
+  "environment": {
+    "accelerator": "AMD Radeon Graphics",
+    "cuda": "n/a",
+    "device": "cuda",
+    "hip": "7.2.53211-e1a6bc5663",
+    "torch": "2.9.1+gitff65f5b",
+    "total_vram_mb": "49136",
+    "vram_metric": "torch.cuda.max_memory_allocated, peak reset before each stage"
+  },
+  "fixture": "fixtures/kora-arc",
+  "runs": [
+    {
+      "campaign_seconds": 50.548,
+      "checks_passed": 27,
+      "checks_total": 27,
+      "content_digest": "347606b58a93ba16a3433b3a4183afdffd94e660bd5bb88c4d2008b7a2448a1b",
+      "mode": "cold",
+      "passed": true,
+      "peak_vram_mb": 9168,
+      "plan_seconds": 17.287,
+      "receipt_hash": "e2d3588d9b98357e226b0b4de67640dff0022e0f713e23b799f73f333120b65b",
+      "repairs": 0,
+      "stages": [
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 8595,
+          "seconds": 0.078,
+          "stage": "segment",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9168,
+          "seconds": 11.589,
+          "stage": "background.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.415,
+          "stage": "composite.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.291,
+          "stage": "background.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.594,
+          "stage": "composite.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 9164,
+          "seconds": 3.362,
+          "stage": "background.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.586,
+          "stage": "composite.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 0.894,
+          "stage": "motion.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 6800,
+          "seconds": 10.435,
+          "stage": "narration.hook",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 616,
+          "seconds": 0.961,
+          "stage": "motion.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 756,
+          "seconds": 6.626,
+          "stage": "narration.proof",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 618,
+          "seconds": 0.93,
+          "stage": "motion.cta",
+          "status": "succeeded"
+        },
+        {
+          "cache_hit": false,
+          "peak_vram_mb": 737,
+          "seconds": 5.924,
+          "stage": "narration.cta",
+          "status": "succeeded"
+        }
+      ],
+      "total_seconds": 67.834
+    }
+  ],
+  "summary": {
+    "max_total_s": 67.83,
+    "median_total_s": 67.83,
+    "min_total_s": 67.83,
+    "runs": 1,
+    "spread_pct": 0.0
+  }
+}

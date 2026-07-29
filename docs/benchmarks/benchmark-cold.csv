@@ -1,0 +1,14 @@
+mode,stage,seconds,peak_vram_mb,cache_hit,status
+cold,segment,0.078,8595,false,succeeded
+cold,background.hook,11.589,9168,false,succeeded
+cold,composite.hook,0.415,6800,false,succeeded
+cold,background.proof,3.291,9164,false,succeeded
+cold,composite.proof,0.594,6800,false,succeeded
+cold,background.cta,3.362,9164,false,succeeded
+cold,composite.cta,0.586,6800,false,succeeded
+cold,motion.hook,0.894,6800,false,succeeded
+cold,narration.hook,10.435,6800,false,succeeded
+cold,motion.proof,0.961,616,false,succeeded
+cold,narration.proof,6.626,756,false,succeeded
+cold,motion.cta,0.930,618,false,succeeded
+cold,narration.cta,5.924,737,false,succeeded
