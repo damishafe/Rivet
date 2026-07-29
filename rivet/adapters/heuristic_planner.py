@@ -13,7 +13,11 @@ from rivet.pipeline.seeds import derive_seed
 
 BACKGROUND_NEGATIVE = (
     "product, speaker, microphone, headphones, device, gadget, bottle, packaging, "
-    "person, people, hands, text, letters, words, watermark, logo, signage"
+    # A synthetic human in an advertisement is a likeness problem no brand will
+    # accept, and the plain "person, people" pair was not enough to suppress one.
+    "person, people, human, man, woman, girl, boy, model, portrait, face, "
+    "body, figure, hands, crowd, mannequin, silhouette, "
+    "text, letters, words, watermark, logo, signage"
 )
 
 _SPECS: tuple[

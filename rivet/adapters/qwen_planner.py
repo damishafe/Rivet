@@ -16,6 +16,9 @@ SHOT_IDS = ("hook", "proof", "cta")
 BANNED_BACKGROUND_WORDS = (
     "speaker", "microphone", "headphone", "earbud", "device", "gadget", "product",
     "bottle", "phone", "laptop", "camera", "watermark", "logo",
+    # A background prompt that invites a person invites a likeness nobody cleared.
+    "person", "people", "man", "woman", "model", "portrait", "face", "hand",
+    "figure", "crowd", "child", "someone",
 )
 SPOKEN_CHARS_PER_SECOND = 15
 SPOKEN_OVERSHOOT = 1.2
