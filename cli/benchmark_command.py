@@ -1,10 +1,12 @@
 import asyncio
+import os
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 
 import typer
 
+from rivet.adapters import residency
 from rivet.pipeline.bootstrap import confirm_brand, derive_plan, ingest_asset
 from rivet.pipeline.campaign import run_campaign
 from rivet.storage.assets import AssetStore
@@ -68,8 +70,8 @@ def benchmark(
     semantic: bool = False,
 ) -> None:
     """Measure the pipeline end to end and write JSON, CSV and Markdown evidence."""
-    if mode not in ("cold", "hot"):
-        typer.echo("mode must be cold or hot", err=True)
+    if mode not in ("cold", "hot", "residency"):
+        typer.echo("mode must be cold, hot or residency", err=True)
         raise typer.Exit(code=2)
     for required in ("product.png", "logo.png"):
         if not (fixture / required).is_file():
@@ -84,10 +86,15 @@ def benchmark(
     if repeat < 1:
         typer.echo("repeat must be at least 1", err=True)
         raise typer.Exit(code=2)
-    measured = [mode] if repeat == 1 else [f"{mode}-{n + 1}" for n in range(repeat)]
-    passes = measured if mode == "cold" else ["warmup", *measured]
+    if mode == "residency":
+        passes = ["resident", "reload-per-stage"]
+    else:
+        measured = [mode] if repeat == 1 else [f"{mode}-{n + 1}" for n in range(repeat)]
+        passes = measured if mode == "cold" else ["warmup", *measured]
     for index, label in enumerate(passes):
         root = workdir / f"{mode}-{index}"
+        if mode == "residency":
+            os.environ[residency.ENV_FLAG] = "0" if label == "reload-per-stage" else "1"
         typer.echo(f"running {label} pass in {root}")
         run = _one_run(root, fixture, label, vlm, semantic)
         report.runs.append(run)

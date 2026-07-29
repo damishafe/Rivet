@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from pathlib import Path
 
+from rivet.adapters import residency
 from rivet.pipeline.device import resolve_device
 from rivet.pipeline.fingerprint import cache_key
 from rivet.pipeline.stage import (
@@ -18,9 +19,13 @@ SAMPLE_RATE = 24000
 def _kokoro_narrate(text: str, device: str, out_path: Path) -> float:
     import numpy as np
     import soundfile as sf
-    from kokoro import KPipeline
 
-    pipe = KPipeline(lang_code="a", device=device)
+    def load() -> object:
+        from kokoro import KPipeline
+
+        return KPipeline(lang_code="a", device=device)
+
+    pipe = residency.acquire(f"kokoro:{device}", load)
     chunks = [chunk.audio for chunk in pipe(text, voice="af_heart")]
     audio = np.concatenate(chunks) if chunks else np.zeros(1, dtype="float32")
     sf.write(out_path, audio, SAMPLE_RATE)

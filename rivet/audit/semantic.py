@@ -1,6 +1,8 @@
 import re
 from collections.abc import Callable
+from typing import Any
 
+from rivet.adapters import residency
 from rivet.adapters.model_cache import resolve_model
 from rivet.domain.models import AuditCheck
 from rivet.pipeline.device import resolve_device
@@ -9,15 +11,21 @@ SemanticJudge = Callable[[str, str], tuple[int, str]]
 SEMANTIC_THRESHOLD = 80
 
 
-def qwen_judge(image_path: str, question: str) -> tuple[int, str]:
+def load_qwen_vl(device: str) -> tuple[Any, Any]:
     import torch
-    from PIL import Image
     from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
     name = resolve_model("Qwen/Qwen3-VL-4B-Instruct")
-    device = resolve_device()
     proc = AutoProcessor.from_pretrained(name)
     model = Qwen3VLForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to(device)
+    return proc, model
+
+
+def qwen_judge(image_path: str, question: str) -> tuple[int, str]:
+    from PIL import Image
+
+    device = resolve_device()
+    proc, model = residency.acquire(f"qwen-vl:{device}", lambda: load_qwen_vl(device))
     image = Image.open(image_path).convert("RGB")
     messages = [
         {

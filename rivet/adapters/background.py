@@ -2,6 +2,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from rivet.adapters import residency
 from rivet.adapters.model_cache import resolve_model
 from rivet.pipeline.device import resolve_device
 from rivet.pipeline.fingerprint import cache_key
@@ -21,20 +22,26 @@ DEFAULT_STEPS = 8
 DEFAULT_GUIDANCE = 6.0
 
 
-def _sdxl_generate(config: dict[str, Any], seed: int, device: str, out_path: Path) -> None:
+def _load_sdxl(device: str) -> Any:
     import torch
     from diffusers import AutoencoderKL, StableDiffusionXLPipeline
 
     vae = AutoencoderKL.from_pretrained(
         resolve_model("madebyollin/sdxl-vae-fp16-fix"), torch_dtype=torch.float16
     )
-    pipe = StableDiffusionXLPipeline.from_pretrained(
+    return StableDiffusionXLPipeline.from_pretrained(
         resolve_model("stabilityai/stable-diffusion-xl-base-1.0"),
         vae=vae,
         torch_dtype=torch.float16,
         variant="fp16",
         use_safetensors=True,
     ).to(device)
+
+
+def _sdxl_generate(config: dict[str, Any], seed: int, device: str, out_path: Path) -> None:
+    import torch
+
+    pipe = residency.acquire(f"sdxl:{device}", lambda: _load_sdxl(device))
     generator = torch.Generator(device="cpu").manual_seed(seed)
     image = pipe(
         prompt=config["prompt"],
@@ -66,13 +73,15 @@ class BackgroundStage:
         shot_id = str(config["shot_id"])
         out = context.workdir / f"{shot_id}.png"
         self._generator(config, request.seed, resolve_device(), out)
-        return StageResult(
-            artifacts={"plate": str(out)},
-            metrics={
-                "width": float(config.get("width", DEFAULT_WIDTH)),
-                "height": float(config.get("height", DEFAULT_HEIGHT)),
-            },
-        )
+        metrics = {
+            "width": float(config.get("width", DEFAULT_WIDTH)),
+            "height": float(config.get("height", DEFAULT_HEIGHT)),
+        }
+        event = residency.last_acquisition()
+        if event is not None:
+            metrics["model_load_s"] = round(event.load_seconds, 3)
+            metrics["model_resident"] = 1.0 if event.resident else 0.0
+        return StageResult(artifacts={"plate": str(out)}, metrics=metrics)
 
     async def cleanup(self) -> None:
         return None

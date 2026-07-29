@@ -2,6 +2,7 @@ from pathlib import Path
 
 from sqlalchemy.engine import Engine
 
+from rivet.adapters import residency
 from rivet.audit.receipt import build_campaign_receipt
 from rivet.audit.semantic import SemanticJudge, qwen_judge
 from rivet.domain.receipt import CampaignReceipt
@@ -110,6 +111,8 @@ async def run_campaign(
         jobs.set_status(job.id, "failed", error=str(error))
         projects.advance(project_id, ProjectStatus.FAILED)
         raise CampaignFailed(f"campaign failed after generation: {error}") from error
+    finally:
+        residency.release_all()
     jobs.set_status(job.id, "succeeded")
     projects.advance(project_id, ProjectStatus.READY)
     projects.advance(project_id, ProjectStatus.EXPORTED)

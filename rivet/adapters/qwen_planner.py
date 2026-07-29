@@ -4,8 +4,8 @@ import re
 from collections.abc import Callable
 from typing import Any
 
+from rivet.adapters import residency
 from rivet.adapters.heuristic_planner import propose_shots
-from rivet.adapters.model_cache import resolve_model
 from rivet.domain.models import BrandDNA, ShotCopy, ShotPlan
 from rivet.pipeline.device import resolve_device
 
@@ -26,14 +26,12 @@ def narration_limit(duration_s: float) -> int:
 
 
 def qwen_writer(image_path: str, prompt: str) -> str:
-    import torch
     from PIL import Image
-    from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
-    name = resolve_model("Qwen/Qwen3-VL-4B-Instruct")
+    from rivet.audit.semantic import load_qwen_vl
+
     device = resolve_device()
-    proc = AutoProcessor.from_pretrained(name)
-    model = Qwen3VLForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to(device)
+    proc, model = residency.acquire(f"qwen-vl:{device}", lambda: load_qwen_vl(device))
     image = Image.open(image_path).convert("RGB")
     messages = [
         {
