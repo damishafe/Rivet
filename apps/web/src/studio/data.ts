@@ -40,15 +40,15 @@ const pass = (
 ): Check => ({ id, metric, threshold, observed, status: 'pass', owner })
 
 const verifiedChecks: Check[] = [
-  pass('A01', 'protected asset lineage', 'exact sha256 match', 'match', 'compose'),
-  pass('A02', 'logo fidelity mean pixel diff', '<= 40', '9.3', 'layout'),
-  pass('A03', 'rendered copy equals approved copy', 'exact string match', 'match', 'copy/layout'),
-  pass('A04', 'saturated colour hue vs palette', '<= 40 degrees', '1.9', 'background/layout'),
-  pass('A05', 'safe-area geometry and text overflow', '0 violations', '0', 'layout'),
-  pass('A06', 'planned product share of frame', '>= 0.05', '0.151', 'layout/mask'),
-  pass('A07', 'forbidden claims and required phrases', '0 forbidden + all required', 'clean', 'copy'),
-  pass('A09', 'product fidelity mean pixel diff', '<= 40', '0.0', 'compose'),
-  pass('A10', 'text contrast ratio', '>= 4.0', '7.28', 'layout'),
+  pass('A01', 'asset lineage', 'exact sha256 match', 'match', 'compose'),
+  pass('A02', 'logo fidelity', '<= 40', '9.3', 'layout'),
+  pass('A03', 'copy integrity', 'exact string match', 'match', 'copy/layout'),
+  pass('A04', 'palette drift', '<= 40 degrees', '1.9', 'background/layout'),
+  pass('A05', 'safe area', '0 violations', '0', 'layout'),
+  pass('A06', 'product share', '>= 0.05', '0.151', 'layout/mask'),
+  pass('A07', 'claims policy', '0 forbidden + all required', 'clean', 'copy'),
+  pass('A09', 'product fidelity', '<= 40', '0.0', 'compose'),
+  pass('A10', 'text contrast', '>= 4.0', '7.28', 'layout'),
 ]
 
 export const RECEIPT = {

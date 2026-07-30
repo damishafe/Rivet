@@ -35,15 +35,16 @@ export default function Studio() {
   const scene = scenes.find((s) => s.id === activeId) ?? scenes[0]
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
-      <div className="flex items-center gap-3 border-b border-border bg-surface px-4 py-2">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-faint">state</span>
+    <div className="flex h-screen items-stretch bg-gradient-to-br from-[#0a0a0d] via-background to-[#0d0a10] p-4 text-foreground">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background/80 shadow-2xl shadow-black/60 backdrop-blur">
+      <div className="flex items-center gap-3 border-b border-border px-5 py-3">
+        <span className="text-[12px] text-faint">State</span>
         <div className="flex gap-1">
           {MODES.map((option) => (
             <button
               key={option.id}
               onClick={() => select(option.id)}
-              className={`cursor-pointer rounded-full border px-2.5 py-0.5 font-mono text-[10px] transition-colors ${
+              className={`cursor-pointer rounded-full border px-3 py-1 text-[12px] transition-colors ${
                 mode === option.id
                   ? 'border-border-strong bg-elevated text-foreground'
                   : 'border-transparent text-faint hover:text-muted'
@@ -53,7 +54,7 @@ export default function Studio() {
             </button>
           ))}
         </div>
-        <p className="ml-auto hidden truncate font-mono text-[10px] text-faint sm:block">
+        <p className="ml-auto hidden truncate font-mono text-[11px] text-faint md:block">
           Radeon PRO W7900 · 67.8s cold · 27/27 checks
         </p>
       </div>
@@ -61,9 +62,10 @@ export default function Studio() {
       <div className="flex min-h-0 flex-1">
         <Sidebar scenes={scenes} activeId={activeId} onSelect={setActiveId} />
         <SceneCanvas scene={scene} running={mode === 'running'} />
-        <div className="w-[320px] shrink-0 border-l border-border bg-surface">
+        <div className="w-[330px] shrink-0 border-l border-border">
           {mode === 'running' ? <StageMonitor /> : <AuditPanel scene={scene} />}
         </div>
+      </div>
       </div>
     </div>
   )
