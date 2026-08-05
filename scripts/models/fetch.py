@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass, field
 
 WEIGHT_NOISE = ["*.bin", "*.ckpt", "*.msgpack", "*.onnx", "*openvino*", "*.h5"]
+VOICES = ("af_heart", "ef_dora", "ff_siwis", "if_sara", "pf_dora", "zf_xiaobei")
 
 
 @dataclass
@@ -20,6 +21,7 @@ class Model:
     revision: str
     purpose: str
     ignore: list[str] = field(default_factory=list)
+    require: list[str] = field(default_factory=list)
 
 
 MODELS = (
@@ -59,8 +61,9 @@ MODELS = (
     Model(
         repo_id="hexgrad/Kokoro-82M",
         revision="f3ff3571791e39611d31c381e3a41a3af07b4987",
-        purpose="narration",
+        purpose="narration in every supported language",
         ignore=["*.onnx", "*openvino*"],
+        require=[f"voices/{voice}.pt" for voice in VOICES],
     ),
     Model(
         repo_id="openai/whisper-tiny.en",
@@ -82,7 +85,11 @@ def _cached(model: Model) -> bool:
         return False
     # A snapshot holding only config files reports as present and fails at load
     # time instead, which on metered hardware is discovered expensively.
-    return any(path.suffix in WEIGHT_SUFFIXES for path in snapshot.rglob("*"))
+    if not any(path.suffix in WEIGHT_SUFFIXES for path in snapshot.rglob("*")):
+        return False
+    # Narration voices live in their own files: the model can be complete while the
+    # voice a language needs is absent, which only surfaces mid-generation.
+    return all((snapshot / name).exists() for name in model.require)
 
 
 def fetch(model: Model) -> float:

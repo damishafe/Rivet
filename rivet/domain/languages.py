@@ -23,6 +23,7 @@ class Language(BaseModel):
     voice: str
     font: str
     prompt_name: str
+    chars_per_second: int = 15
 
 
 LANGUAGES: dict[LanguageCode, Language] = {
@@ -48,7 +49,7 @@ LANGUAGES: dict[LanguageCode, Language] = {
     ),
     "zh": Language(
         code="zh", name="中文", kokoro_code="z", voice="zf_xiaobei",
-        font="NotoSansSC.ttf", prompt_name="Simplified Chinese",
+        font="NotoSansSC.ttf", prompt_name="Simplified Chinese", chars_per_second=5,
     ),
 }
 

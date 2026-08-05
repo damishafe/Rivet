@@ -6,6 +6,7 @@ from typing import Any
 
 from rivet.adapters import residency
 from rivet.adapters.heuristic_planner import propose_shots
+from rivet.domain.languages import language
 from rivet.domain.models import BrandDNA, ShotCopy, ShotPlan
 from rivet.pipeline.device import resolve_device
 
@@ -24,8 +25,15 @@ SPOKEN_CHARS_PER_SECOND = 15
 SPOKEN_OVERSHOOT = 1.2
 
 
-def narration_limit(duration_s: float) -> int:
-    return max(40, int(duration_s * SPOKEN_CHARS_PER_SECOND))
+def narration_limit(duration_s: float, code: str = "en") -> int:
+    """How much can actually be said aloud in the time the scene is on screen.
+
+    Rates differ by script: a second of Mandarin carries far fewer characters than a
+    second of Portuguese, so a shared limit would either truncate one or overrun the
+    other.
+    """
+    rate = language(code).chars_per_second
+    return max(20, int(duration_s * rate))
 
 
 def qwen_writer(image_path: str, prompt: str) -> str:
@@ -53,6 +61,7 @@ def qwen_writer(image_path: str, prompt: str) -> str:
 
 
 def build_prompt(dna: BrandDNA, brief: str) -> str:
+    target = language(dna.language)
     palette = ", ".join(color.hex for color in dna.palette[:3])
     tone = ", ".join(dna.tone) if dna.tone else "clean, modern"
     audience = dna.audience or "general consumers"
@@ -60,6 +69,8 @@ def build_prompt(dna: BrandDNA, brief: str) -> str:
     forbidden = ", ".join(dna.forbidden_claims) or "none"
     return (
         f"You are an advertising copywriter. Study the product image.\n"
+        f"Write every headline, support line, call to action and narration in "
+        f"{target.prompt_name}. Write for that market, do not translate from English.\n"
         f"Product: {dna.product_name}\nAudience: {audience}\nTone: {tone}\n"
         f"Brief: {brief or 'introduce the product honestly'}\n"
         f"Brand colours: {palette}\n"
@@ -73,8 +84,8 @@ def build_prompt(dna: BrandDNA, brief: str) -> str:
         f"- support at most {LIMITS['support']} characters\n"
         f"- cta at most {LIMITS['cta']} characters\n"
         "- narration is one short complete sentence spoken aloud over the scene and must fit "
-        f"its length: at most {narration_limit(4.0)} characters for hook and cta, "
-        f"{narration_limit(5.0)} for proof\n"
+        f"its length: at most {narration_limit(4.0, dna.language)} characters for hook and "
+        f"cta, {narration_limit(5.0, dna.language)} for proof\n"
         "- background_prompt describes ONLY the empty environment behind the product: "
         "surfaces, materials, light and colour. The product is added afterwards, so never "
         "mention the product, a speaker, a microphone, a device or any object that could be "
@@ -143,7 +154,9 @@ def safe_background(prompt: str, product_name: str) -> str:
     return prompt
 
 
-def _merge(shot: ShotPlan, fields: dict[str, Any], product_name: str) -> ShotPlan:
+def _merge(
+    shot: ShotPlan, fields: dict[str, Any], product_name: str, code: str = "en"
+) -> ShotPlan:
     copy_ = ShotCopy(
         headline=_clean(fields.get("headline"), LIMITS["headline"]) or shot.copy_.headline,
         support=_clean(fields.get("support"), LIMITS["support"]) or shot.copy_.support,
@@ -151,7 +164,7 @@ def _merge(shot: ShotPlan, fields: dict[str, Any], product_name: str) -> ShotPla
     )
     spoken = fields.get("narration")
     narration = (
-        clip_narration(spoken, narration_limit(shot.duration_s))
+        clip_narration(spoken, narration_limit(shot.duration_s, code))
         if isinstance(spoken, str)
         else ""
     ) or shot.narration
@@ -190,5 +203,6 @@ def propose_shots_vlm(
     if not scenes:
         return baseline
     return [
-        _merge(shot, scenes.get(shot.shot_id, {}), dna.product_name) for shot in baseline
+        _merge(shot, scenes.get(shot.shot_id, {}), dna.product_name, dna.language)
+        for shot in baseline
     ]
