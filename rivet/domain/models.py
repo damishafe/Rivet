@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from rivet.domain.ids import new_id
+from rivet.domain.languages import DEFAULT_LANGUAGE, LanguageCode
 from rivet.domain.layouts import LayoutTemplate
 from rivet.domain.states import ProjectStatus
 
@@ -32,6 +33,7 @@ class BrandDNA(BaseModel):
     approved_facts: list[ApprovedFact] = []
     logo_asset_id: str
     product_asset_id: str
+    language: LanguageCode = DEFAULT_LANGUAGE
     confirmed_at: datetime | None = None
 
 

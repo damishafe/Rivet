@@ -13,12 +13,13 @@ from sqlalchemy.engine import Engine
 from rivet.adapters.background import BackgroundStage
 from rivet.adapters.narrate import NarrateStage
 from rivet.adapters.segment import SegmentStage
+from rivet.domain.languages import Language
 from services.api.main import create_app
 
 ffmpeg_missing = shutil.which("ffmpeg") is None
 
 
-def fake_narrator(text: str, device: str, out_path: Path) -> float:
+def fake_narrator(text: str, device: str, out_path: Path, lang: Language) -> float:
     sf.write(out_path, np.zeros(24000, dtype="float32"), 24000)
     return 1.0
 

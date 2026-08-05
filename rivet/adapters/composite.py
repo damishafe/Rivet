@@ -1,6 +1,7 @@
 from PIL import Image
 
 from rivet.compositor.compose import compose_still
+from rivet.domain.languages import language
 from rivet.domain.layouts import LayoutTemplate, is_layout
 from rivet.pipeline.fingerprint import cache_key
 from rivet.pipeline.stage import (
@@ -35,6 +36,7 @@ class CompositeStage:
             raise ValueError(f"unknown layout {raw_layout}")
         raw = config.get("accent", [255, 59, 0])
         accent = (int(raw[0]), int(raw[1]), int(raw[2]))
+        font_name = language(config.get("language")).font
         still = compose_still(
             background,
             cutout,
@@ -44,6 +46,7 @@ class CompositeStage:
             str(config.get("cta", "")),
             layout,
             accent,
+            font_name=font_name,
         )
         out = context.workdir / f"{config['shot_id']}-still.png"
         still.save(out)

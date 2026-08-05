@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 
 from rivet.compositor.contrast import SCRIM_RGB, needed_darkening
 from rivet.compositor.geometry import CANVASES, Format, geometry_for, rect_px
-from rivet.compositor.typography import fit_lines, fit_single_line
+from rivet.compositor.typography import DEFAULT_FONT, fit_lines, fit_single_line
 from rivet.domain.layouts import LayoutTemplate
 
 CANVAS = (1080, 1920)
@@ -84,12 +84,20 @@ def _place_contained(base: Image.Image, overlay: Image.Image, box: Box) -> None:
 
 
 def _draw_text(
-    draw: ImageDraw.ImageDraw, text: str, box: Box, weight: int, color: Color, centered: bool
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    box: Box,
+    weight: int,
+    color: Color,
+    centered: bool,
+    font_name: str = DEFAULT_FONT,
 ) -> None:
     if not text:
         return
     x, y, w, h = box
-    font, lines, line_height, _ = fit_lines(draw, text, w, h, weight, max_size=min(h, 150))
+    font, lines, line_height, _ = fit_lines(
+        draw, text, w, h, weight, max_size=min(h, 150), font_name=font_name
+    )
     ty = float(y)
     for line in lines:
         line_width = draw.textlength(line, font=font)
@@ -98,12 +106,16 @@ def _draw_text(
         ty += line_height
 
 
-def _draw_cta(draw: ImageDraw.ImageDraw, text: str, box: Box, accent: Color) -> None:
+def _draw_cta(
+    draw: ImageDraw.ImageDraw, text: str, box: Box, accent: Color, font_name: str = DEFAULT_FONT
+) -> None:
     if not text:
         return
     x, y, w, h = box
     draw.rounded_rectangle([x, y, x + w, y + h], radius=h // 2, fill=accent)
-    font, _ = fit_single_line(draw, text, int(w * 0.82), weight=700, max_size=int(h * 0.5))
+    font, _ = fit_single_line(
+        draw, text, int(w * 0.82), weight=700, max_size=int(h * 0.5), font_name=font_name
+    )
     ascent, descent = font.getmetrics()
     tx = x + (w - draw.textlength(text, font=font)) / 2
     ty = y + (h - (ascent + descent)) / 2
@@ -121,6 +133,7 @@ def compose_still(
     accent: Color,
     canvas: tuple[int, int] | None = None,
     fmt: Format = "story",
+    font_name: str = DEFAULT_FONT,
 ) -> Image.Image:
     canvas = canvas or CANVASES[fmt]
     base = cover_fit(background, canvas)
@@ -131,7 +144,7 @@ def compose_still(
     _place_contained(base, cutout, rect_px(geo["product"], canvas))
     _place_contained(base, logo, rect_px(geo["logo"], canvas))
     centered = fmt == "feed" or (fmt == "story" and layout != "split_proof")
-    _draw_text(draw, headline, rect_px(geo["headline"], canvas), 800, WHITE, centered)
-    _draw_text(draw, support, rect_px(geo["support"], canvas), 400, MUTED, centered)
-    _draw_cta(draw, cta, rect_px(geo["cta"], canvas), accent)
+    _draw_text(draw, headline, rect_px(geo["headline"], canvas), 800, WHITE, centered, font_name)
+    _draw_text(draw, support, rect_px(geo["support"], canvas), 400, MUTED, centered, font_name)
+    _draw_cta(draw, cta, rect_px(geo["cta"], canvas), accent, font_name)
     return base

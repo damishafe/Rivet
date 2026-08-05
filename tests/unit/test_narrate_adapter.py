@@ -5,6 +5,7 @@ import numpy as np
 import soundfile as sf
 
 from rivet.adapters.narrate import NarrateStage
+from rivet.domain.languages import Language
 from rivet.pipeline.stage import StageContext, StageRequest
 
 
@@ -14,7 +15,7 @@ def make_context(tmp_path: Path) -> StageContext:
     return StageContext(project_id="p1", job_id="j1", workdir=workdir)
 
 
-def fake_narrator(text: str, device: str, out_path: Path) -> float:
+def fake_narrator(text: str, device: str, out_path: Path, lang: Language) -> float:
     sf.write(out_path, np.zeros(24000, dtype="float32"), 24000)
     return 1.0
 
@@ -32,7 +33,7 @@ def test_narrate_writes_wav(tmp_path: Path) -> None:
 def test_empty_text_skips_narrator(tmp_path: Path) -> None:
     calls: list[str] = []
 
-    def spy(text: str, device: str, out_path: Path) -> float:
+    def spy(text: str, device: str, out_path: Path, lang: Language) -> float:
         calls.append(text)
         return 2.0
 

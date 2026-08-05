@@ -107,7 +107,11 @@ def render_plan(
                 stage=stages.narrate,
                 request=StageRequest(
                     stage=f"narration.{shot.shot_id}", seed=shot.seed,
-                    config={"shot_id": shot.shot_id, "text": shot.narration},
+                    config={
+                        "shot_id": shot.shot_id,
+                        "text": shot.narration,
+                        "language": inputs.brand.language,
+                    },
                 ),
             )
         )

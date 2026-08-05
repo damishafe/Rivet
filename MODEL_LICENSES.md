@@ -25,7 +25,8 @@ blocked.
 
 | Kind | Name | Revision | License | Notes |
 |----|----|----|----|----|
-| Font | Inter (variable) | Inter 4.x (opsz,wght variable) | SIL OFL 1.1 | bundled in `rivet/compositor/fonts/` for deterministic ad typography |
+| Font | Inter (variable) | Inter 4.x (opsz,wght variable) | SIL OFL 1.1 | bundled in `rivet/compositor/fonts/` for deterministic ad typography; Latin, Greek, Cyrillic |
+| Font | Noto Sans SC | Google Fonts v40 | SIL OFL 1.1 | bundled for Simplified Chinese; Inter has no CJK glyphs and would render empty boxes |
 | Font | Space Grotesk, Inter, JetBrains Mono | `@fontsource/*` pinned in `apps/web/package-lock.json` | SIL OFL 1.1 | self-hosted web UI typography; no CDN requests |
 
 ## Demo assets

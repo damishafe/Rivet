@@ -14,6 +14,7 @@ from rivet.audit.checks import audit_scene
 from rivet.audit.scene import SceneAudit
 from rivet.compositor.compose import compose_still
 from rivet.compositor.geometry import CANVASES, Format
+from rivet.domain.languages import language
 from rivet.domain.models import BrandDNA, ShotPlan
 from rivet.domain.receipt import SceneResult
 
@@ -55,6 +56,7 @@ def render_formats(
                 shot.layout_template,
                 accent,
                 fmt=fmt,
+                font_name=language(brand.language).font,
             ).save(still_path)
 
             scene = SceneAudit(

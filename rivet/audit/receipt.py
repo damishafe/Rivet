@@ -7,6 +7,8 @@ from rivet.audit.checks import SceneAudit, audit_scene
 from rivet.audit.repair import claims_failed, repair_copy
 from rivet.audit.semantic import SemanticJudge
 from rivet.compositor.compose import compose_still
+from rivet.compositor.typography import DEFAULT_FONT
+from rivet.domain.languages import language
 from rivet.domain.layouts import LayoutTemplate, is_layout
 from rivet.domain.models import BrandDNA, ShotCopy, ShotPlan
 from rivet.domain.receipt import CampaignReceipt, RepairRecord, SceneResult
@@ -26,12 +28,14 @@ def _recomposite(
     layout: LayoutTemplate,
     accent: Color,
     still_path: str,
+    font_name: str = DEFAULT_FONT,
 ) -> None:
     background = Image.open(background_path).convert("RGB")
     cutout = Image.open(cutout_path).convert("RGBA")
     logo = Image.open(logo_path).convert("RGBA")
     still = compose_still(
-        background, cutout, logo, copy.headline, copy.support, copy.cta, layout, accent
+        background, cutout, logo, copy.headline, copy.support, copy.cta, layout, accent,
+        font_name=font_name,
     )
     still.save(still_path)
 
@@ -87,7 +91,10 @@ def build_campaign_receipt(
         report = audit_scene(make_scene(copy), copy.model_dump(by_alias=True), judge)
         if not report.passed and claims_failed(report.checks) and shot.shot_id in backgrounds:
             fixed = repair_copy(copy, brand.forbidden_claims, brand.required_text)
-            _recomposite(backgrounds[shot.shot_id], cutout_path, logo_path, fixed, layout, accent, still_path)
+            _recomposite(
+                backgrounds[shot.shot_id], cutout_path, logo_path, fixed, layout, accent,
+                still_path, language(brand.language).font,
+            )
             report = audit_scene(make_scene(fixed), fixed.model_dump(by_alias=True), judge)
             repairs.append(
                 RepairRecord(
