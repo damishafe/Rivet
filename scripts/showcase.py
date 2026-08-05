@@ -53,6 +53,8 @@ def _collect(name: str, receipt: object, prefix: str) -> Result:
     GALLERY.mkdir(parents=True, exist_ok=True)
     stills: list[str] = []
     for scene in data["scenes"]:
+        if scene.get("format", "story") != "story":
+            continue
         src = Path(scene["still_path"])
         if src.is_file():
             dest = GALLERY / f"{prefix}-{scene['shot_id']}.png"
@@ -68,6 +70,7 @@ def _collect(name: str, receipt: object, prefix: str) -> Result:
         for s in data["scenes"]
         for c in s["checks"]
     ]
+    checks = list(dict.fromkeys(checks))
     repairs = [(r["shot_id"], r["detail"], r["after_passed"]) for r in data.get("repairs", [])]
     return Result(
         name=name,

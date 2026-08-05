@@ -45,6 +45,8 @@ def run_brand(root: Path, slug: str, name: str, brief: str, vlm: bool) -> dict[s
     GALLERY.mkdir(parents=True, exist_ok=True)
     stills: list[str] = []
     for scene in data["scenes"]:
+        if scene.get("format", "story") != "story":
+            continue
         src = Path(scene["still_path"])
         if src.is_file():
             dest = GALLERY / f"brand-{slug}-{scene['shot_id']}.png"
