@@ -21,6 +21,7 @@ class SceneResult(BaseModel):
     seed: int
     checks: list[AuditCheck]
     passed: bool
+    format: str = "story"
 
 
 class CampaignReceipt(BaseModel):

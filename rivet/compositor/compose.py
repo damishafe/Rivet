@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from rivet.compositor.contrast import SCRIM_RGB, needed_darkening
-from rivet.compositor.geometry import GEOMETRY, rect_px
+from rivet.compositor.geometry import CANVASES, Format, geometry_for, rect_px
 from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.layouts import LayoutTemplate
 
@@ -46,9 +46,14 @@ def _mean_color(base: Image.Image, box: Box) -> Color:
 
 
 def _legibility_scrim(
-    base: Image.Image, layout: LayoutTemplate, headline: str, support: str, canvas: tuple[int, int]
+    base: Image.Image,
+    layout: LayoutTemplate,
+    headline: str,
+    support: str,
+    canvas: tuple[int, int],
+    fmt: Format,
 ) -> None:
-    geo = GEOMETRY[layout]
+    geo = geometry_for(layout, fmt)
     strongest = 0.0
     for key, color, text in (("headline", WHITE, headline), ("support", MUTED, support)):
         if not text:
@@ -114,16 +119,18 @@ def compose_still(
     cta: str,
     layout: LayoutTemplate,
     accent: Color,
-    canvas: tuple[int, int] = CANVAS,
+    canvas: tuple[int, int] | None = None,
+    fmt: Format = "story",
 ) -> Image.Image:
+    canvas = canvas or CANVASES[fmt]
     base = cover_fit(background, canvas)
-    _legibility_scrim(base, layout, headline, support, canvas)
+    _legibility_scrim(base, layout, headline, support, canvas, fmt)
     _scrim(base)
     draw = ImageDraw.Draw(base, "RGBA")
-    geo = GEOMETRY[layout]
+    geo = geometry_for(layout, fmt)
     _place_contained(base, cutout, rect_px(geo["product"], canvas))
     _place_contained(base, logo, rect_px(geo["logo"], canvas))
-    centered = layout != "split_proof"
+    centered = fmt == "feed" or (fmt == "story" and layout != "split_proof")
     _draw_text(draw, headline, rect_px(geo["headline"], canvas), 800, WHITE, centered)
     _draw_text(draw, support, rect_px(geo["support"], canvas), 400, MUTED, centered)
     _draw_cta(draw, cta, rect_px(geo["cta"], canvas), accent)

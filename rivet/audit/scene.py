@@ -2,7 +2,7 @@ import colorsys
 import re
 from dataclasses import dataclass
 
-from rivet.compositor.geometry import SAFE_MARGIN
+from rivet.compositor.geometry import SAFE_MARGIN, Format
 from rivet.domain.layouts import LayoutTemplate
 
 Color = tuple[int, int, int]
@@ -27,6 +27,7 @@ class SceneAudit:
     purpose: str = ""
     audience: str = ""
     narration: str = ""
+    format: Format = "story"
     canvas: tuple[int, int] = (1080, 1920)
     palette_threshold: float = 40.0
     prominence_threshold: float = 0.05

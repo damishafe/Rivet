@@ -76,9 +76,12 @@ def test_campaign_produces_passing_receipt(engine: Engine, tmp_path: Path) -> No
     assert response.status_code == 200, response.text
     receipt = response.json()
     assert receipt["passed"] is True
-    assert [s["shot_id"] for s in receipt["scenes"]] == ["hook", "proof", "cta"]
-    assert all(len(s["checks"]) == 10 for s in receipt["scenes"])
-    assert all(any(c["check_id"] == "A08" for c in s["checks"]) for s in receipt["scenes"])
+    story = [s for s in receipt["scenes"] if s["format"] == "story"]
+    assert [s["shot_id"] for s in story] == ["hook", "proof", "cta"]
+    assert {s["format"] for s in receipt["scenes"]} == {"story", "feed", "banner"}
+    assert len(receipt["scenes"]) == 9
+    assert all(len(s["checks"]) == 10 for s in story)
+    assert all(any(c["check_id"] == "A08" for c in s["checks"]) for s in story)
     assert len(receipt["receipt_hash"]) == 64
     assert receipt["video_path"] and Path(receipt["video_path"]).exists()
     assert receipt["captions_path"] and Path(receipt["captions_path"]).exists()

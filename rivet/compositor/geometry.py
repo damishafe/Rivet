@@ -1,8 +1,17 @@
+from typing import Literal
+
 from rivet.domain.layouts import LayoutTemplate
 
 Rect = tuple[float, float, float, float]
+Format = Literal["story", "feed", "banner"]
 
 SAFE_MARGIN = 0.04
+
+CANVASES: dict[Format, tuple[int, int]] = {
+    "story": (1080, 1920),
+    "feed": (1080, 1080),
+    "banner": (1920, 1080),
+}
 
 GEOMETRY: dict[LayoutTemplate, dict[str, Rect]] = {
     "center_hero": {
@@ -27,6 +36,39 @@ GEOMETRY: dict[LayoutTemplate, dict[str, Rect]] = {
         "cta": (0.20, 0.75, 0.60, 0.08),
     },
 }
+
+FEED_GEOMETRY: dict[str, Rect] = {
+    "logo": (0.40, 0.06, 0.20, 0.07),
+    "product": (0.26, 0.17, 0.48, 0.42),
+    "headline": (0.07, 0.635, 0.86, 0.115),
+    "support": (0.12, 0.765, 0.76, 0.055),
+    "cta": (0.30, 0.85, 0.40, 0.08),
+}
+
+BANNER_GEOMETRY: dict[str, Rect] = {
+    "logo": (0.06, 0.08, 0.14, 0.075),
+    "product": (0.56, 0.13, 0.36, 0.74),
+    "headline": (0.06, 0.30, 0.44, 0.20),
+    "support": (0.06, 0.545, 0.42, 0.085),
+    "cta": (0.06, 0.70, 0.26, 0.11),
+}
+
+_BY_FORMAT: dict[Format, dict[str, Rect] | None] = {
+    "story": None,
+    "feed": FEED_GEOMETRY,
+    "banner": BANNER_GEOMETRY,
+}
+
+
+def geometry_for(layout: LayoutTemplate, fmt: Format = "story") -> dict[str, Rect]:
+    """Regions for a layout in a given aspect.
+
+    A vertical layout does not survive being squashed into a banner: the boxes keep
+    their proportions and collide. Feed and banner carry their own composition, and
+    only the vertical story format varies by layout.
+    """
+    override = _BY_FORMAT[fmt]
+    return GEOMETRY[layout] if override is None else override
 
 
 def rect_px(rect: Rect, canvas: tuple[int, int]) -> tuple[int, int, int, int]:

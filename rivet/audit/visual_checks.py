@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from rivet.audit.scene import SceneAudit, hex_to_rgb, hue, hue_distance, is_neutral
 from rivet.compositor.compose import MUTED, WHITE, contained_box
 from rivet.compositor.contrast import LEGIBILITY_FLOOR, contrast_ratio
-from rivet.compositor.geometry import GEOMETRY, rect_px
+from rivet.compositor.geometry import geometry_for, rect_px
 from rivet.compositor.typography import fit_lines, fit_single_line
 from rivet.domain.models import AuditCheck
 
@@ -14,7 +14,7 @@ TEXT_INK_DISTANCE = 90
 def check_logo_presence(scene: SceneAudit) -> AuditCheck:
     still = np.asarray(Image.open(scene.still_path).convert("RGB"))
     logo = Image.open(scene.logo_path).convert("RGBA")
-    box = rect_px(GEOMETRY[scene.layout]["logo"], scene.canvas)
+    box = rect_px(geometry_for(scene.layout, scene.format)["logo"], scene.canvas)
     px, py, placed_w, placed_h = contained_box((logo.width, logo.height), box)
     placed = np.asarray(logo.resize((placed_w, placed_h)))
     region = still[py : py + placed_h, px : px + placed_w]
@@ -41,7 +41,7 @@ def check_logo_presence(scene: SceneAudit) -> AuditCheck:
 def check_product_fidelity(scene: SceneAudit) -> AuditCheck:
     still = np.asarray(Image.open(scene.still_path).convert("RGB"))
     product = Image.open(scene.cutout_path).convert("RGBA")
-    box = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    box = rect_px(geometry_for(scene.layout, scene.format)["product"], scene.canvas)
     px, py, placed_w, placed_h = contained_box((product.width, product.height), box)
     placed = np.asarray(product.resize((placed_w, placed_h)))
     region = still[py : py + placed_h, px : px + placed_w]
@@ -78,7 +78,7 @@ def _background_under_text(patch: np.ndarray, color: tuple[int, int, int]) -> tu
 
 def check_legibility(scene: SceneAudit) -> AuditCheck:
     still = Image.open(scene.still_path).convert("RGB")
-    boxes = GEOMETRY[scene.layout]
+    boxes = geometry_for(scene.layout, scene.format)
     worst = 21.0
     for key, color, text in (
         ("headline", WHITE, scene.headline),
@@ -102,7 +102,7 @@ def check_legibility(scene: SceneAudit) -> AuditCheck:
 
 def check_palette(scene: SceneAudit) -> AuditCheck:
     still = Image.open(scene.still_path).convert("RGB")
-    px, py, pw, ph = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    px, py, pw, ph = rect_px(geometry_for(scene.layout, scene.format)["product"], scene.canvas)
     masked = still.copy()
     ImageDraw.Draw(masked).rectangle([px, py, px + pw, py + ph], fill=(0, 0, 0))
     quantized = masked.resize((64, 64)).quantize(6)
@@ -154,7 +154,7 @@ def _text_overflow(scene: SceneAudit, boxes: dict[str, tuple[float, float, float
 
 
 def check_safe_area(scene: SceneAudit) -> AuditCheck:
-    boxes = GEOMETRY[scene.layout]
+    boxes = geometry_for(scene.layout, scene.format)
     margin = scene.safe_margin
     rects = list(boxes.values())
     inside = all(
@@ -186,7 +186,7 @@ def check_prominence(scene: SceneAudit) -> AuditCheck:
     cutout = np.asarray(cutout_image)
     alpha_fraction = float((cutout[:, :, 3] > 128).mean()) if cutout.size else 0.0
     cw, ch = cutout_image.size
-    _, _, box_w, box_h = rect_px(GEOMETRY[scene.layout]["product"], scene.canvas)
+    _, _, box_w, box_h = rect_px(geometry_for(scene.layout, scene.format)["product"], scene.canvas)
     scale = min(box_w / cw, box_h / ch)
     placed_opaque_area = alpha_fraction * cw * ch * scale**2
     canvas_w, canvas_h = scene.canvas

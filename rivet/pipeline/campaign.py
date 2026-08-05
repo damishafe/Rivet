@@ -18,6 +18,7 @@ from rivet.pipeline.campaign_inputs import (
     resolve_campaign_inputs,
     sha256_file,
 )
+from rivet.pipeline.formats import render_formats
 from rivet.pipeline.runner import JobRunner
 from rivet.render.assemble import assemble_scenes, mix_narration, write_srt
 from rivet.render.pack import build_pack
@@ -94,6 +95,15 @@ async def run_campaign(
             logo_sha_expected=inputs.logo.sha256,
             logo_sha_used=sha256_file(inputs.logo.path),
         )
+        alt = render_formats(
+            inputs.shots, workdir, inputs.brand, inputs.logo.path, cutout_path,
+            backgrounds, accent,
+            product_sha=(inputs.product.sha256, sha256_file(inputs.product.path)),
+            logo_sha=(inputs.logo.sha256, sha256_file(inputs.logo.path)),
+        )
+        receipt = receipt.model_copy(update={"scenes": [*receipt.scenes, *alt]})
+        receipt = receipt.model_copy(update={"passed": all(s.passed for s in receipt.scenes)})
+
         render = await runner.run_phase(job, render_plan(inputs, stages, workdir), workdir)
         if render.status != "succeeded":
             raise CampaignFailed(f"render failed: {render.error}")
