@@ -71,11 +71,20 @@ BRANDS = (
 )
 
 
+def _crop_to_content(path: Path) -> None:
+    """A real cutout is tight to the product; padding would understate its frame share."""
+    image = Image.open(path)
+    box = image.getbbox()
+    if box:
+        image.crop(box).save(path)
+
+
 def main() -> int:
     for slug, wordmark, draw_product, accent in BRANDS:
         folder = FIXTURES / slug
         folder.mkdir(parents=True, exist_ok=True)
         draw_product(folder / "product.png")
+        _crop_to_content(folder / "product.png")
         _logo(wordmark, accent, folder / "logo.png")
         print(f"  {slug}: product.png logo.png")
     print(f"wrote {len(BRANDS)} brand fixtures")

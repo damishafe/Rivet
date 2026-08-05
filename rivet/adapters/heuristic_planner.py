@@ -49,8 +49,14 @@ _SPECS: tuple[
 )
 
 
+def _palette_phrase(dna: BrandDNA) -> str:
+    hexes = [color.hex for color in dna.palette[:2]]
+    return f"colour palette {' and '.join(hexes)}" if hexes else "restrained neutral palette"
+
+
 def propose_shots(dna: BrandDNA, campaign_seed: int) -> list[ShotPlan]:
     tone = ", ".join(dna.tone) if dna.tone else "clean, modern"
+    palette = _palette_phrase(dna)
     cta_text = dna.required_text[0] if dna.required_text else f"Discover {dna.product_name}"
     shots: list[ShotPlan] = []
     for shot_id, layout, duration, motion_mode, purpose, setting in _SPECS:
@@ -59,7 +65,10 @@ def propose_shots(dna: BrandDNA, campaign_seed: int) -> list[ShotPlan]:
                 shot_id=shot_id,
                 purpose=purpose,
                 duration_s=duration,
-                background_prompt=f"{setting}, {tone} styling, empty scene, no products, no text",
+                background_prompt=(
+                    f"{setting}, {tone} styling, {palette}, "
+                    "empty scene, no products, no text"
+                ),
                 negative_prompt=BACKGROUND_NEGATIVE,
                 copy=ShotCopy(
                     headline=dna.product_name,
