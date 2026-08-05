@@ -6,7 +6,7 @@ import { StageMonitor } from '../studio/StageMonitor'
 import { BLOCKED_SCENE, SCENES } from '../studio/data'
 import type { Scene } from '../studio/data'
 
-type Mode = 'running' | 'verified' | 'blocked'
+export type Mode = 'running' | 'verified' | 'blocked'
 
 const MODES: { id: Mode; label: string }[] = [
   { id: 'running', label: 'Generating' },
@@ -35,37 +35,28 @@ export default function Studio() {
   const scene = scenes.find((s) => s.id === activeId) ?? scenes[0]
 
   return (
-    <div className="flex h-screen items-stretch bg-gradient-to-br from-[#0a0a0d] via-background to-[#0d0a10] p-4 text-foreground">
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background/80 shadow-2xl shadow-black/60 backdrop-blur">
-      <div className="flex items-center gap-3 border-b border-border px-5 py-3">
-        <span className="text-[12px] text-faint">State</span>
-        <div className="flex gap-1">
-          {MODES.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => select(option.id)}
-              className={`cursor-pointer rounded-full border px-3 py-1 text-[12px] transition-colors ${
-                mode === option.id
-                  ? 'border-border-strong bg-elevated text-foreground'
-                  : 'border-transparent text-faint hover:text-muted'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        <p className="ml-auto hidden truncate font-mono text-[11px] text-faint md:block">
-          Radeon PRO W7900 · 67.8s cold · 27/27 checks
-        </p>
-      </div>
+    <div className="studio-app flex h-screen min-h-[640px] items-stretch p-2 text-foreground sm:p-3">
+      <div className="studio-frame flex min-h-0 flex-1 overflow-hidden rounded-[22px] border border-white/[0.07] bg-[#09090b]/95 shadow-[0_28px_100px_rgba(0,0,0,0.65)]">
+        <Sidebar
+          scenes={scenes}
+          activeId={activeId}
+          onSelect={setActiveId}
+          mode={mode}
+          modes={MODES}
+          onModeSelect={select}
+        />
 
-      <div className="flex min-h-0 flex-1">
-        <Sidebar scenes={scenes} activeId={activeId} onSelect={setActiveId} />
-        <SceneCanvas scene={scene} running={mode === 'running'} />
-        <div className="w-[330px] shrink-0 border-l border-border">
+        <main className="min-w-0 flex-1 border-l border-white/[0.06]">
+          <SceneCanvas
+            scene={scene}
+            running={mode === 'running'}
+            onGenerate={() => select('running')}
+          />
+        </main>
+
+        <aside className="hidden w-[336px] shrink-0 border-l border-white/[0.06] bg-[#0b0b0e] xl:block">
           {mode === 'running' ? <StageMonitor /> : <AuditPanel scene={scene} />}
-        </div>
-      </div>
+        </aside>
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import colorsys
 from typing import Literal
 
 from rivet.compositor.layouts import LayoutTemplate
@@ -44,14 +45,31 @@ _SPECS: tuple[
     (
         "cta", "cta_lockup", 4.0, "controlled",
         "Close with the call to action",
-        "warm minimal gradient backdrop, no objects",
+        "minimal gradient backdrop, no objects",
     ),
 )
 
 
+_HUES = (
+    (15, "red"), (45, "amber"), (70, "yellow"), (160, "green"),
+    (200, "teal"), (250, "blue"), (290, "violet"), (340, "magenta"), (360, "red"),
+)
+
+
+def _colour_name(hex_value: str) -> str:
+    value = hex_value.lstrip("#")
+    rgb = tuple(int(value[i : i + 2], 16) / 255 for i in (0, 2, 4))
+    hue, saturation, brightness = colorsys.rgb_to_hsv(*rgb)
+    if saturation < 0.18:
+        return "charcoal" if brightness < 0.4 else "off-white"
+    name = next(label for edge, label in _HUES if hue * 360 <= edge)
+    return f"deep {name}" if brightness < 0.55 else name
+
+
 def _palette_phrase(dna: BrandDNA) -> str:
-    hexes = [color.hex for color in dna.palette[:2]]
-    return f"colour palette {' and '.join(hexes)}" if hexes else "restrained neutral palette"
+    """SDXL reads colour words, not hex codes, so the palette is named rather than quoted."""
+    names = list(dict.fromkeys(_colour_name(color.hex) for color in dna.palette[:2]))
+    return f"{' and '.join(names)} colour palette" if names else "restrained neutral palette"
 
 
 def propose_shots(dna: BrandDNA, campaign_seed: int) -> list[ShotPlan]:

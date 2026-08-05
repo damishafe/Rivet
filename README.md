@@ -12,6 +12,8 @@ Built for the AMD AI DevMaster Hackathon 2026 (Track 1: Multimodal Content Creat
   <img src="docs/gallery/blocked-hook.jpg" width="220" alt="Blocked scene">
 </p>
 
+**Live studio, nothing to install: [rivet-amd.vercel.app](https://rivet-amd.vercel.app)**
+
 **Left and centre: a verified export.** **Right: the same advertisement, refused.** The product
 file was altered after the brand approved it; A01 compared the confirmed sha256 against the bytes
 actually composited, failed, and no export pack was written. Both runs are real output from the

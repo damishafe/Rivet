@@ -16,6 +16,7 @@ audit is refused rather than shipped.
 | README with environment, startup, dependencies | [`README.md`](README.md) · one-command setup: [`install.sh`](install.sh) |
 | Demo video (3–5 min) | DEMO_VIDEO_LINK |
 | Supplementary material | [`poster.pdf`](poster.pdf) |
+| Live studio (no install) | **https://rivet-amd.vercel.app** |
 
 ## Verified execution on the Radeon PRO W7900
 
