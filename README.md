@@ -6,6 +6,25 @@ A product image, brand kit and spoken brief become a verified three-scene vertic
 
 Built for the AMD AI DevMaster Hackathon 2026 (Track 1: Multimodal Content Creation Tools) on a Radeon PRO W7900 · 48GB · ROCm 7.2.1.
 
+<p align="center">
+  <img src="docs/gallery/hero-hook.jpg" width="220" alt="Hook scene">
+  <img src="docs/gallery/hero-cta.jpg" width="220" alt="Call to action scene">
+  <img src="docs/gallery/blocked-hook.jpg" width="220" alt="Blocked scene">
+</p>
+
+**Left and centre: a verified export.** **Right: the same advertisement, refused.** The product
+file was altered after the brand approved it; A01 compared the confirmed sha256 against the bytes
+actually composited, failed, and no export pack was written. Both runs are real output from the
+W7900 — see [docs/gallery/](docs/gallery/).
+
+| Measured on the W7900 | |
+|---|---|
+| Full campaign, cold | **67.8s** — plan, generate, audit, render, pack |
+| Same work, models resident | **41.2s** |
+| Deterministic checks | **27/27** across three scenes |
+| Peak VRAM | 9168 MB of 49136 |
+| Offline, every socket blocked | **passes** |
+
 ## Why it is different
 
 Most generative ad tools ask you to trust the output. Rivet proves it.
