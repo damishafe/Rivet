@@ -2,10 +2,17 @@
 
 **Verified multimodal ad creation on one AMD Radeon GPU.**
 
-A product image, brand kit and brief become a three-scene vertical advertisement with
-narration and captions — and the product, logo and typography never pass through a
-generative model. Every export carries a Campaign Receipt, and an export that fails the
-audit is refused rather than shipped.
+Someone selling handmade soap can generate fifty advertisements tonight. If one says
+"clinically proven" because a language model reached for a phrase that sounded like
+marketing, that is a fine they cannot absorb — and unlike a large brand, there is no legal
+team between them and it. Generative tools made advertising cheap without making *checking*
+it cheap.
+
+Rivet moves the check into the tool. A product image, brand kit and brief become a
+three-scene advertisement in three delivery formats, with narration and captions. The
+product, logo and typography never pass through a generative model. Every asset is audited
+as it is made, every export carries a Campaign Receipt, and one that fails is refused
+rather than shipped.
 
 ## Deliverables
 
@@ -75,6 +82,11 @@ advisory.
 **A failing export is refused.** [`docs/gallery/`](docs/gallery/) shows a verified campaign
 beside the same advertisement after the product file was altered post-approval: A01 detects
 the mismatch, the project moves to `needs_repair`, and no pack is written.
+
+**One campaign, three delivery formats.** A 9:16 story, a 1:1 feed post and a 16:9 banner,
+each with its own composition rather than a squashed crop, and **each audited separately** —
+so a legible story cannot smuggle through an illegible banner. Nine audited deliverables
+from one run.
 
 **One pipeline, three brands.** [`docs/gallery/DIVERSITY.md`](docs/gallery/DIVERSITY.md)
 runs a speaker, an insulated flask and a coffee press through the same code with nothing

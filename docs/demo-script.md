@@ -12,14 +12,16 @@ Total: **3 min 55 s**. Aim for one take per section rather than one take overall
 
 **On screen:** the landing page at `/`.
 
-> "A brand can generate a thousand advertisements with a diffusion model in an afternoon,
-> and ship none of them. Not because the quality is bad — because the model redraws
-> whatever you give it. It bends the logo, invents a button on the product, and renders
-> text that spells nothing. So the output goes back to a designer, and the generative step
-> saved nobody any time.
+> "Someone selling handmade soap can generate fifty advertisements tonight. If one of them
+> says 'clinically proven' — because a language model reached for a phrase that sounded
+> like marketing — that's a fine they can't absorb. A large brand has a legal team between
+> them and that mistake. They have a phone.
 >
-> Rivet is the other approach. The model is creative only where creativity is safe, and
-> every export carries proof."
+> Generative tools made advertising cheap. They didn't make *checking* it cheap. So the
+> check stayed where it always was — with whoever could afford a reviewer.
+>
+> Rivet moves the check into the tool. The model is creative only where creativity is safe,
+> every asset is audited as it's made, and one that fails is refused rather than shipped."
 
 ---
 

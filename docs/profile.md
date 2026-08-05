@@ -7,6 +7,15 @@ Radeon PRO W7900 · 48 GB · ROCm 7.2.1
 
 ## The problem
 
+Someone selling handmade soap can generate fifty advertisements tonight. If one of them says
+"clinically proven" — because a language model reached for a phrase that sounded like
+marketing — that is a regulatory fine, and there is no legal team standing between them and
+it. A large brand absorbs that. They do not.
+
+That asymmetry is the problem Rivet is built for. The tools that make advertising cheap have
+not made *checking* it cheap, so the check stayed where it always was: with whoever can
+afford a reviewer.
+
 A brand can generate a thousand advertisements with a diffusion model in an afternoon, and ship none
 of them.
 
@@ -43,12 +52,20 @@ document come from it.
 
 ## Who it is for
 
-| User | Scenario |
+The people who most need generated advertising are the ones who can least afford it to go
+wrong. A large brand has a legal team and a design studio between a bad claim and the
+public. A person selling handmade soap has neither, and the same regulator.
+
+| User | What is at stake |
 |---|---|
-| A brand marketing team | Needs fifty product advertisements this quarter and cannot send each one through legal review. Rivet blocks the ones that violate the brand's claim policy before a human ever sees them. |
-| An agency | Delivers to a client whose contract specifies logo treatment and required legal text. The receipt is the proof of compliance, per asset. |
-| A regulated seller | Cannot say "clinically proven" or "guaranteed". Forbidden claims are checked in headline, support, call-to-action **and spoken narration**, and repaired automatically. |
-| A solo seller | Has one product photo and no design tools. The deterministic compositor gives typography that is correct rather than merely generated. |
+| A small seller | One photo, no designer, no budget for either. A generated ad that says "clinically proven" is a fine they cannot absorb, so today they either post nothing or post something they have not checked. Rivet gives them the ad and the check together. |
+| A regulated seller — supplements, cosmetics, health | Words like "guaranteed" or "cures" carry real penalties. Forbidden claims are caught in the headline, the support line, the call to action **and the spoken narration**, then rewritten and re-audited. |
+| A shop selling in more than one place | The same campaign is needed as a story, a square post and a banner. Each is composited from the same protected assets and audited separately, so a legible story does not smuggle through an illegible banner. |
+| An agency or in-house team | Delivers against a contract specifying logo treatment and required legal text. The receipt is per-asset proof, not a promise that someone looked. |
+
+The common thread is that the cost of an unchecked advertisement does not fall evenly.
+Rivet moves the check to where the asset is made, so it does not depend on who can afford
+a reviewer.
 
 ## Verification
 

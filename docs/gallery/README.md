@@ -1,41 +1,62 @@
 # Rivet results gallery
 
-Produced by `scripts/showcase.py` on **AMD Radeon Graphics** (torch 2.9.1+gitff65f5b, hip 7.2.53211-e1a6bc5663).
-
-Two of the three scenes are shown for each run; the full set ships in the export pack.
+Produced by `scripts/showcase.py` on **mps** (torch 2.13.0, hip n/a).
 
 ## Verified campaign
 
-- receipt `c6914739cccdd9cb`
+- receipt `ea72effef9454a4f`
 - **passed: True**
 - export pack: written
 
 <img src="hero-hook.jpg" width="240">
+<img src="hero-proof.jpg" width="240">
+<img src="hero-cta.jpg" width="240">
+<img src="hero-hook.jpg" width="240">
+<img src="hero-hook.jpg" width="240">
+<img src="hero-proof.jpg" width="240">
+<img src="hero-proof.jpg" width="240">
+<img src="hero-cta.jpg" width="240">
 <img src="hero-cta.jpg" width="240">
 
+[hero.mp4](hero.mp4)
 
 ## Tampered product asset
 
-- receipt `e5ca454919385062`
+- receipt `36925ca927f0876a`
 - **passed: False**
 - export pack: withheld
 - failing checks:
   - `hook` **A01** — mismatch
   - `proof` **A01** — mismatch
   - `cta` **A01** — mismatch
+  - `hook` **A01** — mismatch
+  - `hook` **A01** — mismatch
+  - `proof` **A01** — mismatch
+  - `proof` **A01** — mismatch
+  - `cta` **A01** — mismatch
+  - `cta` **A01** — mismatch
 
 <img src="blocked-hook.jpg" width="240">
+<img src="blocked-proof.jpg" width="240">
+<img src="blocked-cta.jpg" width="240">
+<img src="blocked-hook.jpg" width="240">
+<img src="blocked-hook.jpg" width="240">
+<img src="blocked-proof.jpg" width="240">
+<img src="blocked-proof.jpg" width="240">
+<img src="blocked-cta.jpg" width="240">
 <img src="blocked-cta.jpg" width="240">
 
+[blocked.mp4](blocked.mp4)
 
-Full-resolution stills, the assembled video, the receipt and a manifest hashing every member ship inside each campaign's export pack.
+## One campaign, three delivery formats
 
-## The artifacts themselves
+The same scene as a vertical story, a square feed post and a wide banner. Each has its own
+composition rather than a squashed crop, and each is audited separately — a legible story
+does not smuggle through an illegible banner.
 
-- [`campaign.mp4`](campaign.mp4) — the verified advertisement: 13s, 1080x1920, H.264 with narration
-- [`campaign-pack.zip`](campaign-pack.zip) — what an export actually delivers: the video, all three
-  full-resolution stills, SRT captions, `receipt.json` with every check and its observed value, and
-  `manifest.json` carrying a sha256 for each member
+<img src="format-story.jpg" height="230">
+<img src="format-feed.jpg" height="230">
+<img src="format-banner.jpg" height="230">
 
-The manifest is checkable. Hash any file in the pack and compare it against its row; the tampered
-run produced a video too, and no pack, because the audit would not certify it.
+Every export pack carries all nine stills, the assembled video, captions, the receipt and a
+manifest hashing each member.

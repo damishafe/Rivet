@@ -27,6 +27,17 @@ W7900 — see [docs/gallery/](docs/gallery/).
 | Peak VRAM | 9168 MB of 49136 |
 | Offline, every socket blocked | **passes** |
 
+## Who this is for
+
+Someone selling handmade soap can generate fifty advertisements tonight. If one says
+"clinically proven" — because a language model reached for a phrase that sounded like
+marketing — that is a fine they cannot absorb, and there is no legal team standing between
+them and it. A large brand has a review process. They have a phone.
+
+Generative tools made advertising cheap without making *checking* it cheap, so the check
+stayed with whoever could afford a reviewer. Rivet moves it into the tool: every asset is
+audited as it is made, and one that fails is refused rather than shipped.
+
 ## Why it is different
 
 Most generative ad tools ask you to trust the output. Rivet proves it.
