@@ -40,3 +40,8 @@ story does not smuggle through an illegible banner.
 
 Every export pack carries all nine stills, the assembled video, captions, the receipt and a
 manifest hashing each member.
+
+## Other runs
+
+- [LANGUAGE-ZH.md](LANGUAGE-ZH.md) — the same campaign produced and audited in Mandarin
+- [DIVERSITY.md](DIVERSITY.md) — one campaign per demo brand
