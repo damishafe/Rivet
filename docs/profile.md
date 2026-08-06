@@ -160,6 +160,28 @@ run is digested over the rendered still bytes, the seeds and the deterministic a
 and the digests are compared across runs. The comparison cannot be satisfied by matching paths or
 identifiers, only by matching content.
 
+**The ROCm build of PyTorch is not replaceable, and the installer enforces it.** A Radeon instance
+ships a ROCm torch that no package index serves. Any dependency resolution that installs `torch`
+transitively pulls the CPU or CUDA wheel over it, the GPU disappears, and the pipeline keeps running
+— silently, on the CPU, at a hundredth of the speed. `install.sh` records the torch version before
+installing anything, re-reads it afterwards, and aborts the install if it changed rather than
+handing back a machine that looks fine. It also selects the interpreter that *owns* the ROCm torch
+rather than trusting `python3`, because on the contest image those are different interpreters.
+
+**SDXL runs fp16 on a VAE that can survive it.** SDXL's own VAE overflows in float16 and decodes to
+black or NaN frames. Rivet pins `madebyollin/sdxl-vae-fp16-fix` and loads the fp16 variant of the
+base model against it, so the whole generation path stays half precision on the W7900 without a
+float32 decode step. The model fetcher special-cases this repository: for every other model it skips
+duplicate weight formats, but here `diffusion_pytorch_model.safetensors` *is* the model, and
+excluding it leaves a config with no weights that only fails at load time.
+
+**Narration pulls a different toolchain per language, and offline runs find out too late.** Kokoro
+resolves a separate grapheme-to-phoneme chain for each language and fetches the missing pieces on
+first use — a spaCy model for English, `misaki[zh]` and `ordered_set` for Mandarin. On a restricted
+network that fails halfway through generation, after the GPU work is already spent. Both are pinned
+as install-time dependencies so a language either works before the run starts or is rejected at
+validation.
+
 **Offline by requirement.** Models resolve from local snapshots. `make offline-demo` runs the golden
 project with every outbound socket blocked at the Python socket layer; the run completes with zero
 connection attempts.
