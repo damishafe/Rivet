@@ -4,6 +4,11 @@
 
 A product image, brand kit and spoken brief become a verified three-scene vertical advertisement — without allowing AI to distort the product, logo or text.
 
+Compositing a logo deterministically is table stakes; several tools do that much. The question
+none of them answer is *how you know it worked*. **Rivet checks its own output against named
+checks and refuses to export when one fails** — and every refusal is as reproducible as every
+pass.
+
 Built for the AMD AI DevMaster Hackathon 2026 (Track 1: Multimodal Content Creation Tools) on a Radeon PRO W7900 · 48GB · ROCm 7.2.1.
 
 <p align="center">
