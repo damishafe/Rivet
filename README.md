@@ -17,7 +17,7 @@ A product image, brand kit and spoken brief become a three-scene vertical advert
 
 Compositing a logo deterministically is table stakes; several tools do that much. The question none of them answer is *how you know it worked*. Rivet answers it, and **a refusal reproduces exactly like a pass**.
 
-**[ Live studio ↗ ](https://rivet-amd.vercel.app)** · **[ The audit ↗ ](#the-audit-eleven-checks-every-scene)** · **[ Verify it yourself ↗ ](#verify-it-yourself-in-60-seconds)** · **[ Results ↗ ](#results)** · **[ Run it locally ↗ ](#install)**
+**[ Watch the demo ↗ ](https://youtu.be/NI-S_5lD79M)** · **[ Live studio ↗ ](https://rivet-amd.vercel.app)** · **[ The audit ↗ ](#the-audit-eleven-checks-every-scene)** · **[ Verify it yourself ↗ ](#verify-it-yourself-in-60-seconds)** · **[ Results ↗ ](#results)** · **[ Run it locally ↗ ](#install)**
 
 Built for the **AMD AI DevMaster Hackathon 2026** — Track 1: Multimodal Content Creation Tools, on a Radeon PRO W7900 · 48 GB · ROCm 7.2.1.
 
@@ -26,6 +26,10 @@ Built for the **AMD AI DevMaster Hackathon 2026** — Track 1: Multimodal Conten
 ---
 
 ## ▶ Demo
+
+https://github.com/user-attachments/assets/972d1c57-2051-45eb-830b-921bfe72ca65
+
+**4:56, on YouTube: [youtu.be/NI-S_5lD79M](https://youtu.be/NI-S_5lD79M).** The terminal scenes are the real Radeon cloud instance; wherever the picture is compressed, an on-screen clock counts true seconds and states the multiplier — the run is never silently sped up.
 
 <p align="center">
   <img src="docs/gallery/hero-hook.jpg" width="215" alt="Hook scene">

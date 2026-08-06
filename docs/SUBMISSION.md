@@ -14,6 +14,14 @@ product, logo and typography never pass through a generative model. Every asset 
 as it is made, every export carries a Campaign Receipt, and one that fails is refused
 rather than shipped.
 
+## ▶ Demo video
+
+https://github.com/user-attachments/assets/972d1c57-2051-45eb-830b-921bfe72ca65
+
+Also on YouTube: **https://youtu.be/NI-S_5lD79M** — 4:56. The terminal scenes were recorded
+live on the Radeon cloud instance; wherever the picture is compressed a clock counts true
+seconds and states the multiplier on screen.
+
 ## Deliverables
 
 | Requirement | Artifact |
@@ -21,7 +29,7 @@ rather than shipped.
 | Project Profile Document (PDF) | [`project-profile.pdf`](project-profile.pdf) — source: [`docs/profile.md`](docs/profile.md) |
 | Project source code | this repository |
 | README with environment, startup, dependencies | [`README.md`](README.md) · one-command setup: [`install.sh`](install.sh) |
-| Demo video (3–5 min) | DEMO_VIDEO_LINK |
+| Demo video (4:56) | [YouTube](https://youtu.be/NI-S_5lD79M) · plays inline below |
 | Supplementary material | [`poster.pdf`](poster.pdf) |
 | Live studio (no install) | **https://rivet-amd.vercel.app** |
 
