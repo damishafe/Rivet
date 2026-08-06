@@ -8,6 +8,8 @@ DEFAULT_FONT = "Inter.ttf"
 
 CJK = re.compile(r"[　-ヿ㐀-䶿一-鿿豈-﫿＀-￯]")
 NOTDEF_PROBE = chr(0xE0FF)
+NO_LINE_START = "，。、；：！？）》」』】…・％”’,.;:!?)]}"
+NO_LINE_END = "（《「『【“‘([{"
 
 
 class MissingFont(RuntimeError):
@@ -80,19 +82,45 @@ def _extend(line: str, token: str) -> str:
     return f"{line} {token}"
 
 
+def _breakable(line: str, token: str) -> bool:
+    """Whether a line may end here.
+
+    Chinese typesetting forbids a line that opens with closing punctuation or closes with
+    an opening bracket. Breaking purely on width produces a comma stranded at the start of
+    a line, which reads as broken to anyone who reads the script.
+    """
+    return bool(line) and token not in NO_LINE_START and line[-1] not in NO_LINE_END
+
+
 def wrap_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
     lines: list[str] = []
     line = ""
     for token in _tokenize(text):
         trial = _extend(line, token)
-        if not line or draw.textlength(trial, font=font) <= max_width:
+        fits = draw.textlength(trial, font=font) <= max_width
+        if not line or fits or not _breakable(line, token):
             line = trial
         else:
             lines.append(line)
             line = token
     if line:
         lines.append(line)
-    return lines
+    return _unorphan(lines)
+
+
+def _unorphan(lines: list[str]) -> list[str]:
+    """Pull a stranded final character up onto a pair.
+
+    A last line holding one ideograph reads as a mistake rather than a line break. Moving
+    one character down from the line above costs a little width and buys a headline that
+    looks set rather than wrapped.
+    """
+    if len(lines) < 2 or len(lines[-1]) != 1 or not CJK.search(lines[-1]):
+        return lines
+    previous = lines[-2]
+    if len(previous) < 3 or previous[-1] in NO_LINE_END:
+        return lines
+    return [*lines[:-2], previous[:-1], previous[-1] + lines[-1]]
 
 
 def fit_lines(

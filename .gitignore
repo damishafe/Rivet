@@ -19,3 +19,6 @@ dist/
 *.egg-info/
 docs/smoke/
 .benchmark/
+
+# video build harness — outputs, caches and secrets
+video/
