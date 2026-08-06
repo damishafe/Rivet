@@ -161,6 +161,7 @@ def generation_plan(
                         "support": shot.copy_.support,
                         "cta": shot.copy_.cta,
                         "accent": list(accent),
+                        "language": inputs.brand.language,
                     },
                 ),
             )
