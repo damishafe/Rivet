@@ -78,7 +78,7 @@ def test_clean_campaign_receipt_passes(tmp_path: Path) -> None:
     assert receipt.passed
     assert receipt.repairs == []
     assert [s.shot_id for s in receipt.scenes] == ["hook", "proof", "cta"]
-    assert all(len(s.checks) == 9 for s in receipt.scenes)
+    assert all(len(s.checks) == 10 for s in receipt.scenes)
     assert len(receipt.receipt_hash) == 64
 
 

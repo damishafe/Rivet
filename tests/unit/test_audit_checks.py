@@ -63,7 +63,7 @@ def test_clean_scene_passes_all_checks(tmp_path: Path) -> None:
     scene = build_scene(tmp_path, required=["Make every space your studio"])
     report = audit_scene(scene, APPROVED)
     assert [c.check_id for c in report.checks] == [
-        "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A09", "A10",
+        "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A09", "A10", "A11",
     ]
     assert report.passed, [(c.check_id, c.observed) for c in report.checks if not c.passed]
 
@@ -236,3 +236,23 @@ def test_all_neutral_brand_flags_saturated_background(tmp_path: Path) -> None:
         tmp_path, palette=["#141414", "#EDEDED"], bg_color=(200, 30, 30)
     )
     assert not check_palette(scene).passed
+
+
+def test_glyph_coverage_rejects_copy_the_font_cannot_draw(tmp_path: Path) -> None:
+    """Chinese copy drawn with the Latin font renders as boxes; A11 is what notices."""
+    scene = build_scene(tmp_path, headline="音质出众")
+    unreadable = audit_scene(scene, {**APPROVED, "headline": "音质出众"})
+    a11 = next(c for c in unreadable.checks if c.check_id == "A11")
+    assert not a11.passed
+    assert "音" in str(a11.observed)
+
+    readable = build_scene(tmp_path, headline="音质出众")
+    readable.font = "NotoSansSC.ttf"
+    report = audit_scene(readable, {**APPROVED, "headline": "音质出众"})
+    assert next(c for c in report.checks if c.check_id == "A11").passed
+
+
+def test_glyph_coverage_passes_for_latin_copy(tmp_path: Path) -> None:
+    scene = build_scene(tmp_path)
+    report = audit_scene(scene, APPROVED)
+    assert next(c for c in report.checks if c.check_id == "A11").passed

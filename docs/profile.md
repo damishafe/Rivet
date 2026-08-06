@@ -82,6 +82,7 @@ Ten checks run on every scene. Nine are deterministic and block the export; one 
 | A07 | no forbidden claims, all required phrases | whole-word matching across copy **and narration** |
 | A09 | the product in the frame is the real product | pixel diff against the cutout at its placed position |
 | A10 | the text is legible | WCAG contrast against the measured background behind each text box |
+| A11 | the font can draw the copy | each character compared against the .notdef box the font falls back to |
 | A08 | semantic fit (advisory, never blocks) | Qwen3-VL scores the rendered scene against purpose and audience |
 
 When a claims check fails, Rivet does not simply refuse. It rewrites the offending copy, recomposites
@@ -107,7 +108,7 @@ photo ─┼─► Qwen3-VL ─────────► scene plan (copy, nar
                                      (product · logo · typography)
                                                        │
                                                        ▼
-                                    audit A01–A10 ──► repair ──► re-audit
+                                    audit A01–A11 ──► repair ──► re-audit
                                                        │
                                                        ▼
                             Kokoro narration · motion · assembly · captions

@@ -49,6 +49,7 @@ every file in it.
 | **A07** | no forbidden claims, all required phrases — including narration |
 | **A09** | the product in the frame is the real product, pixel for pixel |
 | **A10** | text is legible against what is actually behind it |
+| **A11** | every character rendered exists in the font that drew it |
 | **A08** | *advisory* — semantic fit judged by Qwen3-VL, never blocks |
 
 If a deterministic check fails, **no pack is written**. The project moves to `needs_repair`.

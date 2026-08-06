@@ -10,6 +10,7 @@ from rivet.audit.visual_checks import (
     check_prominence,
     check_safe_area,
 )
+from rivet.compositor.typography import load_font, missing_glyphs
 from rivet.domain.models import AuditCheck
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "SceneAudit",
     "audit_scene",
     "check_claims",
+    "check_glyph_coverage",
     "check_legibility",
     "check_lineage",
     "check_logo_presence",
@@ -72,6 +74,26 @@ def check_claims(scene: SceneAudit) -> AuditCheck:
     )
 
 
+def check_glyph_coverage(scene: SceneAudit) -> AuditCheck:
+    """Every rendered character must exist in the font that drew it.
+
+    A font without the script does not fail: it draws each absent character as an
+    identical empty box. The copy check still matches, the contrast check still reads a
+    legible ratio, and the export ships an advertisement nobody can read.
+    """
+    font = load_font(64, 400, scene.font)
+    missing = missing_glyphs(f"{scene.headline}{scene.support}{scene.cta}", font)
+    ok = not missing
+    return AuditCheck(
+        check_id="A11",
+        metric=f"characters {scene.font} can draw",
+        threshold="0 missing glyphs",
+        observed="all drawable" if ok else f"missing {''.join(missing)[:16]}",
+        passed=ok,
+        owner_stage="compose",
+    )
+
+
 @dataclass
 class AuditReport:
     checks: list[AuditCheck] = field(default_factory=list)
@@ -94,6 +116,7 @@ def audit_scene(
         check_claims(scene),
         check_product_fidelity(scene),
         check_legibility(scene),
+        check_glyph_coverage(scene),
     ]
     if judge is not None:
         message = f"{scene.headline} {scene.support} {scene.cta}".strip()

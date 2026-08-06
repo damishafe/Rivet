@@ -142,12 +142,16 @@ def _text_overflow(scene: SceneAudit, boxes: dict[str, tuple[float, float, float
         if not text:
             continue
         _, _, bw, bh = rect_px(boxes[key], scene.canvas)
-        _, _, _, fits = fit_lines(scratch, text, bw, bh, weight, max_size=min(bh, 150))
+        _, _, _, fits = fit_lines(
+            scratch, text, bw, bh, weight, max_size=min(bh, 150), font_name=scene.font
+        )
         if not fits:
             count += 1
     if scene.cta:
         _, _, cw, ch = rect_px(boxes["cta"], scene.canvas)
-        _, fits = fit_single_line(scratch, scene.cta, int(cw * 0.82), 700, int(ch * 0.5))
+        _, fits = fit_single_line(
+            scratch, scene.cta, int(cw * 0.82), 700, int(ch * 0.5), font_name=scene.font
+        )
         if not fits:
             count += 1
     return count

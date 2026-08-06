@@ -1,9 +1,13 @@
+import re
 from pathlib import Path
 
-from PIL import ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 FONT_DIR = Path(__file__).parent / "fonts"
 DEFAULT_FONT = "Inter.ttf"
+
+CJK = re.compile(r"[　-ヿ㐀-䶿一-鿿豈-﫿＀-￯]")
+NOTDEF_PROBE = chr(0xE0FF)
 
 
 class MissingFont(RuntimeError):
@@ -31,16 +35,61 @@ def load_font(size: int, weight: int = 400, name: str = DEFAULT_FONT) -> ImageFo
     return font
 
 
+def _glyph_bytes(char: str, font: ImageFont.FreeTypeFont) -> bytes:
+    box = int(font.size) * 3
+    canvas = Image.new("L", (box, box), 0)
+    ImageDraw.Draw(canvas).text((box / 3, box / 3), char, font=font, fill=255)
+    return canvas.tobytes()
+
+
+def missing_glyphs(text: str, font: ImageFont.FreeTypeFont) -> list[str]:
+    """Characters this font cannot draw.
+
+    A font without the script still renders: every absent codepoint becomes the same
+    .notdef box. Comparing each glyph against the box a private-use codepoint produces
+    tells a real character apart from a placeholder one.
+    """
+    probe = _glyph_bytes(NOTDEF_PROBE, font)
+    return [
+        char
+        for char in dict.fromkeys(text)
+        if not char.isspace() and _glyph_bytes(char, font) == probe
+    ]
+
+
+def _tokenize(text: str) -> list[str]:
+    """Split into the smallest pieces a line may break at.
+
+    Chinese is written without spaces, so whitespace tokens leave a headline as one
+    unbreakable word that can only be met by shrinking it to nothing.
+    """
+    tokens: list[str] = []
+    for word in text.split():
+        if CJK.search(word):
+            tokens.extend(word)
+        else:
+            tokens.append(word)
+    return tokens
+
+
+def _extend(line: str, token: str) -> str:
+    if not line:
+        return token
+    if CJK.search(token) or CJK.search(line[-1]):
+        return f"{line}{token}"
+    return f"{line} {token}"
+
+
 def wrap_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
     lines: list[str] = []
     line = ""
-    for word in text.split():
-        trial = f"{line} {word}".strip()
+    for token in _tokenize(text):
+        trial = _extend(line, token)
         if not line or draw.textlength(trial, font=font) <= max_width:
             line = trial
         else:
             lines.append(line)
-            line = word
+            line = token
     if line:
         lines.append(line)
     return lines

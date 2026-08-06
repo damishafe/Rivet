@@ -86,6 +86,7 @@ def build_campaign_receipt(
                 product_sha_expected=product_expected, product_sha_used=product_used,
                 logo_sha_expected=logo_expected, logo_sha_used=logo_used,
                 purpose=purpose, audience=brand.audience, narration=narration,
+                font=language(brand.language).font,
             )
 
         report = audit_scene(make_scene(copy), copy.model_dump(by_alias=True), judge)

@@ -58,6 +58,7 @@ Ten checks run on every scene. If a deterministic check fails, the export is blo
 | A07 | no forbidden claims, all required phrases present — including narration |
 | A09 | the product in the frame matches the cutout, pixel for pixel |
 | A10 | text contrast is legible against what is actually behind it |
+| A11 | every rendered character exists in the font that drew it |
 | A08 | *(advisory)* semantic fit, judged by Qwen3-VL — never blocks an export |
 
 ## Requirements

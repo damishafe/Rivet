@@ -77,6 +77,7 @@ def render_formats(
                 purpose=shot.purpose,
                 audience=brand.audience,
                 narration=shot.narration,
+                font=language(brand.language).font,
                 format=fmt,
                 canvas=CANVASES[fmt],
             )
