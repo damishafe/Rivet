@@ -65,8 +65,8 @@ gfx1100 · 49136 MB · ROCm 7.2.53211 · PyTorch 2.9.1
 
 | | seconds | audit |
 |---|---:|---|
-| **Cold** — plan, generate, audit, render, pack | **67.8** | 27/27 |
-| **Hot** — models already resident | **41.2** | 27/27 |
+| **Cold** — plan, generate, audit, render, pack | **71.7** | 90/90 |
+| **Hot** — models already resident | **45.4** | 90/90 |
 | **Offline** — every outbound socket blocked | **67** | 27/27 |
 
 **Peak VRAM 9168 MB of 49136.** One heavy model is held at a time; 81% of the card stays free.

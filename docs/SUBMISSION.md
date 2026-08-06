@@ -37,8 +37,8 @@ session. Raw logs in [`docs/evidence/`](docs/evidence/), reports in
 
 | Measurement | Result |
 |---|---|
-| Full campaign, cold | **67.8 s** — plan, generate, audit, render, pack |
-| Same work, models resident | **41.2 s** |
+| Full campaign, cold | **71.7 s** — plan, generate, audit, render, pack |
+| Same work, models resident | **45.4 s** |
 | Deterministic checks | **27 / 27** across three scenes |
 | Peak VRAM | **9168 MB** of 49136 (81% of the card free) |
 | Offline gate, every outbound socket blocked | **passes**, 0 connection attempts |

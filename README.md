@@ -21,9 +21,9 @@ W7900 — see [docs/gallery/](docs/gallery/).
 
 | Measured on the W7900 | |
 |---|---|
-| Full campaign, cold | **67.8s** — plan, generate, audit, render, pack |
-| Same work, models resident | **41.2s** |
-| Deterministic checks | **27/27** across three scenes |
+| Full campaign, cold | **71.7s** — plan, generate, audit, render, pack |
+| Same work, models resident | **45.4s** |
+| Deterministic checks | **90/90** across nine scenes |
 | Peak VRAM | 9168 MB of 49136 |
 | Offline, every socket blocked | **passes** |
 
@@ -151,8 +151,8 @@ gfx1100 · 49136 MB · ROCm 7.2.53211 · PyTorch 2.9.1 · fixture `kora-arc`
 
 | | seconds | audit |
 |---|---:|---|
-| Cold — plan, generate, audit, render, pack | **67.8** | 27/27 |
-| Hot — models already resident | **41.2** | 27/27 |
+| Cold — plan, generate, audit, render, pack | **71.7** | 90/90 |
+| Hot — models already resident | **45.4** | 90/90 |
 | Offline, every outbound socket blocked | 67 | 27/27 |
 
 Peak VRAM **9168 MB of 49136**: one heavy model is held at a time, leaving 81% of the card free.

@@ -172,8 +172,8 @@ section. The full reports are in `docs/benchmarks/`.
 
 | | seconds | audit |
 |---|---:|---|
-| Cold: plan, generate, audit, render, pack | **67.8** | 27/27 |
-| Hot: same work, models already resident | **41.2** | 27/27 |
+| Cold: plan, generate, audit, render, pack | **71.7** | 90/90 |
+| Hot: same work, models already resident | **45.4** | 90/90 |
 | Offline gate, every outbound socket blocked | 67 | 27/27 |
 
 Peak VRAM is **9168 MB of 49136** — the pipeline holds one heavy model at a time and leaves 81% of
