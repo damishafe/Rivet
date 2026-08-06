@@ -83,6 +83,11 @@ say "rivet"
 say "generative libraries"
 "$PYTHON" -m pip install -q diffusers transformers accelerate safetensors soundfile kokoro huggingface_hub spacy
 
+say "narration language packs"
+# Kokoro resolves a different phoneme chain per language and fetches these at first
+# use otherwise, which breaks offline runs part-way through generation.
+"$PYTHON" -m pip install -q "misaki[zh]" ordered_set || warn "Chinese narration unavailable"
+
 say "narration language model"
 # Kokoro's grapheme-to-phoneme step fetches this at run time if it is absent, which
 # breaks any offline or restricted-network run halfway through generation.

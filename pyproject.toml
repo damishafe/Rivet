@@ -31,6 +31,10 @@ gpu = [
     # is absent, which breaks any offline or restricted-network run mid-generation.
     # Pinning it here makes narration self-contained after install.
     "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+    # Kokoro reaches for a different grapheme-to-phoneme chain per language and pulls
+    # these in at first use, which fails offline and mid-generation.
+    "misaki[zh]",
+    "ordered_set",
 ]
 
 [project.scripts]
