@@ -36,7 +36,9 @@ class Result:
     repairs: list[tuple[str, str, bool]]
 
 
-def _build(root: Path, fixture: Path, vlm: bool) -> tuple[object, str, Path]:
+def _build(
+    root: Path, fixture: Path, vlm: bool, lang: str = "en"
+) -> tuple[object, str, Path]:
     engine = make_engine(root / "rivet.db")
     projects = ProjectStore(engine)
     assets = AssetStore(engine, root)
@@ -44,6 +46,9 @@ def _build(root: Path, fixture: Path, vlm: bool) -> tuple[object, str, Path]:
     product = ingest_asset(assets, project.id, fixture / "product.png", "product")
     logo = ingest_asset(assets, project.id, fixture / "logo.png", "logo")
     confirm_brand(engine, root, project.id, product, logo)
+    dna = projects.get_brand_dna(project.id)
+    if dna is not None and lang != "en":
+        projects.set_brand_dna(project.id, dna.model_copy(update={"language": lang}))
     derive_plan(engine, project.id, product.path, use_vlm=vlm)
     return engine, project.id, Path(product.path)
 
@@ -84,15 +89,16 @@ def _collect(name: str, receipt: object, prefix: str) -> Result:
     )
 
 
-def run_clean(root: Path, fixture: Path, vlm: bool) -> Result:
-    engine, project_id, _ = _build(root / "clean", fixture, vlm)
+def run_clean(root: Path, fixture: Path, vlm: bool, lang: str = "en") -> Result:
+    engine, project_id, _ = _build(root / "clean", fixture, vlm, lang)
     receipt = asyncio.run(run_campaign(engine, root / "clean", project_id, semantic=False))
-    return _collect("Verified campaign", receipt, "hero")
+    prefix = "hero" if lang == "en" else f"hero-{lang}"
+    return _collect("Verified campaign", receipt, prefix)
 
 
-def run_tampered(root: Path, fixture: Path, vlm: bool) -> Result:
+def run_tampered(root: Path, fixture: Path, vlm: bool, lang: str = "en") -> Result:
     """Swap the product file after the brand confirmed it: A01 must block the export."""
-    engine, project_id, product_path = _build(root / "tampered", fixture, vlm)
+    engine, project_id, product_path = _build(root / "tampered", fixture, vlm, lang)
     original = product_path.read_bytes()
     product_path.write_bytes(original + b"\x00tampered")
     try:
@@ -131,18 +137,19 @@ def main() -> int:
     parser.add_argument("--fixture", type=Path, default=Path("fixtures/kora-arc"))
     parser.add_argument("--workdir", type=Path, default=Path(".showcase"))
     parser.add_argument("--no-vlm", dest="vlm", action="store_false")
+    parser.add_argument("--language", default="en", help="en, es, fr, it, pt or zh")
     args = parser.parse_args()
 
     shutil.rmtree(args.workdir, ignore_errors=True)
     results: list[Result] = []
 
     print("1/2 verified campaign ...", flush=True)
-    results.append(run_clean(args.workdir, args.fixture, args.vlm))
+    results.append(run_clean(args.workdir, args.fixture, args.vlm, args.language))
     print(f"    passed={results[-1].passed} receipt={results[-1].receipt_hash[:16]}")
 
     print("2/2 tampered product asset ...", flush=True)
     try:
-        results.append(run_tampered(args.workdir, args.fixture, args.vlm))
+        results.append(run_tampered(args.workdir, args.fixture, args.vlm, args.language))
         print(f"    passed={results[-1].passed} (expected False)")
     except CampaignFailed:
         print("    blocked before export, as intended")
