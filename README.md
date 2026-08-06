@@ -129,15 +129,39 @@ The benchmark writes JSON, CSV and Markdown to [docs/benchmarks/](docs/benchmark
 Protected assets route **around** the generative path. That is the whole design.
 
 ```mermaid
-flowchart LR
-    IN["Product image · logo<br/>brand kit · spoken brief"] --> BRAND["Brand DNA<br/>Whisper + Qwen3-VL"]
-    BRAND --> PLAN["Shot plan<br/>Qwen3-VL writes hook / proof / cta"]
-    PLAN --> BG["Background only<br/>SDXL + fp16-fix VAE"]
-    IN -->|"never enters a model"| COMP
-    BG --> COMP["Deterministic compositor<br/>cutout · logo · typography<br/>recorded transforms + hashes"]
-    COMP --> AUDIT{"Audit A01–A11<br/>90 checks"}
-    AUDIT -->|"fail"| STOP["needs_repair<br/>no pack written"]
-    AUDIT -->|"pass"| OUT["Motion · Kokoro narration · FFmpeg<br/>export pack + Campaign Receipt"]
+flowchart TB
+    subgraph inputs["Inputs — immutable, hashed at ingest"]
+        P["Product image"]
+        L["Logo"]
+        B["Brand kit · spoken brief"]
+    end
+
+    B --> DNA["Brand DNA<br/>Whisper transcribes · Qwen3-VL reads the product<br/>palette derived from the logo"]
+    DNA --> PLAN["Shot plan — Qwen3-VL<br/>hook / proof / cta copy + narration<br/>written in the campaign language"]
+    PLAN --> BG["Backgrounds ONLY<br/>SDXL + fp16-fix VAE · fp16 on ROCm<br/>the only generative pixels"]
+
+    P -->|"SAM 2.1 cutout — source pixels"| COMP
+    L -->|"source bytes, recorded transform"| COMP
+    PLAN -->|"packaged fonts, CJK-aware line breaking"| COMP
+    BG --> COMP["Deterministic compositor<br/>story 1080×1920 · feed 1080×1080 · banner 1920×1080"]
+
+    COMP --> AUDIT{"Audit A01–A11<br/>11 checks × 9 scenes = 90<br/>observed values vs thresholds"}
+    AUDIT -->|"claims violation (A07)"| REPAIR["Targeted repair<br/>rewrite copy → re-composite → re-audit"]
+    REPAIR --> AUDIT
+    AUDIT -->|"any deterministic check fails"| STOP["REFUSED<br/>no pack written · needs_repair"]
+    AUDIT -->|"90/90 pass"| RENDER["Motion · Kokoro narration · FFmpeg"]
+    RENDER --> OUT["Export pack<br/>MP4 + stills + SRT + Campaign Receipt<br/>+ manifest hashing every file"]
+
+    classDef protected fill:#0C0C0C,stroke:#FF3B00,color:#FAFAFA,stroke-width:2px
+    classDef generative fill:#18181B,stroke:#3F3F46,color:#A1A1AA
+    classDef gate fill:#0C0C0C,stroke:#F59E0B,color:#FAFAFA,stroke-width:2px
+    classDef refused fill:#1a0505,stroke:#F87171,color:#F87171,stroke-width:2px
+    classDef pass fill:#051a10,stroke:#34D399,color:#34D399
+    class P,L,COMP protected
+    class BG,DNA,PLAN generative
+    class AUDIT gate
+    class STOP refused
+    class OUT,RENDER pass
 ```
 
 - **SAM 2.1** cuts the product out; the cutout is composited from *your* pixels, never redrawn.
